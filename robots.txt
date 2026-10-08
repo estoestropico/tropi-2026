@@ -1,0 +1,4 @@
+# Copia de trabajo del sitio, para el equipo.
+# El sitio público es https://tropico.ar — esta copia no se indexa.
+User-agent: *
+Disallow: /

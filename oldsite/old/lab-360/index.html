@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="es" data-astro-cid-t7yzo5a4> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab · Trópico 360</title><style>:root{--oscuro:#050515;--arena:#f5f4eb}@supports (color: color(display-p3 1 1 1)){@media (color-gamut:p3){:root{--oscuro:color(display-p3 .0196 .0196 .0824)}}}[data-astro-cid-t7yzo5a4]{margin:0;padding:0;box-sizing:border-box}html,body{background:var(--oscuro);color:var(--arena);font-family:system-ui,-apple-system,sans-serif}.hint[data-astro-cid-t7yzo5a4]{position:fixed;left:0;right:0;bottom:22px;text-align:center;font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;z-index:5;pointer-events:none}.intro[data-astro-cid-t7yzo5a4],.outro[data-astro-cid-t7yzo5a4]{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}.intro[data-astro-cid-t7yzo5a4] h1[data-astro-cid-t7yzo5a4]{font-size:clamp(28px,6vw,64px);font-weight:800;letter-spacing:-.02em}.intro[data-astro-cid-t7yzo5a4] p[data-astro-cid-t7yzo5a4],.outro[data-astro-cid-t7yzo5a4] p[data-astro-cid-t7yzo5a4]{font-family:ui-monospace,monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.55}.s360x[data-astro-cid-t7yzo5a4]{position:relative;height:340vh}.s360x[data-astro-cid-t7yzo5a4] .stk[data-astro-cid-t7yzo5a4]{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}.stage[data-astro-cid-t7yzo5a4]{position:relative;width:min(80vh,74vw);aspect-ratio:1}.stage[data-astro-cid-t7yzo5a4] .ring[data-astro-cid-t7yzo5a4]{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;will-change:transform,opacity;backface-visibility:hidden}.stage[data-astro-cid-t7yzo5a4] .r1[data-astro-cid-t7yzo5a4]{opacity:1}.stage[data-astro-cid-t7yzo5a4] .r2[data-astro-cid-t7yzo5a4],.stage[data-astro-cid-t7yzo5a4] .r3[data-astro-cid-t7yzo5a4],.stage[data-astro-cid-t7yzo5a4] .r4[data-astro-cid-t7yzo5a4],.stage[data-astro-cid-t7yzo5a4] .r5[data-astro-cid-t7yzo5a4]{opacity:0}@media (prefers-reduced-motion:reduce){.stage[data-astro-cid-t7yzo5a4] .ring[data-astro-cid-t7yzo5a4]{opacity:1!important;transform:none!important}}@media (max-width:700px){.stage[data-astro-cid-t7yzo5a4]{width:88vw}}
+</style></head> <body data-astro-cid-t7yzo5a4> <section class="intro" data-astro-cid-t7yzo5a4> <h1 data-astro-cid-t7yzo5a4>Trópico 360</h1> <p data-astro-cid-t7yzo5a4>Scrolleá ↓ — mové el mouse</p> </section> <section class="s360x" data-s360x data-astro-cid-t7yzo5a4> <div class="stk" data-astro-cid-t7yzo5a4> <div class="stage" data-stage data-astro-cid-t7yzo5a4> <!-- de afuera hacia adentro en el DOM; el escudo queda arriba --> <img class="ring r5" src="/img/360-5.svg" alt="" data-dir="-1" data-rev="0.72" data-mag="30" data-astro-cid-t7yzo5a4> <img class="ring r4" src="/img/360-4.svg" alt="" data-dir="1" data-rev="0.54" data-mag="25" data-astro-cid-t7yzo5a4> <img class="ring r3" src="/img/360-3.svg" alt="" data-dir="-1" data-rev="0.36" data-mag="20" data-astro-cid-t7yzo5a4> <img class="ring r2" src="/img/360-2.svg" alt="" data-dir="1" data-rev="0.18" data-mag="15" data-astro-cid-t7yzo5a4> <img class="ring r1" src="/img/360-1.svg" alt="" data-dir="0" data-rev="0" data-mag="0" data-astro-cid-t7yzo5a4> </div> </div> </section> <section class="outro" data-astro-cid-t7yzo5a4><p data-astro-cid-t7yzo5a4>fin de la prueba</p></section> <div class="hint" data-astro-cid-t7yzo5a4>lab · 360</div> <script>
+    (function () {
+      const sec = document.querySelector('[data-s360x]'); if (!sec) return;
+      const stage = sec.querySelector('[data-stage]');
+      const D = matchMedia('(min-width:701px)').matches;
+      const REDUCE = matchMedia('(prefers-reduced-motion:reduce)').matches;
+      const clamp = (v) => Math.min(1, Math.max(0, v));
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const smooth = (t) => t * t * (3 - 2 * t);
+
+      const R = [...stage.querySelectorAll('.ring')].map((el) => ({
+        el,
+        dir: +el.dataset.dir,      // -1 izq, +1 der, 0 quieto (escudo)
+        rev: +el.dataset.rev,      // umbral de scroll donde empieza a aparecer
+        mag: +el.dataset.mag,      // cuánto rota con el mouse
+        rot: 0, tRot: 0,           // rotación actual/objetivo (mouse)
+        op: el.classList.contains('r1') ? 1 : 0
+      }));
+
+      // ---- Scroll: revelar los anillos hacia afuera ----
+      const onScroll = () => {
+        const r = sec.getBoundingClientRect(), tot = sec.offsetHeight - innerHeight;
+        const p = clamp(-r.top / tot);
+        R.forEach((o) => { if (o.dir === 0) { o.op = 1; return; }
+          o.op = smooth(clamp((p - o.rev) / 0.10)); // fade+spin-in en una ventana del 10% (un toque más rápido)
+        });
+      };
+
+      // ---- Mouse: rotación objetivo (alterna dirección) ----
+      const onMove = (e) => { if (!D) return;
+        const nx = (e.clientX / innerWidth - 0.5) * 2; // -1 .. 1
+        R.forEach((o) => { o.tRot = nx * o.mag * o.dir; });
+      };
+      addEventListener('mouseleave', () => R.forEach((o) => o.tRot = 0));
+
+      // ---- Loop de render ----
+      const tick = () => {
+        R.forEach((o) => {
+          o.rot = lerp(o.rot, o.tRot, 0.09);
+          const spinIn = o.dir === 0 ? 0 : (1 - o.op) * o.dir * 34; // entra girando desde ±34°
+          o.el.style.opacity = o.op.toFixed(3);
+          o.el.style.transform = `rotate(${(o.rot + spinIn).toFixed(2)}deg)`;
+        });
+        requestAnimationFrame(tick);
+      };
+
+      if (REDUCE) { R.forEach((o) => { o.el.style.opacity = 1; o.el.style.transform = 'none'; }); return; }
+      addEventListener('scroll', onScroll, { passive: true });
+      addEventListener('resize', onScroll);
+      onScroll(); tick();
+      if (D) addEventListener('mousemove', onMove);
+    })();
+  </script> </body> </html>

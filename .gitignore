@@ -1,0 +1,25 @@
+# Dependencias
+vendor/
+node_modules/
+
+# Configuración / secretos
+.env
+.env.*
+*.key
+*.pem
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Logs, temporales y backups
+*.log
+*.tmp
+*.bak
+*.tar.gz
+*.zip
+*.sql
