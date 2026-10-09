@@ -52,8 +52,7 @@ if (!$contacto->dentroDelLimite($_SERVER['REMOTE_ADDR'] ?? '')) {
 $variables = [$config['variables']['novedades'] => $datos['novedades'] ? 'Sí' : 'No'];
 if ($datos['servicios']) {
     $variables[$config['variables']['servicio']] = implode(', ', $datos['servicios']);
-}
-// Tags vacíos en la configuración no se envían.
+}// Tags vacíos en la configuración no se envían.
 $tagsServicios = array_values(array_filter(array_map(
     fn ($s) => $config['tags']['servicios'][$s] ?? '',
     $datos['servicios']
@@ -117,6 +116,23 @@ try {
 
     if (!empty($resp['rejected_fields'])) {
         $registro['rechazados'] = $resp['rejected_fields'];
+    }
+
+    // Bienvenida por WhatsApp: solo a leads nuevos que dieron su consentimiento.
+    // Abre la conversación; cuando el lead responde, sigue el agente IA.
+    $plantilla = $config['plantilla'];
+    if ($plantilla['activa'] && $registro['resultado'] === 'creado' && $datos['acepta_whatsapp']) {
+        $valores = [
+            'nombre'   => $datos['nombre'],
+            'servicio' => $datos['servicios'] ? implode(', ', $datos['servicios']) : $plantilla['servicio_defecto'],
+        ];
+        $parametros = array_map(fn ($campo) => $valores[$campo], $plantilla['parametros']);
+        try {
+            [$codigoPl, $respPl] = $api->enviarPlantilla($datos['telefono'], $plantilla['nombre'], $plantilla['idioma'], $parametros);
+            $registro['plantilla'] = $codigoPl === 200 ? 'enviada' : "error $codigoPl: " . ($respPl['message'] ?? '');
+        } catch (Throwable $e) {
+            $registro['plantilla'] = 'error: ' . $e->getMessage();
+        }
     }
 } catch (Throwable $e) {
     // Si Prometheo falla, el contacto queda en el registro y el usuario ve el mensaje de éxito.

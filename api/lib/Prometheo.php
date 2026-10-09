@@ -21,6 +21,21 @@ final class Prometheo
         return $this->llamar('PATCH', '/leads/' . rawurlencode($id), $cambios);
     }
 
+    // Envía una plantilla aprobada de Meta. No requiere la ventana de 24 h.
+    // El teléfono va en dígitos, sin "+"; los parámetros usan el nombre de cada variable (p. ej. v_1).
+    public function enviarPlantilla(string $telefono, string $nombre, string $idioma, array $parametros = []): array
+    {
+        $cuerpo = [
+            'phone_number'      => preg_replace('/\D/', '', $telefono),
+            'template_name'     => $nombre,
+            'template_language' => $idioma,
+        ];
+        if ($parametros) {
+            $cuerpo['parameters'] = array_map('strval', $parametros);
+        }
+        return $this->llamar('POST', '/whatsapp-business/message/template', $cuerpo);
+    }
+
     // Busca un lead por teléfono comparando solo dígitos (la API normaliza a E.164).
     public function buscarPorTelefono(string $telefono): ?array
     {

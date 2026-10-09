@@ -48,6 +48,7 @@ final class Contacto
             'telefono'  => $telefono,
             'servicios' => $servicios,
             'novedades' => isset($post['novedades']),
+            'acepta_whatsapp' => isset($post['acepta_whatsapp']),
             'idea'      => $idea,
         ], $errores];
     }
