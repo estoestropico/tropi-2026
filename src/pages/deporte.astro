@@ -1,0 +1,127 @@
+---
+import PaginaRubro from '../components/rubro/PaginaRubro.astro';
+import { CORREDOR_DEPORTE } from '../lib/corredores';
+import { L_360, L_BRANDING, L_WEB } from '../lib/rubros';
+
+/* Vertical de rubro: Deporte. Establecimientos y predios, proyectos y
+   marcas deportivas. Caso publicado: FXM. */
+
+const VENTAJAS = [
+  {
+    titulo: 'Una identidad que resiste la aplicación',
+    texto:
+      'La marca queda resuelta para bordado, una sola tinta, lectura a distancia y reducción, que es como se usa en indumentaria y en competencia.',
+  },
+  {
+    titulo: 'Presencia también fuera de la temporada',
+    texto:
+      'El plan de contenido cubre el año completo y no sólo las fechas de competencia.',
+  },
+  {
+    titulo: 'Material para presentarse ante sponsors',
+    texto:
+      'La carpeta comercial y las piezas de presentación quedan armadas con el mismo nivel de terminación que el resto de la marca.',
+  },
+  {
+    titulo: 'La temporada planificada por adelantado',
+    texto:
+      'Pretemporada, inscripciones, fecha a fecha y cierre entran en el calendario anual, con el material producido antes de cada instancia.',
+  },
+  {
+    titulo: 'Socios, cuotas y vínculo en un mismo circuito',
+    texto:
+      'La inscripción, el cobro y la comunicación con el socio funcionan sobre el mismo sistema, integrado con las herramientas que ya usás.',
+  },
+  {
+    titulo: 'Con tu equipo o con el nuestro',
+    texto:
+      'Si el proyecto tiene a alguien a cargo de la comunicación, trabaja con nuestro manual, nuestras plantillas y nuestro criterio. Si preferís, la operación completa corre por nuestra cuenta con Trópico 360.',
+  },
+];
+
+const ALCANCE = [
+  {
+    titulo: 'Identidad y sistema de competencia',
+    texto:
+      'Marca, escudo, tipografía de numeración y las versiones que la actividad exige: aplicación textil, bordado, una tinta, tamaño chico. Un sistema pensado para lo que el deporte le hace a una marca.',
+  },
+  {
+    titulo: 'Indumentaria y merchandising',
+    texto:
+      'Diseño de la línea completa —competencia, entrenamiento, hinchada— y del merchandising, coordinado con los proveedores de producción. Con el sistema armado para que cada temporada nueva no empiece de cero.',
+  },
+  {
+    titulo: 'Predio, sede y señalética',
+    texto:
+      'Gráfica del predio, señalización, vestuarios, cartelería de sponsors y ambientación del día de competencia. El lugar donde la comunidad se encuentra, trabajado como parte de la marca.',
+  },
+  {
+    titulo: 'Sitio, inscripciones y venta',
+    texto:
+      'Sitio con calendario, altas de socios, cobro de cuotas y venta de indumentaria, integrado con los medios de pago y las herramientas de gestión que ya usás.',
+  },
+  {
+    titulo: 'Contenido de temporada y redes',
+    texto:
+      'Cobertura de la competencia, contenido de comunidad y campañas de captación, con un criterio editorial único y un ritmo que sostiene el vínculo también fuera de temporada.',
+  },
+  {
+    titulo: 'Carpeta comercial para sponsors',
+    texto:
+      'El material con el que salís a buscar auspiciantes: qué ofrece el proyecto, a quién llega, qué visibilidad recibe una marca y en qué formatos, presentado con el nivel de una propuesta profesional.',
+  },
+];
+
+const PREGUNTAS = [
+  {
+    pregunta: '¿Trabajan con clubes y predios, o sólo con marcas deportivas?',
+    respuesta:
+      'Con los dos, y también con proyectos que arrancan alrededor de una persona. Cambia el interlocutor y cambia la pieza: un predio necesita resolver señalética, altas y cuotas; una marca de indumentaria necesita packaging, e-commerce y lanzamientos.',
+  },
+  {
+    pregunta: '¿Hacen la indumentaria?',
+    respuesta:
+      'Diseñamos la línea completa y el sistema para que crezca, y coordinamos con los proveedores de producción. La fabricación la hace el textil, y nosotros seguimos las muestras hasta la aprobación de producción.',
+  },
+  {
+    pregunta: '¿Esto me sirve para conseguir sponsors?',
+    respuesta:
+      'Sí. Una empresa que va a auspiciar evalúa con qué asocia su marca, y lo hace con el material que le presentás. La carpeta comercial y las piezas de presentación entran dentro del trabajo.',
+  },
+  {
+    pregunta: '¿Se ocupan del sistema de inscripciones y cobros?',
+    respuesta:
+      'Sí. Desarrollamos el sitio con altas de socios, calendario, cobro de cuotas y venta online, integrado con los medios de pago y con las herramientas de gestión que ya tengas funcionando.',
+  },
+  {
+    pregunta: '¿Cuánto cuesta?',
+    respuesta:
+      'Depende del alcance y del momento del proyecto, así que no hay precio de lista. Con una reunión para entender el caso te pasamos rápido una propuesta con alcance, etapas y valores.',
+  },
+];
+
+/* Sin testimonios: el bloque no se arma hasta que lleguen las citas
+   reales del rubro. */
+---
+
+<PaginaRubro
+  slug="deporte"
+  rotulo="Deporte"
+  titulo="Deporte"
+  descripcion="Branding, web y comunicación para clubes, predios, proyectos y marcas deportivas. Identidad, indumentaria, comunidad y sponsors bajo un mismo criterio."
+  titular={['Una marca ', 'que la gente quiera usar', '.']}
+  intro="Trabajamos con clubes, predios y gimnasios, academias, proyectos deportivos y marcas del rubro. Identidad, indumentaria, comunidad y material comercial, con el calendario de la temporada como eje."
+  corredor={CORREDOR_DEPORTE}
+  ventajasTitulo="Identidad, indumentaria y comunidad trabajadas como un mismo sistema."
+  ventajas={VENTAJAS}
+  alcanceTitulo="Un mismo equipo para la marca, la indumentaria y los canales."
+  alcanceTexto={[
+    'El trabajo arranca por la identidad y el sistema de aplicación, sigue por indumentaria, predio y canales digitales, y se sostiene con un plan atado a la temporada. Las instancias de aprobación se definen al inicio.',
+    `Es el tipo de trabajo que encaja con ${L_360}: un plan atado a la temporada, un equipo fijo y un reporte mensual. Cuando lo que hace falta es ordenar la base, ${L_BRANDING} y ${L_WEB} se toman como proyectos aparte.`,
+  ]}
+  alcance={ALCANCE}
+  casosRotulo="Marcas del deporte"
+  casosBajada="Proyectos y marcas del rubro con su identidad, su sitio y su comunicación trabajados por un mismo equipo."
+  casos={['fxm']}
+  preguntas={PREGUNTAS}
+/>

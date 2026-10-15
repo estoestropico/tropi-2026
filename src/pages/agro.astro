@@ -1,0 +1,148 @@
+---
+import PaginaRubro from '../components/rubro/PaginaRubro.astro';
+import { CORREDOR_AGRO } from '../lib/corredores';
+import { L_360, L_BRANDING, L_WEB } from '../lib/rubros';
+
+/* Vertical de rubro: Agro.
+
+   Por ahora el corredor es el de branding y el único caso publicado del
+   sector es Parisi; los dos se reemplazan sumando material, sin tocar la
+   maqueta. */
+
+/* Ventajas de tener la comunicación profesionalizada y en un solo equipo,
+   escritas para lo que le pasa a una empresa del agro. Los títulos van en
+   forma nominal, como las etapas de las páginas de servicio. */
+const VENTAJAS = [
+  {
+    titulo: 'Atributos propios, además del precio',
+    texto:
+      'El producto llega al mercado con atributos de marca propios, más allá de los números de dosis, rinde y precio con los que se lo compara.',
+  },
+  {
+    titulo: 'Material listo dentro de la ventana',
+    texto:
+      'Las piezas de cada momento de la campaña están producidas y aprobadas antes de que se abra la ventana de decisión.',
+  },
+  {
+    titulo: 'Un mensaje parejo en todos los soportes',
+    texto:
+      'El folleto de la jornada, el stand, el catálogo del distribuidor y las redes sostienen el mismo discurso y el mismo nivel de terminación.',
+  },
+  {
+    titulo: 'Material técnico que se puede leer',
+    texto:
+      'Los ensayos, los protocolos y las fichas quedan en piezas claras, con el rigor intacto y sin afirmaciones que el producto no respalde.',
+  },
+  {
+    titulo: 'El canal con material propio',
+    texto:
+      'Distribuidores, acopios y agronomías cuentan con catálogos, fichas y piezas de mostrador de tu marca, con reglas de uso definidas.',
+  },
+  {
+    titulo: 'Con tu equipo o con el nuestro',
+    texto:
+      'Si tenés área de marketing, trabaja con nuestro manual, nuestras plantillas y nuestro criterio. Si preferís, la operación completa corre por nuestra cuenta con Trópico 360.',
+  },
+];
+
+/* Qué entra, en la columna que pasa. */
+const ALCANCE = [
+  {
+    titulo: 'Marca y líneas de producto',
+    texto:
+      'Las empresas del sector suelen tener una marca madre y una familia de productos con nombres heredados. Ordenamos la jerarquía para que el productor sepa qué es de quién y qué se lleva cuando compra.',
+  },
+  {
+    titulo: 'Material técnico y comercial',
+    texto:
+      'Fichas, catálogos, presentaciones y piezas de mostrador, resueltos como sistema, para que tu equipo pueda armar la pieza del producto nuevo sin volver a empezar de cero.',
+  },
+  {
+    titulo: 'Expos y jornadas a campo',
+    texto:
+      'Stand, gráfica, indumentaria y contenido del evento, pensados juntos. Lo que se muestra en Expoagro o en una jornada de lote es la misma marca que el productor vuelve a encontrar en los canales digitales.',
+  },
+  {
+    titulo: 'Sitio y canales digitales',
+    texto:
+      'Un sitio que se consulta desde el campo, con la ficha de cada producto y el contacto directo con tu asesor o tu distribuidor más cercano.',
+  },
+  {
+    titulo: 'Campaña, pauta y reporte',
+    texto:
+      'Contenido sostenido todo el año y pauta segmentada por zona y por momento de la campaña, con un reporte mensual que mide las consultas que genera cada acción.',
+  },
+];
+
+/* Preguntas del rubro. No repiten las generales del sitio: van sobre lo que
+   pregunta una empresa del agro antes de contratar. */
+const PREGUNTAS = [
+  {
+    pregunta: 'No son agrónomos. ¿Cómo resuelven el contenido técnico?',
+    respuesta:
+      'El criterio agronómico lo pone tu equipo técnico. Nosotros ordenamos la información, definimos qué entra en cada pieza y le damos forma, trabajando sobre los ensayos, protocolos y fichas que ya existen. Nada sale publicado sin que tu equipo lo revise.',
+  },
+  {
+    pregunta: '¿Se ocupan de la expo?',
+    respuesta:
+      'Sí. Stand, gráfica, indumentaria, material de mano y el contenido del evento, resueltos como un mismo sistema y coordinados con los proveedores de armado. Va planificado dentro del calendario anual y no como un pedido de último momento.',
+  },
+  {
+    pregunta: '¿Hacen el material para la red de distribuidores?',
+    respuesta:
+      'Sí. Catálogos, fichas y piezas de mostrador para el canal, con reglas claras de uso de marca, para que tu producto se presente igual en cada punto de venta sin que tengas que revisar uno por uno.',
+  },
+  {
+    pregunta: '¿Conviene empezar por la marca o por la campaña?',
+    respuesta:
+      'Depende de dónde esté el problema. Si la marca todavía no sostiene lo que el producto vale, invertir en campaña amplifica un mensaje que no está resuelto. Si la marca ya está ordenada y lo que falta es llegada, se arranca por el plan. El Diagnóstico 360 define ese orden antes de destinar presupuesto.',
+  },
+  {
+    pregunta: '¿Cuánto cuesta?',
+    respuesta:
+      'Depende del alcance y del momento de la empresa, así que no hay precio de lista. Con una reunión para entender el caso te pasamos rápido una propuesta con alcance, etapas y valores.',
+  },
+];
+
+/* Testimonios del rubro: los dos clientes de agro, con las mismas citas que
+   están en la home. */
+const TESTIMONIOS = [
+  {
+    nombre: 'Renato Monte',
+    cargo: 'Gerente administrativo',
+    empresa: 'Consignataria Galarraga',
+    texto:
+      '“Hace años que trabajamos juntos y eso se nota en los tiempos. Conocen el negocio, así que pedimos algo y sale, sin tener que explicar el contexto cada vez. Cuando aparece un imprevisto, responden.”',
+  },
+  {
+    nombre: 'Fermín Parisi',
+    cargo: 'Director',
+    empresa: 'Parisi',
+    texto:
+      '“No esperan a que les pida las cosas. Me llegan propuestas antes de que se me ocurra que hacían falta, y más de una vez se adelantaron a temas de la campaña que yo todavía no había mirado.”',
+  },
+];
+---
+
+<PaginaRubro
+  slug="agro"
+  rotulo="Agro"
+  titulo="Agro"
+  descripcion="Branding, web y comunicación para empresas del agro: insumos, maquinaria, nutrición animal, servicios y producción. Un equipo, un plan y el ritmo de la campaña."
+  titular={['Tené una marca tan ', 'buena como tu producto', '.']}
+  intro="Trabajamos con empresas del agro: insumos, maquinaria, nutrición animal, servicios y producción. Marca, canales y comunicación bajo una misma dirección, al ritmo que impone la campaña."
+  corredor={CORREDOR_AGRO}
+  ventajasTitulo="Una marca presente en cada momento de la campaña, con el respaldo técnico a la vista."
+  ventajas={VENTAJAS}
+  alcanceTitulo="Un mismo equipo para la marca, el material técnico y los canales."
+  alcanceTexto={[
+    'El trabajo arranca por la marca y el sistema de aplicación, sigue por el material técnico y comercial, y se sostiene con un plan anual atado al calendario de la campaña. Las instancias de aprobación se definen al inicio.',
+    `Es el tipo de trabajo que encaja con ${L_360}: un plan mensual, un equipo fijo y un reporte que muestra qué movió cada acción. Cuando lo que hace falta es ordenar la base, ${L_BRANDING} y ${L_WEB} se toman como proyectos aparte.`,
+  ]}
+  alcance={ALCANCE}
+  casosRotulo="Marcas del agro"
+  casosBajada="Empresas que producen, procesan y venden a campo, con su marca, su sitio y su comunicación trabajados por un mismo equipo."
+  casos={['galarraga', 'parisi']}
+  testimonios={TESTIMONIOS}
+  preguntas={PREGUNTAS}
+/>

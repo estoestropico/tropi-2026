@@ -1,0 +1,227 @@
+---
+/**
+ * Motor de animaciones del sitio. Se incluye una sola vez, en el layout base.
+ *
+ *   data-lineas          → el texto se parte en líneas y cada una sube detrás
+ *                          de una máscara, escalonada
+ *   data-mascara         → la imagen se descubre con un clip que se abre,
+ *                          mientras el contenido baja de escala
+ *   data-revelar         → fade + subida (para textos de cuerpo y detalles)
+ *   data-revelar-grupo   → escalona la entrada de sus hijos directos
+ *   data-parallax="0.28" → la capa se desplaza a otra velocidad que el scroll
+ *   data-parallax-in     → la imagen se mueve dentro de su marco
+ *   data-parallax-doc    → se desplaza contra el scroll del documento
+ *
+ * Todo se apaga con prefers-reduced-motion.
+ */
+---
+
+<script>
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Partir titulares en líneas ────────────────────────────────────── */
+  /* `data-lineas-desde="1024"` deja el corte en líneas sólo de ese ancho para
+     arriba. Es para los párrafos largos: cortarlos a mano en mobile congela
+     quince renglones y cualquiera de ellos queda partido donde no va. */
+  const cortaAca = (el: HTMLElement) => {
+    const desde = Number(el.dataset.lineasDesde);
+    return !desde || window.innerWidth >= desde;
+  };
+
+  const partirEnLineas = (el: HTMLElement) => {
+    if (el.dataset.partido === '1') return;
+    if (!cortaAca(el)) return;
+    el.dataset.original = el.innerHTML;
+
+    const palabras = el.textContent?.trim().split(/\s+/) ?? [];
+    if (!palabras.length) return;
+
+    el.innerHTML = palabras.map((p) => `<span class="a-pal">${p}</span>`).join(' ');
+
+    const spans = [...el.querySelectorAll<HTMLElement>('.a-pal')];
+    const lineas: string[][] = [];
+    let topActual: number | null = null;
+
+    spans.forEach((s) => {
+      const top = Math.round(s.offsetTop);
+      if (topActual === null || Math.abs(top - topActual) > 4) {
+        lineas.push([]);
+        topActual = top;
+      }
+      lineas[lineas.length - 1].push(s.textContent ?? '');
+    });
+
+    el.innerHTML = lineas
+      .map(
+        (l, i) =>
+          `<span class="a-linea"><span class="a-linea-i" style="--i:${i}">${l.join(' ')}${i < lineas.length - 1 ? ' ' : ''}</span></span>`
+      )
+      .join('');
+    el.dataset.partido = '1';
+  };
+
+  const titulares = [...document.querySelectorAll<HTMLElement>('[data-lineas]')];
+  if (!quieto) titulares.forEach(partirEnLineas);
+
+  /* Rehacer el corte si cambia el ancho de la ventana */
+  let anchoPrevio = window.innerWidth;
+  let temporizador: number;
+  window.addEventListener('resize', () => {
+    if (quieto || Math.abs(window.innerWidth - anchoPrevio) < 60) return;
+    anchoPrevio = window.innerWidth;
+    clearTimeout(temporizador);
+    temporizador = window.setTimeout(() => {
+      titulares.forEach((el) => {
+        const visible = el.classList.contains('a-visible');
+        el.innerHTML = el.dataset.original ?? el.innerHTML;
+        el.dataset.partido = '0';
+        partirEnLineas(el);
+        if (visible) el.classList.add('a-visible');
+      });
+    }, 180);
+  });
+
+  /* ── Entradas ──────────────────────────────────────────────────────── */
+  const SELECTOR = '[data-revelar],[data-mascara],[data-lineas]';
+  const animables = [...document.querySelectorAll<HTMLElement>(SELECTOR)];
+
+  document.querySelectorAll<HTMLElement>('[data-revelar-grupo]').forEach((g) => {
+    [...g.children].forEach((hijo, i) => {
+      const el = hijo as HTMLElement;
+      if (!el.hasAttribute('data-mascara')) el.setAttribute('data-revelar', '');
+      el.style.setProperty('--retardo', `${Math.min(i, 7) * 90}ms`);
+      animables.push(el);
+    });
+  });
+
+  if (quieto) {
+    animables.forEach((el) => el.classList.add('a-visible'));
+  } else {
+    const obs = new IntersectionObserver(
+      (entradas) => {
+        entradas.forEach((e) => {
+          if (e.isIntersecting || e.boundingClientRect.bottom < 0) {
+            e.target.classList.add('a-visible');
+            obs.unobserve(e.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.04 }
+    );
+    animables.forEach((el) => obs.observe(el));
+
+    // Red de seguridad: nada puede quedar invisible por un salto de scroll.
+    const barrer = () => {
+      const alto = window.innerHeight || 0;
+      animables.forEach((el) => {
+        if (el.classList.contains('a-visible')) return;
+        if (el.getBoundingClientRect().top < alto * 0.94) {
+          el.classList.add('a-visible');
+          obs.unobserve(el);
+        }
+      });
+    };
+    let barriendo = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (barriendo) return;
+        barriendo = true;
+        requestAnimationFrame(() => {
+          barriendo = false;
+          barrer();
+        });
+      },
+      { passive: true }
+    );
+    window.addEventListener('load', barrer);
+    barrer();
+  }
+
+  /* ── Parallax del documento ────────────────────────────────────────── */
+  /* Para lo que arranca pegado al tope, como el hero: se desplaza contra el
+     scroll del documento, así se adelanta al contenido de arriba. */
+  const capasDoc = [
+    ...document.querySelectorAll<HTMLElement>('[data-parallax-doc]'),
+  ].map((el) => ({ el, vel: parseFloat(el.dataset.parallaxDoc || '0.25') }));
+
+  if (!quieto && capasDoc.length) {
+    let pendienteDoc = false;
+    const pintarDoc = () => {
+      pendienteDoc = false;
+      const y = window.scrollY || 0;
+      capasDoc.forEach((c) => {
+        /* Tope: la imagen no puede subir más que la holgura que le deja su
+           marco, o se vería el borde. Con la velocidad bien calculada no se
+           llega nunca; queda como red por si cambia el alto del original. */
+        const marco = c.el.parentElement;
+        const holgura = marco ? Math.max(0, c.el.offsetHeight - marco.offsetHeight) : 0;
+        const d = Math.min(y * c.vel, holgura);
+        c.el.style.transform = `translate3d(0, ${(-d).toFixed(1)}px, 0)`;
+      });
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!pendienteDoc) {
+          pendienteDoc = true;
+          requestAnimationFrame(pintarDoc);
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener('load', pintarDoc);
+    pintarDoc();
+  }
+
+  /* ── Parallax de bloque ────────────────────────────────────────────── */
+  /* Se calcula el rect en cada frame: no hay flags de visibilidad que se
+     puedan desincronizar y dejar una capa congelada. */
+  type Capa = { marco: HTMLElement; movil: HTMLElement; vel: number };
+
+  const capas: Capa[] = [];
+
+  document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
+    capas.push({ marco: el, movil: el, vel: parseFloat(el.dataset.parallax || '0.2') });
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-parallax-in]').forEach((el) => {
+    const hijo = el.querySelector<HTMLElement>('img, video');
+    if (hijo) {
+      capas.push({
+        marco: el,
+        movil: hijo,
+        vel: parseFloat(el.dataset.parallaxIn || '0.1'),
+      });
+    }
+  });
+
+  if (!quieto && capas.length) {
+    let pendiente = false;
+    const pintar = () => {
+      pendiente = false;
+      const alto = window.innerHeight || 1;
+      capas.forEach((c) => {
+        const r = c.marco.getBoundingClientRect();
+        if (r.bottom < -alto * 0.25 || r.top > alto * 1.25) return;
+        const p = 1 - (r.top + r.height) / (alto + r.height);
+        /* El recorrido es una fracción del alto del marco, no un valor fijo
+           en px: la holgura de la imagen también es porcentual, así que un
+           número fijo se queda corto apenas el viewport baja del ancho de
+           diseño y aparece el borde. */
+        const y = (p - 0.5) * r.height * c.vel * -1;
+        c.movil.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0)`;
+      });
+    };
+    const alScrollear = () => {
+      if (!pendiente) {
+        pendiente = true;
+        requestAnimationFrame(pintar);
+      }
+    };
+    window.addEventListener('scroll', alScrollear, { passive: true });
+    window.addEventListener('resize', alScrollear, { passive: true });
+    window.addEventListener('load', pintar);
+    pintar();
+  }
+</script>

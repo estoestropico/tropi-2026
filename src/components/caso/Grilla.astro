@@ -1,0 +1,45 @@
+---
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Grilla de medios para caso.
+ * `cols` toma la proporción del Figma, ej. "2fr 1fr" — se aplica por estilo
+ * inline para no depender de clases dinámicas (Tailwind no las detecta).
+ */
+interface Props {
+  cols?: string;
+  espacio?: Espacio;
+  gap?: string;
+  ancho?: 'completo' | 'contenido';
+  class?: string;
+}
+
+const {
+  cols = '1fr 1fr',
+  espacio,
+  gap = '0.75rem',
+  ancho = 'completo',
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={['grilla-caso', ancho === 'contenido' ? 'contenido' : '', className]}
+  style={[`--grilla-cols:${cols}`, `--grilla-gap:${gap}`, margenArriba(espacio)].filter(Boolean).join(';')}
+>
+  <slot />
+</div>
+
+<style>
+  .grilla-caso {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--grilla-gap);
+  }
+
+  @media (width >= 64rem) {
+    .grilla-caso {
+      grid-template-columns: var(--grilla-cols);
+    }
+  }
+</style>

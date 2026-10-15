@@ -1,0 +1,71 @@
+---
+/**
+ * Tira aqua con el claim corriendo. Es lo último del contenido de cualquier
+ * página: abajo de ella aparece la placa violeta de cierre, que queda fija al
+ * fondo y se descubre al scrollear.
+ */
+const CLAIM = 'Ágiles por instinto · Creativos por naturaleza · ';
+---
+
+<div class="marquesina full-width" aria-hidden="true">
+  <div class="marquesina-pista">
+    <span>{CLAIM.repeat(6)}</span>
+    <span>{CLAIM.repeat(6)}</span>
+  </div>
+</div>
+
+<style>
+  /* La sombra dura de 10 px cae sobre la placa violeta que pasa por debajo:
+     sin desenfoque, negro al 20 %. */
+  .marquesina {
+    overflow: hidden;
+    background-color: var(--color-aqua);
+    padding-block: 22px;
+    box-shadow: 0 10px 0 rgb(0 0 0 / 0.2);
+  }
+
+  /* Dos copias del claim y un recorrido del 50 %: al volver a cero el empalme
+     cae en el mismo punto y no se ve el corte. */
+  .marquesina-pista {
+    display: flex;
+    width: max-content;
+    animation: correr 46s linear infinite;
+  }
+
+  .marquesina-pista span {
+    padding-right: 0.5em;
+    font-family: var(--font-rotulo);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  @media (width >= 64rem) {
+    .marquesina {
+      padding-block: 30px;
+    }
+
+    .marquesina-pista span {
+      font-size: 3rem;
+      letter-spacing: -0.01em;
+    }
+  }
+
+  @keyframes correr {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquesina-pista {
+      animation: none;
+    }
+  }
+</style>

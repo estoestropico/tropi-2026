@@ -1,0 +1,64 @@
+---
+import Banda from '../caso/Banda.astro';
+import Boton from '../ui/Boton.astro';
+
+/**
+ * Placa de cierre. Forma una sola pieza violeta con el pie: las dos juntas
+ * miden el alto de la pantalla y quedan fijas al fondo, y el contenido de la
+ * página —la marquesina aqua es lo último— les pasa por encima al scrollear.
+ * Este bloque se queda con el espacio que deja el pie y centra su contenido
+ * ahí, así el titular va al medio y la marca con los legales abajo.
+ */
+const VIOLETA = '#5d00ff';
+---
+
+<Banda color={VIOLETA} espacio="nulo" class="cierre-placa">
+  <div class="contenido py-[64px] text-center text-arena">
+    <p class="rotulo" data-revelar>Tenés una idea. Tenemos el equipo.</p>
+    <div class="cierre mt-6 lg:mt-[26px]">
+      <h2 class="cierre-titulo" data-revelar>Hagamos<br />algo juntos.</h2>
+      <div class="cierre-boton" data-revelar>
+        <Boton href="/contacto" class="cierre-cta">Empecemos</Boton>
+      </div>
+    </div>
+  </div>
+</Banda>
+
+<style>
+  .cierre {
+    position: relative;
+  }
+
+  /* En mobile el titular ganó un escalón y el botón perdió otro: con los dos
+     al mismo tamaño la placa se leía chata. */
+  .cierre-titulo {
+    font-size: clamp(3.5rem, 0.4rem + 10.4vw, 10rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  /* En desktop el botón se monta sobre el titular, como en el Figma. Abajo de
+     1024 eso taparía una línea entera de texto, así que va debajo. */
+  .cierre-boton {
+    margin-top: 32px;
+  }
+
+  /* El CTA de cierre mide 66 de alto en desktop; en mobile baja a 52 para no
+     competir con el titular. */
+  @media (width < 64rem) {
+    .cierre-boton :global(.cierre-cta) {
+      padding-block: 11px;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .cierre-boton {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: 0;
+      translate: -50% -50%;
+    }
+  }
+</style>

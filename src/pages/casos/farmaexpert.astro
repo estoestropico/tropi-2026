@@ -1,0 +1,668 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Base from '../../layouts/Base.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Intro from '../../components/caso/Intro.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Media from '../../components/caso/Media.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import MosaicoFeed from '../../components/caso/MosaicoFeed.astro';
+import Composicion from '../../components/caso/Composicion.astro';
+import Pieza from '../../components/caso/Pieza.astro';
+import Video from '../../components/caso/Video.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+import { margenArriba } from '../../lib/espacios';
+
+import hero from '../../assets/casos/farmaexpert/hero.png';
+import marcaClaim from '../../assets/casos/farmaexpert/marca-claim.svg';
+import lockup from '../../assets/casos/farmaexpert/lockup.svg';
+import isoTeal from '../../assets/casos/farmaexpert/iso-teal.svg';
+import isoAzul from '../../assets/casos/farmaexpert/iso-azul.svg';
+import vidrieraGrande from '../../assets/casos/farmaexpert/vidriera-grande.png';
+import local1 from '../../assets/casos/farmaexpert/local-1.png';
+import local2 from '../../assets/casos/farmaexpert/local-2.png';
+import local3 from '../../assets/casos/farmaexpert/local-3.png';
+import ugc1 from '../../assets/casos/farmaexpert/vidriera-ugc-1.png';
+import ugc2 from '../../assets/casos/farmaexpert/vidriera-ugc-2.png';
+import ugc3 from '../../assets/casos/farmaexpert/vidriera-ugc-3.png';
+import equipo1 from '../../assets/casos/farmaexpert/equipo-1.png';
+import equipo2 from '../../assets/casos/farmaexpert/equipo-2.png';
+import equipo3 from '../../assets/casos/farmaexpert/equipo-3.png';
+import jarabeFoto from '../../assets/casos/farmaexpert/jarabe-foto.png';
+import monstruos from '../../assets/casos/farmaexpert/monstruos.png';
+import revista from '../../assets/casos/farmaexpert/revista.png';
+import jarabeV1 from '../../assets/casos/farmaexpert/v1.png';
+import jarabeV2 from '../../assets/casos/farmaexpert/v2.png';
+import creatina from '../../assets/casos/farmaexpert/creatina.png';
+import tramaAniversario from '../../assets/casos/farmaexpert/trama-aniversario.svg';
+import backFooter from '../../assets/casos/farmaexpert/back-footer.svg';
+import videoFestejo from '../../assets/casos/farmaexpert/video/festejo.mp4';
+import reelDermocosmetica from '../../assets/casos/farmaexpert/video/reel-dermocosmetica.mp4';
+import reelMostrador from '../../assets/casos/farmaexpert/video/reel-farmaceutica-mostrador.mp4';
+import reelGondolas from '../../assets/casos/farmaexpert/video/reel-farmaceutica-gondolas.mp4';
+
+import f40Off1 from '../../assets/casos/farmaexpert/feed/40-off-1.png';
+import f40Off2 from '../../assets/casos/farmaexpert/feed/40-off-2.png';
+import fCapsulasAutobronceantes from '../../assets/casos/farmaexpert/feed/capsulas-autobronceantes.png';
+import fDiaDelNino from '../../assets/casos/farmaexpert/feed/dia-del-nino.png';
+import fEstamosDeTurno from '../../assets/casos/farmaexpert/feed/estamos-de-turno.png';
+import fLrpDescuento from '../../assets/casos/farmaexpert/feed/lrp-descuento.png';
+import fMesDeLaAmistad from '../../assets/casos/farmaexpert/feed/mes-de-la-amistad.png';
+import fMigrana from '../../assets/casos/farmaexpert/feed/migrana.png';
+import fPromosJunio from '../../assets/casos/farmaexpert/feed/promos-junio.png';
+import fPromosNoviembre from '../../assets/casos/farmaexpert/feed/promos-noviembre.png';
+import fRutina from '../../assets/casos/farmaexpert/feed/rutina.png';
+import fRutinaKids from '../../assets/casos/farmaexpert/feed/rutina-kids.png';
+import fSolares50Off from '../../assets/casos/farmaexpert/feed/solares-50-off.png';
+import fSomosFarmaexpert from '../../assets/casos/farmaexpert/feed/somos-farmaexpert.png';
+import fStoryLrpDescuento from '../../assets/casos/farmaexpert/feed/story-lrp-descuento.png';
+import fVichyDescuento1 from '../../assets/casos/farmaexpert/feed/vichy-descuento-1.png';
+import fVichyDescuento2 from '../../assets/casos/farmaexpert/feed/vichy-descuento-2.png';
+import tablet from '../../assets/casos/farmaexpert/tablet.png';
+import revistas from '../../assets/casos/farmaexpert/revistas.png';
+
+/* Set de íconos del sistema. Posiciones del Figma sobre el marco de 1780. */
+import icoEstetoscopio from '../../assets/casos/farmaexpert/ico-estetoscopio.svg';
+import icoDosXUno from '../../assets/casos/farmaexpert/ico-dos-x-uno.svg';
+import icoJeringa from '../../assets/casos/farmaexpert/ico-jeringa.svg';
+import icoNuevo from '../../assets/casos/farmaexpert/ico-nuevo.svg';
+import icoBlister from '../../assets/casos/farmaexpert/ico-blister.svg';
+import icoCirculo from '../../assets/casos/farmaexpert/ico-circulo.svg';
+import icoCapsulas from '../../assets/casos/farmaexpert/ico-capsulas.svg';
+import icoCorazon from '../../assets/casos/farmaexpert/ico-corazon.svg';
+import icoFarmaceutico from '../../assets/casos/farmaexpert/ico-farmaceutico.svg';
+import icoDescuento from '../../assets/casos/farmaexpert/ico-descuento.svg';
+import icoCrema from '../../assets/casos/farmaexpert/ico-crema.svg';
+import icoMatraz from '../../assets/casos/farmaexpert/ico-matraz.svg';
+import icoTermometro from '../../assets/casos/farmaexpert/ico-termometro.svg';
+import icoOff from '../../assets/casos/farmaexpert/ico-off.svg';
+
+const caso = await getEntry('casos', 'farmaexpert');
+if (!caso) throw new Error('Falta src/content/casos/farmaexpert.yaml');
+const { data } = caso;
+
+/* Colores muestreados del export del Figma */
+const AZUL = '#003da6';
+const TEAL = '#3bbfad';
+/* Mosaico de posteos: la misma estructura que el de Fornaro —cinco columnas
+   trabadas, giradas −10°—. Las diecisiete piezas van todas al mismo ancho, que
+   es lo que hacen las columnas `1fr`, y cada una lleva su proporción real, así
+   el alto sale de la imagen y no se recorta nada.
+   Son cuatro filas, veinte lugares, porque con tres la columna queda más corta
+   que el marco y al desplazarse deja el fondo a la vista. Las seis verticales
+   —9:16— abren cada columna y el resto son 4:5, para que las cinco terminen
+   del mismo alto. Las tres que se repiten caen en otra columna que su primera
+   aparición. */
+const A = (q: string) => `Pieza de feed de Farmaexpert: ${q}`;
+const pf = (src: ImageMetadata, q: string) => ({ src, alt: A(q), ratio: `${src.width}/${src.height}` });
+const COLUMNAS_POSTEOS = [
+  { offset: '-14%', velocidad: -1, piezas: [
+    pf(fCapsulasAutobronceantes, 'cápsulas autobronceantes'), pf(f40Off1, '40 % de descuento'),
+    pf(fPromosNoviembre, 'promos de noviembre'), pf(fVichyDescuento2, 'descuento Vichy')] },
+  { offset: '-26%', velocidad: 1, piezas: [
+    pf(fDiaDelNino, 'día del niño'), pf(f40Off2, '40 % de descuento'),
+    pf(fRutina, 'rutina de cuidado'), pf(fStoryLrpDescuento, 'descuento La Roche-Posay')] },
+  { offset: '-19%', velocidad: -1, piezas: [
+    pf(fEstamosDeTurno, 'estamos de turno'), pf(fLrpDescuento, 'descuento La Roche-Posay'),
+    pf(fRutinaKids, 'rutina de cuidado para chicos'), pf(fPromosJunio, 'promos de junio')] },
+  { offset: '-24%', velocidad: 1, piezas: [
+    pf(fSolares50Off, 'hasta 50 % en solares'), pf(fMigrana, 'migraña'),
+    pf(fSomosFarmaexpert, 'somos Farmaexpert'), pf(fRutina, 'rutina de cuidado')] },
+  { offset: '-16%', velocidad: -1, piezas: [
+    pf(fMesDeLaAmistad, 'mes de la amistad'), pf(fPromosJunio, 'promos de junio'),
+    pf(fVichyDescuento1, 'descuento Vichy'), pf(fLrpDescuento, 'descuento La Roche-Posay')] },
+];
+
+const VERDE_CLARO = '#a6e0d0';
+const GRIS = '#f5f5f5';
+const AZUL_ANIVERSARIO = '#4272d4';
+
+/* Tiras de color: cada familia con su primario a sangre y el secundario en una
+   pastilla con degradé que arranca en el primario, así se funde con la banda.
+   Los hexa salen de los exports azul.svg / verde.svg / gris.svg del Figma.
+   `tintaPar` sólo se declara cuando el secundario no lleva texto blanco. */
+const TIRAS = [
+  { nombre: 'Azul primario', par: 'Azul secundario', fondo: AZUL, hasta: '#4e7cdd' },
+  { nombre: 'Verde primario', par: 'Verde secundario', fondo: '#74bdac', hasta: VERDE_CLARO },
+  { nombre: 'Gris primario', par: 'Gris secundario', fondo: '#ced1d2', hasta: GRIS, tintaPar: '#6c6c6c' },
+];
+
+/* Íconos del sistema: y relativo al bloque (arranca en 3728 del Figma) */
+const ICONOS = [
+  { src: icoEstetoscopio, alt: 'Estetoscopio', x: 124, y: 152, w: 145 },
+  { src: icoDosXUno, alt: 'Hay 2x1', x: 364, y: 141, w: 160 },
+  { src: icoJeringa, alt: 'Jeringa y frasco', x: 609, y: 146, w: 130 },
+  { src: icoNuevo, alt: 'Nuevo', x: 833, y: 143, w: 160 },
+  { src: icoBlister, alt: 'Blister', x: 1078, y: 153, w: 97 },
+  { src: icoCirculo, alt: 'Trama circular', x: 1269, y: 136, w: 170 },
+  { src: icoCapsulas, alt: 'Cápsulas', x: 1494, y: 139, w: 160 },
+  { src: icoCorazon, alt: 'Corazón', x: 124, y: 404, w: 160 },
+  { src: icoFarmaceutico, alt: 'Farmacéutico', x: 374, y: 406, w: 130 },
+  { src: icoDescuento, alt: '20% off', x: 594, y: 408, w: 160 },
+  { src: icoCrema, alt: 'Crema con protección solar', x: 845, y: 418, w: 68 },
+  { src: icoMatraz, alt: 'Matraz', x: 1009, y: 405, w: 160 },
+  { src: icoTermometro, alt: 'Termómetro', x: 1252, y: 420, w: 130 },
+  { src: icoOff, alt: '10% off', x: 1472, y: 444, w: 192 },
+];
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.cliente}
+    solape={0}
+  />
+
+  <Intro espacio="l">
+    Farmaexpert es una nueva red de farmacias en la provincia de Buenos
+    Aires. El desafío: sostener el valor de la farmacia de barrio
+    tradicional, pero con una impronta moderna bajo la premisa
+    «lo de siempre, como nunca». Como su equipo estratégico, construimos el
+    proyecto desde cero y hoy gestionamos todo su ecosistema: desde el
+    naming y los locales físicos hasta la plataforma de e-commerce y las
+    campañas comerciales.
+  </Intro>
+
+  {/* ── Identidad institucional ─────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="La identidad" titulo="Naming, claim y sistema visual">
+    <p>
+      Creamos el nombre de la red y su claim rector («Un experto a tu
+      lado»). A partir de ahí, desarrollamos una identidad visual apoyada en
+      una paleta cromática rápidamente identificable y un sistema gráfico
+      versátil, diseñado para escalar y construir coherencia en cada punto
+      de contacto de la marca.
+    </p>
+  </BloqueTexto>
+
+  {/* La marca y el claim sobre el azul institucional */}
+  <Banda color={AZUL} espacio="m" class="pb-[198px] pt-[216px]">
+    <div class="ancho" style="--ancho:1097px">
+      <Media efecto="fade" src={marcaClaim} alt="Farmaexpert, un experto a tu lado" recorte={false} />
+    </div>
+  </Banda>
+
+  {/* Lockup e isotipos, a sangre y al ras de la banda */}
+  <div class="grid grid-cols-[1088fr_345fr_347fr]" style={margenArriba('nulo')} data-revelar-grupo>
+    <div class="grid aspect-[1088/306] place-items-center bg-white">
+      <Media efecto="fade" src={lockup} alt="Lockup de Farmaexpert" recorte={false} class="w-[68.5%]" />
+    </div>
+    <div class="grid aspect-[345/306] place-items-center" style={`background-color:${TEAL}`}>
+      <Media efecto="fade" src={isoTeal} alt="Isotipo en positivo" recorte={false} class="w-[39.4%]" />
+    </div>
+    <div class="grid aspect-[347/306] place-items-center bg-white">
+      <Media efecto="fade" src={isoAzul} alt="Isotipo en azul" recorte={false} class="w-[39.2%]" />
+    </div>
+  </div>
+
+  {/* Tiras de color: primario y secundario de cada familia, en divs */}
+  <div style={margenArriba('nulo')} data-revelar-grupo>
+    {
+      TIRAS.map((t) => (
+        <div
+          class="tira full-width"
+          style={`--tira-fondo:${t.fondo};--tira-hasta:${t.hasta};--tira-tinta-par:${t.tintaPar ?? '#ffffff'}`}
+        >
+          <div class="tira-fila contenido">
+            <p class="tira-rotulo">{t.nombre}</p>
+            <div class="tira-pastilla">
+              <p class="tira-rotulo">{t.par}</p>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  {/* Set de íconos del sistema */}
+  {/* Cinco por fila y todos al mismo alto: con cuatro y el ancho de la celda,
+      los archivos más anchos se veían al doble que el resto. El aire de
+      arriba es sólo de mobile; en desktop sigue pegado a las tiras. */}
+  <Composicion
+    alto={700}
+    ancho_layout="contenido"
+    colsMobile={5}
+    piezasParejas
+    altoMobile={44}
+    class="mt-10 lg:mt-0"
+  >
+    {ICONOS.map((i) => <Pieza src={i.src} alt={i.alt} efecto="fade" x={i.x} y={i.y} w={i.w} alto={700} />)}
+  </Composicion>
+
+  {/* ── Vidrieras ───────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Arquigrafía y retail" titulo="Diseño de locales y punto de venta">
+    <p>
+      Llevamos la nueva identidad al territorio físico. Diseñamos
+      marquesinas, vidrieras y material POP, adaptando el sistema a
+      diferentes tipologías y estructuras comerciales. Además, desarrollamos
+      la indumentaria del equipo para que la experiencia de marca se perciba
+      de forma profesional desde el mostrador.
+    </p>
+  </BloqueTexto>
+
+  {/* El gris arranca a media altura de la foto grande y llega hasta la banda azul */}
+  <section class="relative" style={margenArriba('m')}>
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 top-[28.85%]" aria-hidden="true">
+      <div class="absolute inset-y-0 left-[calc(50%-50vw)] w-screen" style={`background-color:${GRIS}`}></div>
+    </div>
+
+    <div class="relative flex flex-col gap-[0.65rem]">
+      <Media efecto="reveal" src={vidrieraGrande} alt="Vidriera de Farmaexpert" ancho="contenido" proporcion="1531/802" />
+
+      <Grilla cols="1fr 1fr 1fr" gap="0.65rem" ancho="contenido">
+        <Media efecto="reveal" src={local1} alt="Sucursal de Farmaexpert" proporcion="510/384" />
+        <Media efecto="reveal" src={local2} alt="Sucursal de Farmaexpert" proporcion="510/384" />
+        <Media efecto="reveal" src={local3} alt="Sucursal de Farmaexpert" proporcion="510/384" />
+      </Grilla>
+
+      <Grilla cols="1fr 1fr" gap="0.65rem" ancho="contenido">
+        <Media efecto="reveal" src={ugc1} alt="Cartel de la sucursal" proporcion="749/886" />
+        <Media efecto="reveal" src={ugc2} alt="Vidriera de apertura" proporcion="749/886" />
+      </Grilla>
+    </div>
+  </section>
+
+  {/* Equipo, sobre la banda azul */}
+  <section class="relative" style={margenArriba('s')}>
+    {/* El alto lo sigue dando el marco de 1780 —así la composición no cambia—
+        y el color sale a 100vw, para que no queden bordes a los costados. */}
+    <div class="pointer-events-none absolute inset-x-0 top-0 aspect-[1780/600]" aria-hidden="true">
+      <div class="absolute inset-y-0 left-[calc(50%-50vw)] w-screen" style={`background-color:${AZUL}`}></div>
+    </div>
+
+    <div class="relative pt-[6.74%]">
+      <Grilla cols="1fr 1fr 1fr" gap="0.65rem" ancho="contenido">
+        <Media efecto="reveal" src={equipo1} alt="Equipo de Farmaexpert" proporcion="489/645" />
+        <Media efecto="reveal" src={equipo2} alt="Bolsa de Farmaexpert" proporcion="489/645" />
+        <Media efecto="reveal" src={equipo3} alt="Producto en la bolsa de Farmaexpert" proporcion="489/645" />
+      </Grilla>
+    </div>
+  </section>
+
+  {/* ── Packaging ───────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Packaging" titulo="Diseño de productos de marca propia">
+    <p>
+      Con el objetivo de asegurar la presencia de la marca dentro de los
+      hogares de los clientes, la red desarrolló una línea de productos de
+      laboratorio propio. Diseñamos las etiquetas y el sistema de
+      información de estos artículos, consolidando la confianza en la marca.
+    </p>
+  </BloqueTexto>
+
+  <div style={margenArriba('m')}>
+    <Grilla cols="1005fr 745fr" gap="0.65rem">
+      <Media efecto="reveal" src={jarabeFoto} alt="Jarabe de Farmaexpert en el mostrador" proporcion="1005/628" />
+      {/* Las dos versiones de la ficha se turnan cada 3 s con un fade. Entra
+          con la misma máscara que su par de la izquierda: el `data-mascara`
+          va en el contenedor y las dos imágenes viven adentro. */}
+      <div class="jarabe" style="aspect-ratio:745/628;touch-action:pan-y" data-mascara data-jarabe>
+        <Image src={jarabeV1} alt="Ficha técnica del jarabe" widths={[640, 960, 1490]} sizes="(min-width: 1024px) 40vw, 100vw" class="jarabe-cara jarabe-visible" />
+        <Image src={jarabeV2} alt="" aria-hidden="true" widths={[640, 960, 1490]} sizes="(min-width: 1024px) 40vw, 100vw" class="jarabe-cara" />
+      </div>
+    </Grilla>
+
+    <Media ancho="contenido" efecto="reveal" src={creatina} alt="Composición de la creatina monohidratada" proporcion="1531/800" espacio="s" />
+
+    <Media efecto="reveal" src={monstruos} alt="Línea de alcohol en gel y en spray" ancho="contenido" proporcion="1529/800" espacio="xs" />
+  </div>
+
+  {/* ── Revista ─────────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Material comercial" titulo="Diseño editorial y catálogo de productos">
+    <p>
+      Estructuramos y diseñamos una revista mensual impresa que funciona
+      como herramienta de tracción en las sucursales. El catálogo permite
+      comunicar promociones, productos exclusivos y novedades comerciales
+      con un formato de lectura ágil.
+    </p>
+  </BloqueTexto>
+
+  <Media ancho="contenido" efecto="reveal" src={revista} alt="Revista mensual de Farmaexpert" espacio="s" />
+
+  {/* ── E-commerce ──────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Plataforma digital" titulo="E-commerce 24/7 enfocado en conversión">
+    <p>
+      Desarrollamos una tienda online ágil y sin fricciones, extendiendo la
+      promesa de servicio físico al mundo digital. Priorizamos la
+      experiencia de usuario (UX) para garantizar que encontrar un producto
+      o recibir asesoramiento online sea tan fácil e intuitivo como hacerlo
+      en el local.
+    </p>
+  </BloqueTexto>
+
+  {/* La foto de la tablet con la pantalla montada encima */}
+  <div class="relative" style={margenArriba('m')}>
+    <Media efecto="parallax" src={tablet} alt="La web de Farmaexpert en una tablet" proporcion="1780/1261" />
+  </div>
+
+  {/* ── Social & Ads ────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Estrategia de crecimiento" titulo="Social media y performance">
+    <p>
+      Integramos creatividad y pauta comercial. En redes sociales, generamos
+      contenido que educa, humaniza la marca y la posiciona como referente
+      de salud. En paralelo, ejecutamos campañas publicitarias en Google y
+      Meta Ads con un enfoque full-funnel: captamos la intención de compra
+      inmediata y fidelizamos, asegurando un retorno de inversión (ROI)
+      medible y escalable.
+    </p>
+  </BloqueTexto>
+
+  <MosaicoFeed
+    class="full-width"
+    columnas={COLUMNAS_POSTEOS}
+    cols={5}
+    inclinacion={-10}
+    proporcion="1780/1134"
+    proporcionBase="1780/1600"
+    gap="0.65rem"
+    relleno="0px"
+    fondo={AZUL}
+    recorrido={130}
+    espacio="m"
+  />
+
+  {/* Tres reels de UGC sobre el verde claro */}
+  <Banda color={VERDE_CLARO} espacio="s">
+    <div class="grid grid-cols-2 gap-5 px-5 py-12 sm:grid-cols-3 lg:relative lg:block lg:aspect-[1780/780] lg:p-0">
+      <div class="mx-auto w-full max-w-[300px] lg:absolute lg:left-[16.236%] lg:top-[8.974%] lg:mx-0 lg:w-[20.337%] lg:max-w-none">
+        <Video efecto="fade" src={reelDermocosmetica} alt="Reel de Farmaexpert: rutina de dermocosmética frente al espejo" proporcion="362/640" ancho="completo" class="rounded-[30px]" />
+      </div>
+      <div class="mx-auto w-full max-w-[300px] lg:absolute lg:left-[39.663%] lg:top-[8.974%] lg:mx-0 lg:w-[20.337%] lg:max-w-none">
+        <Video efecto="fade" src={reelMostrador} alt="Reel de Farmaexpert: una farmacéutica recomienda productos en el mostrador" proporcion="362/640" ancho="completo" class="rounded-[30px]" />
+      </div>
+      <div class="mx-auto hidden w-full max-w-[300px] sm:block lg:absolute lg:left-[63.315%] lg:top-[8.974%] lg:mx-0 lg:w-[20.337%] lg:max-w-none">
+        <Video efecto="fade" src={reelGondolas} alt="Reel de Farmaexpert: una farmacéutica muestra un producto entre las góndolas" proporcion="362/640" ancho="completo" class="rounded-[30px]" />
+      </div>
+    </div>
+  </Banda>
+
+  {/* ── Aniversario ─────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Experiencia de marca" titulo="Campaña aniversario y activaciones">
+    <p>
+      Para celebrar el primer año de la red, generamos una campaña integral
+      en el territorio. Brandeamos por completo las farmacias con una línea
+      gráfica exclusiva del aniversario y diseñamos acciones en el punto de
+      venta para fidelizar y afianzar el vínculo con los vecinos.
+    </p>
+  </BloqueTexto>
+
+  {/* A sangre: el bloque no lleva margen a los costados a ningún ancho. */}
+  <div class="full-width relative" style={margenArriba('m')}>
+    <Grilla cols="749fr 1005fr" gap="0.65rem">
+      <Media efecto="reveal" src={ugc3} alt="Pieza de aniversario: cumplimos un año" proporcion="749/1067" />
+      <div class="relative aspect-[1005/1067]" style={`background-color:${AZUL_ANIVERSARIO}`}>
+        {/* La trama del aniversario mide justo el bloque, 1005 × 1067, y va
+            de fondo cubriéndolo entero, detrás de la pieza. */}
+        <Image
+          src={tramaAniversario}
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full select-none object-cover"
+        />
+        <div class="absolute left-[25.8%] top-[9.65%] h-[82.85%] w-[49.4%]">
+          {/* El mp4 es 1080 × 1920 y el hueco de la placa mide 496 × 884
+              (0,5619 contra 0,5625): la diferencia es medio punto, así que
+              `object-cover` no recorta nada visible. El alto lo fija el
+              hueco, por eso va `h-full` y la proporción queda de respaldo. */}
+          <Video
+            efecto="reveal"
+            src={videoFestejo}
+            alt="Festejo del primer aniversario de Farmaexpert"
+            proporcion="1080/1920"
+            ancho="completo"
+            class="h-full rounded-[30px]"
+          />
+        </div>
+      </div>
+    </Grilla>
+
+    {/* La revista flotante se monta sobre las piezas: a ancho de mobile tapaba
+        medio bloque, así que aparece recién en desktop. */}
+    <div class="pointer-events-none absolute inset-0 hidden lg:block">
+      <Media
+        efecto="fade"
+        src={revistas}
+        alt="Revista de aniversario"
+        class="absolute left-[20.06%] top-[60.17%] w-[49.1%]"
+      />
+    </div>
+  </div>
+
+  {/* ── Cierre ──────────────────────────────────────────────────────────── */}
+  {/* Cierre: la trama del pie va detrás de la marca y llega hasta el tope de
+      1780, que es la medida del archivo. De ahí para afuera sigue el azul de
+      la banda, que es el mismo #003DA6 del SVG, así que no se nota el corte.
+      La tira teal sí va a sangre: con `w-full` se topaba en 1780 y arriba de
+      ese ancho quedaba el blanco de la página a los costados. */}
+  {/* En mobile el cierre arranca pegado al bloque de aniversario: los 112 px
+      de aire dejaban una franja blanca entre el azul de arriba y el del pie. */}
+  <Banda color={AZUL} class="mt-0 lg:mt-[112px]">
+    <div class="fx-pie relative">
+      <Image
+        src={backFooter}
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-y-0 left-[calc(50%-50vw)] h-full w-screen max-w-none select-none object-cover"
+      />
+      <div class="relative grid h-full place-items-center">
+        <Media efecto="fade" src={marcaClaim} alt="Farmaexpert" recorte={false} class="w-[62%] max-w-[600px] lg:w-[34%]" />
+      </div>
+    </div>
+  </Banda>
+
+  <div class="full-width h-[22px]" style={`background-color:${TEAL}`}></div>
+
+  <OtrosProyectos excluir="farmaexpert" />
+</Base>
+
+<style>
+  /* Pie: la trama va a sangre —arriba de 1780 los círculos del archivo
+     quedaban metidos para adentro y se leían como un margen— y el alto lo da
+     el aire, no la proporción del archivo, para que la marca respire. */
+  .fx-pie {
+    padding-block: 2.5rem;
+  }
+
+  @media (width >= 64rem) {
+    .fx-pie {
+      padding-block: 4.5rem;
+    }
+  }
+
+  /* Slider de las dos fichas del jarabe: las dos ocupan el mismo lugar y se
+     turnan con opacidad. El alto sale de la proporción del contenedor, así
+     que no hay salto al cambiar. */
+  .jarabe {
+    position: relative;
+  }
+
+  .jarabe-cara {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 700ms var(--ease-salida);
+  }
+
+  .jarabe-cara.jarabe-visible {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .jarabe-cara {
+      transition: none;
+    }
+  }
+
+  /* Tiras de color. El color va al ancho de la pantalla y el contenido —del
+     rótulo primario al semicírculo de la pastilla— topa en la grilla de 1410.
+     Los rótulos van al tamaño de párrafo del sistema y no escalan, por eso la
+     pastilla toma sus proporciones recién en desktop: más abajo se ajusta al
+     texto y la fila envuelve. */
+  .tira {
+    background-color: var(--tira-fondo);
+    color: #ffffff;
+  }
+
+  /* Una sola fila a cualquier ancho: si la fila envuelve, el rótulo primario
+     deja de estar centrado y se apoya arriba. Por eso el que puede partirse en
+     dos renglones es el primario, y sólo abajo de 1280. */
+  .tira-fila {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 0.875rem;
+  }
+
+  .tira-rotulo {
+    /* 18 px es el cuerpo del diseño; en mobile los dos rótulos más la
+       pastilla no entran a esa medida y la tira se leía apretada. */
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* La pastilla no se achica y su rótulo va en una línea. Abajo de 480 px eso
+     no entra: "Verde secundario" en una línea más el rótulo primario suman más
+     que el ancho de contenido y la pastilla se pasaba del borde derecho de la
+     pantalla, dejando la página con scroll horizontal. En esos anchos la
+     pastilla cede y el texto pasa a dos renglones; de 480 para arriba queda
+     igual que antes. */
+  .tira-pastilla > .tira-rotulo {
+    white-space: normal;
+  }
+
+  .tira-pastilla {
+    margin-left: auto;
+    flex: 0 1 auto;
+    padding: 0.5rem 1.5rem;
+    border-radius: 999px;
+    background-image: linear-gradient(to right, var(--tira-fondo), var(--tira-hasta));
+    color: var(--tira-tinta-par);
+  }
+
+  @media (width >= 64rem) {
+    .tira-rotulo {
+      font-size: 1.125rem;
+    }
+  }
+
+  @media (width >= 30rem) {
+    .tira-pastilla > .tira-rotulo {
+      white-space: nowrap;
+    }
+
+    .tira-pastilla {
+      flex: none;
+    }
+  }
+
+  /* El corte va en 1360 y no en 1024: con el rótulo fijo en 18 px, abajo de
+     ese ancho la pastilla en porcentaje deja al texto pegado al semicírculo. */
+  @media (width >= 85rem) {
+    /* 29 px arriba y abajo de una pastilla de 82: los 140 de alto del diseño.
+       La pastilla se lleva el 38,53 % del tramo, igual que en el Figma, y su
+       rótulo arranca al 58 %, corrido hacia el semicírculo. */
+    .tira-fila {
+      padding-block: 1.8125rem;
+    }
+
+    .tira-fila > .tira-rotulo {
+      white-space: nowrap;
+    }
+
+    .tira-pastilla {
+      display: flex;
+      flex: none;
+      align-items: center;
+      width: 38.53%;
+      height: 82px;
+      padding: 0;
+    }
+
+    .tira-pastilla > .tira-rotulo {
+      margin-left: 58%;
+    }
+  }
+</style>
+
+<script>
+  /* Las dos fichas del jarabe se turnan cada 3 s. Se corta cuando el bloque no
+     está en pantalla para no dejar un timer girando de fondo, y además se
+     puede pasar a mano arrastrando para los costados. */
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-jarabe]').forEach((caja) => {
+    const caras = [...caja.querySelectorAll<HTMLElement>('.jarabe-cara')];
+    if (caras.length < 2) return;
+
+    let actual = 0;
+    let reloj: ReturnType<typeof setInterval> | null = null;
+
+    const mostrar = (i: number) => {
+      caras[actual].classList.remove('jarabe-visible');
+      actual = (i + caras.length) % caras.length;
+      caras[actual].classList.add('jarabe-visible');
+    };
+
+    const pasar = () => mostrar(actual + 1);
+
+    const arrancar = () => {
+      if (quieto || reloj !== null) return;
+      reloj = setInterval(pasar, 3000);
+    };
+    const parar = () => {
+      if (reloj === null) return;
+      clearInterval(reloj);
+      reloj = null;
+    };
+
+    /* Swipe: sólo cuenta si el gesto fue más horizontal que vertical, así no
+       le roba el scroll a la página. */
+    let x0 = 0;
+    let y0 = 0;
+    let siguiendo = false;
+
+    caja.addEventListener(
+      'touchstart',
+      (e) => {
+        if (e.touches.length !== 1) return;
+        x0 = e.touches[0].clientX;
+        y0 = e.touches[0].clientY;
+        siguiendo = true;
+      },
+      { passive: true }
+    );
+
+    caja.addEventListener(
+      'touchend',
+      (e) => {
+        if (!siguiendo) return;
+        siguiendo = false;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - x0;
+        const dy = t.clientY - y0;
+        if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
+        parar();
+        mostrar(actual + (dx < 0 ? 1 : -1));
+        arrancar();
+      },
+      { passive: true }
+    );
+
+    new IntersectionObserver((entradas) => {
+      entradas.forEach((e) => {
+        if (e.isIntersecting) arrancar();
+        else parar();
+      });
+    }).observe(caja);
+  });
+</script>

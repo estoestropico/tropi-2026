@@ -1,0 +1,172 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Dos filas horizontales trabadas dentro de una máscara: al scrollear, una
+ * se va hacia la izquierda y la otra hacia la derecha.
+ * Es el gemelo acostado del mosaico del feed.
+ *
+ * Cada fila repite su secuencia de piezas tres veces para que nunca se vea el
+ * borde. El ancho de cada pieza es su fracción del ancho total de la fila, así
+ * una pasada completa mide un viewport y ninguna imagen se recorta.
+ */
+export interface PiezaTira {
+  src: ImageMetadata;
+  alt?: string;
+}
+
+interface Fila {
+  /** Las piezas de la fila, en orden. Todas con el mismo alto de origen. */
+  piezas: PiezaTira[];
+  /** Signo del desplazamiento: -1 va a la izquierda, 1 va a la derecha. */
+  sentido: -1 | 1;
+  /** Corrimiento inicial de la fila, en % del ancho de la fila entera. */
+  traba: number;
+}
+
+interface Props {
+  filas: Fila[];
+  fondo?: string;
+  espacio?: Espacio;
+  class?: string;
+}
+
+const {
+  filas,
+  fondo = '#f2f2f2',
+  espacio,
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={['tira-doble', className]}
+  style={[`background-color:${fondo}`, margenArriba(espacio)].filter(Boolean).join(';')}
+  data-tira
+>
+  {
+    filas.map((f) => {
+      /* Cada pieza se lleva su parte proporcional del viewport, sin recortar:
+         una pasada completa mide 100vw. Los anchos sólo quedan iguales si los
+         archivos de la fila vienen del mismo ancho. */
+      const total = f.piezas.reduce((s, p) => s + p.src.width, 0);
+      return (
+        <div
+          class="tira-fila"
+          style={`--sentido:${f.sentido};--traba:${f.traba}%`}
+          data-tira-fila
+        >
+          {[0, 1, 2].map((pasada) =>
+            f.piezas.map((p) => {
+              const vw = ((p.src.width / total) * 100).toFixed(4);
+              return (
+                <Image
+                  src={p.src}
+                  alt={pasada === 0 ? (p.alt ?? '') : ''}
+                  aria-hidden={pasada === 0 && p.alt ? undefined : 'true'}
+                  widths={[360, 720, 1080, 1440]}
+                  sizes={`(width < 64rem) ${(Number(vw) * 2).toFixed(4)}vw, ${vw}vw`}
+                  class="tira-pieza"
+                  style={`--pieza:${vw}vw`}
+                />
+              );
+            })
+          )}
+        </div>
+      );
+    })
+  }
+</div>
+
+<style>
+  .tira-doble {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+    padding: 12px 0;
+  }
+
+  .tira-fila {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    width: max-content;
+    transform: translate3d(var(--traba), 0, 0);
+    will-change: transform;
+  }
+
+  /* `--escala` agranda las piezas sin tocar el cálculo de proporciones: una
+     pasada deja de medir exactamente un viewport, que es justo lo que hace
+     falta en mobile para que cada página del manual se lea. */
+  .tira-pieza {
+    max-width: none;
+    height: auto;
+    flex: none;
+    width: calc(var(--pieza) * var(--escala, 1));
+  }
+
+  @media (width < 64rem) {
+    .tira-doble {
+      --escala: 2;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tira-fila {
+      will-change: auto;
+      transform: translate3d(var(--traba), 0, 0) !important;
+    }
+  }
+</style>
+
+<script>
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!quieto) {
+    document.querySelectorAll<HTMLElement>('[data-tira]').forEach((tira) => {
+      const filas = [...tira.querySelectorAll<HTMLElement>('[data-tira-fila]')];
+      const datos = filas.map((f) => ({
+        el: f,
+        sentido: parseFloat(getComputedStyle(f).getPropertyValue('--sentido')) || 1,
+        traba: getComputedStyle(f).getPropertyValue('--traba').trim() || '0%',
+      }));
+
+      /** Cuánto recorre cada fila de punta a punta del viewport, en px. */
+      const RECORRIDO = 240;
+      let visible = false;
+      let pendiente = false;
+
+      const pintar = () => {
+        pendiente = false;
+        const r = tira.getBoundingClientRect();
+        const alto = window.innerHeight || 1;
+        const p = 1 - (r.top + r.height / 2) / (alto / 2 + r.height / 2);
+        datos.forEach((d) => {
+          const x = p * d.sentido * RECORRIDO;
+          d.el.style.transform = `translate3d(calc(${d.traba} + ${x.toFixed(1)}px), 0, 0)`;
+        });
+      };
+
+      const alScrollear = () => {
+        if (!pendiente && visible) {
+          pendiente = true;
+          requestAnimationFrame(pintar);
+        }
+      };
+
+      new IntersectionObserver(
+        ([e]) => {
+          visible = e.isIntersecting;
+          if (visible) pintar();
+        },
+        { rootMargin: '200px 0px' }
+      ).observe(tira);
+
+      window.addEventListener('scroll', alScrollear, { passive: true });
+      window.addEventListener('resize', alScrollear, { passive: true });
+      pintar();
+    });
+  }
+</script>

@@ -1,0 +1,357 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Intro from '../../components/caso/Intro.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Media from '../../components/caso/Media.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+import { margenArriba } from '../../lib/espacios';
+
+import hero from '../../assets/casos/fxm/hero.png';
+import tramaMarca from '../../assets/casos/fxm/trama-marca.png';
+import logoFxm from '../../assets/casos/fxm/logo-fxm.svg';
+import concepto from '../../assets/casos/fxm/fxm-concepto.svg';
+import camiseta from '../../assets/casos/fxm/camiseta.png';
+import bufanda from '../../assets/casos/fxm/bufanda.png';
+import vestuario from '../../assets/casos/fxm/vestuario.png';
+import retrato1 from '../../assets/casos/fxm/retrato-1.png';
+import retrato2 from '../../assets/casos/fxm/retrato-2.png';
+import retrato3 from '../../assets/casos/fxm/retrato-3.png';
+import flyer1 from '../../assets/casos/fxm/flyer-1.png';
+import flyer2 from '../../assets/casos/fxm/flyer-2.png';
+import folleto from '../../assets/casos/fxm/folleto.png';
+import backWeb from '../../assets/casos/fxm/back-web.png';
+import macWeb from '../../assets/casos/fxm/mac-web.png';
+import homeFxm from '../../assets/casos/fxm/home-fxm.png';
+import web1 from '../../assets/casos/fxm/web-1.png';
+import web2 from '../../assets/casos/fxm/web-2.png';
+import web3 from '../../assets/casos/fxm/web-3.png';
+import web4 from '../../assets/casos/fxm/web-4.png';
+import cierre from '../../assets/casos/fxm/cierre.svg';
+
+const caso = await getEntry('casos', 'fxm');
+if (!caso) throw new Error('Falta src/content/casos/fxm.yaml');
+const { data } = caso;
+
+/* Colores muestreados del export del Figma */
+const OSCURO = '#22242e';
+const GRIS = '#f7f7f8';
+/* Paleta de marca. `parte` es la fracción del viewport que ocupa cada tono:
+   los dos primeros se reparten la mitad y los otros tres, la otra mitad. */
+const PALETA = [
+  { nombre: 'Blue', hex: '#374bfa', tinta: '#ffffff', parte: '25%', parteMovil: '50%' },
+  { nombre: 'Dark', hex: '#22242e', tinta: '#ffffff', parte: '25%', parteMovil: '50%' },
+  { nombre: 'Blue 2.0', hex: '#08226e', tinta: '#ffffff', parte: '16.6667%', parteMovil: '33.3333%' },
+  { nombre: 'Gray', hex: '#f7f7f8', tinta: '#22242e', parte: '16.6667%', parteMovil: '33.3333%' },
+  { nombre: 'Yellow', hex: '#e6ff3c', tinta: '#22242e', parte: '16.6666%', parteMovil: '33.3334%' },
+];
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.cliente}
+    solape={0}
+  />
+
+  <Intro espacio="l">
+    Fulboporelmundo es el proyecto de Ismael, un creador de contenido que
+    viaja combinando sus dos grandes pasiones: conocer nuevos destinos y
+    desafiar a locales en partidos de fútbol 1v1. Para acompañarlo en su
+    viaje, desarrollamos su identidad visual, el sitio web y sus
+    herramientas de venta. Trabajamos bajo un formato de entrega integral,
+    dejándole todos los activos y plataformas listas para que él pueda
+    autogestionar su marca, subir nuevos destinos y continuar la
+    comunicación con autonomía.
+  </Intro>
+
+  {/* ── Identidad ───────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="La identidad" titulo="Diseño de marca y mensajes clave">
+    <p>
+      Ordenamos sus ideas para darles forma en una marca diseñada
+      específicamente para potenciar la comercialización del proyecto. El
+      resultado es una identidad dinámica, intensa y desafiante, que
+      complementamos con el desarrollo de sus mensajes clave para
+      estructurar su discurso ante distintas audiencias.
+    </p>
+  </BloqueTexto>
+
+  {/* La marca sobre la trama del azul de FXM. La placa va a sangre y quieta:
+      sin reveal ni parallax, es el fondo sobre el que entran la marca y la
+      escuadra. */}
+  <div class="full-width relative" style={margenArriba('m')}>
+    <Media class="full-width" efecto="ninguno" src={tramaMarca} alt="" proporcion="1780/600" />
+    <div class="pointer-events-none absolute inset-0">
+      {/* Posiciones del Figma en estilo inline, como el `--ancho` de Washington:
+          no dependen de que Tailwind genere una clase nueva. */}
+      <div class="absolute" style="left:37.53%;top:32.67%;width:24.94%">
+        <Media efecto="fade" src={logoFxm} alt="Marca FXM" recorte={false} />
+      </div>
+
+      {/* Escuadra del Figma (nodo 824:676): no está exportada, va dibujada */}
+      <svg
+        class="absolute"
+        style="left:87.81%;top:70.17%;width:5%;--retardo:220ms"
+        viewBox="0 0 89 89"
+        fill="none"
+        stroke="#22242e"
+        stroke-width="4"
+        aria-hidden="true"
+        data-revelar
+      >
+        <path d="M0 87 H87 V0" />
+        <path d="M45 87 A42 42 0 0 1 87 45" />
+      </svg>
+    </div>
+  </div>
+
+  {/* Construcción del signo, sobre el oscuro */}
+  <Banda color={OSCURO} espacio="nulo" class="pb-[5.45%] pt-[7.13%]">
+    <div class="ancho" style="--ancho:1284px">
+      <Media efecto="fade" src={concepto} alt="Fulbo por el mundo, partidos 1x1, pelota en movimiento" recorte={false} />
+    </div>
+  </Banda>
+
+  {/* ── Paleta cromática ────────────────────────────────────────────────
+      Va pegada a la banda oscura de arriba, sin margen. Los dos primeros
+      tonos se reparten la mitad del viewport y los otros tres, la otra
+      mitad. Son divs con el color aplicado, no una imagen. */}
+  <section class="paleta full-width" aria-label="Paleta cromática de FXM" data-revelar-grupo>
+    {
+      PALETA.map((c) => (
+        <div
+          class="tono"
+          style={`--parte:${c.parte};--parte-movil:${c.parteMovil};background-color:${c.hex};color:${c.tinta}`}
+          data-revelar
+        >
+          <p class="font-bold">{c.nombre}</p>
+          <p>{c.hex.toUpperCase()}</p>
+        </div>
+      ))
+    }
+  </section>
+
+  {/* Las dos fotos se montan sobre la banda azul de abajo */}
+  <Grilla cols="1fr 1fr" gap="0.65rem" ancho="contenido" espacio="m" class="relative z-10">
+    <Media efecto="reveal" src={camiseta} alt="Camiseta de FXM" proporcion="750/890" />
+    <Media efecto="reveal" src={bufanda} alt="Bufanda de Fulbo Por El Mundo" proporcion="750/890" />
+  </Grilla>
+
+  {/* La home recorriendo dentro de la Mac. Son tres capas sobre el mismo
+      marco de 2560 × 2524: el fondo, la home desplazándose y la Mac encima
+      con la pantalla transparente.
+      La máscara no termina en la pantalla: sigue hasta el pie del marco, así
+      la home aparece de nuevo abajo del chasis y se lee como una sola página.
+      Arranca en x 577 / y 397 —cuatro píxeles afuera del hueco, que está en
+      581/401 sobre el alfa de `mac-web.png`— para que el borde biselado quede
+      siempre tapado; lo que sobra lo cubre la Mac, que va encima.
+      El desplazamiento va atado al scroll de la página, como el parallax del
+      resto del sitio, y el recorrido se mide del DOM: alto de la home menos
+      alto de la máscara. */}
+  <div class="web-mac full-width" style="margin-top:-4.94%" data-revelar>
+    <Image src={backWeb} alt="" aria-hidden="true" widths={[640, 960, 1280, 1920, 2560]} sizes="100vw" class="web-mac-capa" />
+    <div class="web-mac-pantalla">
+      <Image
+        src={homeFxm}
+        alt="La home de Fulbo Por El Mundo"
+        widths={[360, 720, 1080, 1440]}
+        sizes="(min-width: 1024px) 55vw, 55vw"
+        class="web-mac-home"
+      />
+    </div>
+    <Image src={macWeb} alt="" aria-hidden="true" widths={[640, 960, 1280, 1920, 2560]} sizes="100vw" class="web-mac-capa web-mac-frente" />
+  </div>
+
+  {/* ── Website ─────────────────────────────────────────────────────────── */}
+  {/* En mobile el 4,38 % de arriba son 17 px y el texto quedaba pegado a la
+      compu; ahí el aire va en píxeles. */}
+  <Banda color={GRIS} espacio="nulo" class="pb-[112px] pt-14 lg:pt-[4.38%]">
+    <BloqueTexto espacio="nulo" etiqueta="Plataforma digital" titulo="Sitio web y bitácora de viaje">
+      <p>
+        Creamos el centro neurálgico de su comunicación: un sitio web donde
+        los usuarios pueden explorar sus viajes navegando por historia o por
+        país. Cada entrada combina sus experiencias, fotos y videos, sumando
+        además una bitácora cultural sobre cómo se vive el fútbol en cada
+        destino. Todo el sitio está integrado de forma fluida con sus redes
+        sociales y su canal de YouTube.
+      </p>
+    </BloqueTexto>
+
+    {/* Las cuatro vistas en columnas iguales, al ancho de grilla y pegadas
+        entre sí, sin medianera. Las cuatro miden 890 × 1572, así que cierran
+        al mismo alto sin forzar nada. */}
+    <Grilla cols="1fr 1fr 1fr 1fr" gap="0px" ancho="contenido" espacio="s">
+      <Media efecto="fade" src={web1} alt="Listado de historias del sitio" />
+      <Media efecto="fade" src={web2} alt="Mapa de las historias alrededor del mundo" />
+      <Media efecto="fade" src={web3} alt="Quién es Ismael Romero y el plan de sponsoreo" />
+      <Media efecto="fade" src={web4} alt="El sitio de FXM en el celular" />
+    </Grilla>
+  </Banda>
+
+  <Media class="full-width" efecto="parallax" src={vestuario} alt="El equipo de FXM en el vestuario" espacio="nulo" proporcion="1780/900" />
+
+  <Grilla cols="1fr 1fr" gap="0.65rem" ancho="contenido" espacio="m">
+    <Media efecto="reveal" src={flyer1} alt="Placa: torazo en rodeo ajeno" proporcion="750/890" />
+    <Media efecto="reveal" src={flyer2} alt="Placa: es tu turno, en tu cancha, animate" proporcion="750/890" />
+  </Grilla>
+
+  {/* ── Presentación institucional ──────────────────────────────────────── */}
+  {/* El padding de abajo le da aire al cuaderno antes del cierre: si no, la
+      pieza queda pegada al borde de la banda. */}
+  <Banda color={OSCURO} espacio="m" class="pb-[112px]">
+    <Grilla cols="1fr 1fr 1fr" gap="0.65rem" espacio="nulo">
+      <Media efecto="reveal" src={retrato1} alt="Jugador de FXM" proporcion="586/791" />
+      <Media efecto="reveal" src={retrato3} alt="Jugador de FXM cabeceando" proporcion="586/791" />
+      <Media efecto="reveal" src={retrato2} alt="Jugador de FXM con la bufanda" proporcion="586/791" />
+    </Grilla>
+
+    <BloqueTexto espacio="m" etiqueta="Herramientas de venta" titulo="Presentaciones comerciales editables" class="text-white">
+      <p>
+        Desarrollamos piezas estratégicas para la expansión del proyecto.
+        Diseñamos una presentación institucional orientada a captar sponsors
+        y otra pensada para introducirse ante posibles rivales alrededor del
+        mundo. Entregamos ambos materiales en formatos editables para darle
+        flexibilidad y agilidad en sus negociaciones.
+      </p>
+
+      <div slot="derecha" class="mt-6 w-full lg:mt-12">
+        <Media efecto="reveal" src={folleto} alt="Presentación institucional de FXM" recorte={false} />
+      </div>
+    </BloqueTexto>
+  </Banda>
+
+  <Media class="full-width" efecto="fade" src={cierre} alt="Fulbo Por El Mundo" espacio="nulo" recorte={false} />
+
+  <OtrosProyectos excluir="fxm" />
+</Base>
+
+<style>
+  /* Recorrido de la home dentro de la Mac */
+  .web-mac {
+    position: relative;
+    aspect-ratio: 2560 / 2524;
+  }
+
+  .web-mac-capa {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+  }
+
+  .web-mac-frente {
+    z-index: 2;
+  }
+
+  .web-mac-pantalla {
+    position: absolute;
+    left: 22.53906%;
+    top: 15.729%;
+    width: 54.92188%;
+    height: 84.271%;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .web-mac-home {
+    display: block;
+    width: 100%;
+    height: auto;
+    will-change: transform;
+  }
+
+  /* Paleta: una tira a sangre, sin medianeras, pegada al bloque de arriba.
+     El ancho lo pone la utilidad `full-width`; acá no va ningún `width`,
+     porque el CSS del componente no está en capa y le ganaría. */
+  .paleta {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .tono {
+    flex: 0 0 var(--parte-movil);
+    min-width: 0;
+    height: 220px;
+    padding: 1.25rem;
+  }
+  .tono p {
+    font-size: 1.125rem;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+
+  @media (width >= 64rem) {
+    /* En fila y sin wrap: las cinco partes suman 100 % justo, y si el
+       navegador redondea un pelo para arriba al calcular los anchos, con
+       `wrap` el último tono se va a un renglón nuevo y deja el resto de la
+       fila vacío a la derecha. Sin wrap eso no puede pasar. */
+    .paleta {
+      flex-wrap: nowrap;
+    }
+
+    .tono {
+      flex-basis: var(--parte);
+      height: 450px;
+      padding: 2rem;
+    }
+  }
+</style>
+
+<script>
+  /* El recorrido de la home va atado al scroll de la página, con la misma
+     cuenta que el parallax del resto del sitio: `p` va de 0 a 1 mientras el
+     bloque cruza la pantalla. El recorrido se mide del DOM —alto de la home
+     menos alto de la máscara— así que no depende de las medidas del export:
+     si cambia el PNG, sigue cerrando solo. */
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const capas = [...document.querySelectorAll<HTMLElement>('.web-mac')]
+    .map((marco) => ({
+      marco,
+      mascara: marco.querySelector<HTMLElement>('.web-mac-pantalla'),
+      home: marco.querySelector<HTMLElement>('.web-mac-home'),
+    }))
+    .filter((c) => c.mascara && c.home);
+
+  if (!quieto && capas.length) {
+    let pendiente = false;
+
+    const pintar = () => {
+      pendiente = false;
+      const alto = window.innerHeight || 1;
+      capas.forEach((c) => {
+        const r = c.marco.getBoundingClientRect();
+        if (r.bottom < -alto * 0.25 || r.top > alto * 1.25) return;
+        const recorrido = c.home!.offsetHeight - c.mascara!.offsetHeight;
+        if (recorrido <= 0) return;
+        /* `demora` es la parte del cruce en la que la home se queda quieta
+           arriba de todo: sin eso el recorrido empieza apenas asoma el bloque
+           y el header pasa de largo antes de que se lo pueda leer. */
+        const demora = 0.15;
+        const bruto = 1 - (r.top + r.height) / (alto + r.height);
+        const p = Math.min(1, Math.max(0, (bruto - demora) / (1 - demora)));
+        c.home!.style.transform = `translate3d(0, ${(-p * recorrido).toFixed(1)}px, 0)`;
+      });
+    };
+
+    const alScrollear = () => {
+      if (!pendiente) {
+        pendiente = true;
+        requestAnimationFrame(pintar);
+      }
+    };
+
+    window.addEventListener('scroll', alScrollear, { passive: true });
+    window.addEventListener('resize', alScrollear, { passive: true });
+    window.addEventListener('load', pintar);
+    pintar();
+  }
+</script>

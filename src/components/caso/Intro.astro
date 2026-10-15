@@ -1,0 +1,23 @@
+---
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/** Párrafo de apertura del caso. */
+interface Props {
+  espacio?: Espacio;
+}
+
+const { espacio = 'l' } = Astro.props;
+---
+
+<section class="relative z-10 bg-white" style={margenArriba(espacio)}>
+  <div class="contenido">
+    <div class="max-w-[1162px] tracking-[-0.0375em]">
+      {/* El corte renglón por renglón entra recién en desktop: a 390 px este
+          párrafo son quince líneas y el corte quedaba congelado en lugares
+          que no corresponden. En mobile envuelve solo y entra con fundido. */}
+      <p class="text-[1.625rem] leading-[1.4] lg:text-[2rem]" data-lineas data-lineas-desde="1024">
+        <slot />
+      </p>
+    </div>
+  </div>
+</section>

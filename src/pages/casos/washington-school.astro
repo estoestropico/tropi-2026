@@ -1,0 +1,672 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Intro from '../../components/caso/Intro.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import ColumnaDerecha from '../../components/caso/ColumnaDerecha.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Media from '../../components/caso/Media.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import Composicion from '../../components/caso/Composicion.astro';
+import TiraDoble from '../../components/caso/TiraDoble.astro';
+import Pieza from '../../components/caso/Pieza.astro';
+import Video from '../../components/caso/Video.astro';
+import MosaicoFeed from '../../components/caso/MosaicoFeed.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+import { margenArriba } from '../../lib/espacios';
+
+import hero from '../../assets/casos/washington-school/hero.png';
+import escudo1990 from '../../assets/casos/washington-school/escudo-1990.svg';
+import escudo2016 from '../../assets/casos/washington-school/escudo-2016.svg';
+import elementos from '../../assets/casos/washington-school/elementos.svg';
+import estrellaWs from '../../assets/casos/washington-school/estrella-ws.svg';
+import circulos from '../../assets/casos/washington-school/circulos.svg';
+import forma from '../../assets/casos/washington-school/forma.svg';
+import faro from '../../assets/casos/washington-school/faro.svg';
+import agenda from '../../assets/casos/washington-school/agenda.png';
+import botella from '../../assets/casos/washington-school/botella.png';
+import bufanda from '../../assets/casos/washington-school/bufanda.png';
+import bolsa from '../../assets/casos/washington-school/bolsa.png';
+import gorra from '../../assets/casos/washington-school/gorra.png';
+import llavero from '../../assets/casos/washington-school/llavero.png';
+import welcomeKit from '../../assets/casos/washington-school/welcome-kit.png';
+import mesa from '../../assets/casos/washington-school/mesa.png';
+import puertas from '../../assets/casos/washington-school/puertas.png';
+import poster1 from '../../assets/casos/washington-school/poster-1.png';
+import poster2 from '../../assets/casos/washington-school/poster-2.png';
+import poster3 from '../../assets/casos/washington-school/poster-3.png';
+import poster4 from '../../assets/casos/washington-school/poster-4.png';
+import ico1 from '../../assets/casos/washington-school/p-1.svg';
+import ico2 from '../../assets/casos/washington-school/p-2.svg';
+import ico3 from '../../assets/casos/washington-school/p-3.svg';
+import ico4 from '../../assets/casos/washington-school/p-4.svg';
+import ico5 from '../../assets/casos/washington-school/p-5.svg';
+import ico6 from '../../assets/casos/washington-school/p-6.svg';
+import ico7 from '../../assets/casos/washington-school/p-7.svg';
+import ico8 from '../../assets/casos/washington-school/p-8.svg';
+import ico9 from '../../assets/casos/washington-school/p-9.svg';
+import ico10 from '../../assets/casos/washington-school/p-10.svg';
+import pl1 from '../../assets/casos/washington-school/pl-1.svg';
+import pl2 from '../../assets/casos/washington-school/pl-2.svg';
+import pl3 from '../../assets/casos/washington-school/pl-3.svg';
+import pl4 from '../../assets/casos/washington-school/pl-4.svg';
+import pl5 from '../../assets/casos/washington-school/pl-5.svg';
+import pl6 from '../../assets/casos/washington-school/pl-6.svg';
+import remera1 from '../../assets/casos/washington-school/remera-1.png';
+import remera2 from '../../assets/casos/washington-school/remera-2.png';
+import remera3 from '../../assets/casos/washington-school/remera-3.png';
+import remera4 from '../../assets/casos/washington-school/remera-4.png';
+import earth from '../../assets/casos/washington-school/earth.svg';
+import wind from '../../assets/casos/washington-school/wind.svg';
+import fire from '../../assets/casos/washington-school/fire.svg';
+import houses1 from '../../assets/casos/washington-school/houses-1.png';
+import houses2 from '../../assets/casos/washington-school/houses-2.png';
+import houses3 from '../../assets/casos/washington-school/houses-3.png';
+import houses4 from '../../assets/casos/washington-school/houses-4.png';
+import manual1 from '../../assets/casos/washington-school/manual-1.png';
+import manual2 from '../../assets/casos/washington-school/manual-2.png';
+import manual3 from '../../assets/casos/washington-school/manual-3.png';
+import manual4 from '../../assets/casos/washington-school/manual-4.png';
+import manual5 from '../../assets/casos/washington-school/manual-5.png';
+import manual6 from '../../assets/casos/washington-school/manual-6.png';
+import manual7 from '../../assets/casos/washington-school/manual-7.png';
+import manual8 from '../../assets/casos/washington-school/manual-8.png';
+import edFisica from '../../assets/casos/washington-school/educacion-fisica.png';
+import edFisica1 from '../../assets/casos/washington-school/educacion-fisica-1.png';
+import rugby from '../../assets/casos/washington-school/rugby-1.png';
+import mascotasProceso from '../../assets/casos/washington-school/mascotas-proceso.png';
+import mascotasTrio from '../../assets/casos/washington-school/mascotas-trio.png';
+import mascotasPiezas from '../../assets/casos/washington-school/mascotas-piezas.png';
+import mascotaFicha from '../../assets/casos/washington-school/mascota-ficha.svg';
+import mascotaAplicacion from '../../assets/casos/washington-school/mascota-aplicacion.png';
+import estandartes from '../../assets/casos/washington-school/estandartes.png';
+import timeline from '../../assets/casos/washington-school/timeline.png';
+import banner75 from '../../assets/casos/washington-school/banner-75.png';
+import foto75 from '../../assets/casos/washington-school/75-foto.png';
+import historias75 from '../../assets/casos/washington-school/75-historias.svg';
+import trama from '../../assets/casos/washington-school/trama.svg';
+import back75 from '../../assets/casos/washington-school/back-75.png';
+import post1 from '../../assets/casos/washington-school/post-1.png';
+import post2 from '../../assets/casos/washington-school/post-2.png';
+import post3 from '../../assets/casos/washington-school/post-3.png';
+import post4 from '../../assets/casos/washington-school/post-4.png';
+import post5 from '../../assets/casos/washington-school/post-5.png';
+import post6 from '../../assets/casos/washington-school/post-6.png';
+import post7 from '../../assets/casos/washington-school/post-7.png';
+import post8 from '../../assets/casos/washington-school/post-8.png';
+import post9 from '../../assets/casos/washington-school/post-9.png';
+import post10 from '../../assets/casos/washington-school/post-10.png';
+import wsLogoPie from '../../assets/casos/washington-school/ws-logo-footer.svg';
+import wsTramaPie from '../../assets/casos/washington-school/ws-trama-footer.svg';
+import videoBanderas from '../../assets/casos/washington-school/video/banderas-aniversario.mp4';
+import posterBanderas from '../../assets/casos/washington-school/video/banderas-aniversario.webp';
+import videoAlumnas from '../../assets/casos/washington-school/video/alumnas.mp4';
+import videoDocente from '../../assets/casos/washington-school/video/docente.mp4';
+import videoAlumnaMascota from '../../assets/casos/washington-school/video/alumna-mascota.mp4';
+import videoClase from '../../assets/casos/washington-school/video/clase.mp4';
+import video75Docente from '../../assets/casos/washington-school/video/75-docente.mp4';
+import video75AlumnaMascota from '../../assets/casos/washington-school/video/75-alumna-mascota.mp4';
+import video75Clase from '../../assets/casos/washington-school/video/75-clase.mp4';
+import videoWeb from '../../assets/casos/washington-school/video/web-recorrido.mp4';
+import posterWeb from '../../assets/casos/washington-school/video/web-recorrido.webp';
+
+const caso = await getEntry('casos', 'washington-school');
+if (!caso) throw new Error('Falta src/content/casos/washington-school.yaml');
+const { data } = caso;
+
+const AZUL = '#002d7d';
+const CLARO = '#f8f7ef';
+const AZUL_HONDO = '#001e4b'; /* fondo de las láminas de WS Programs */
+const AMARILLO = '#ffb90a';
+
+/* Íconos de programas: los diez vienen en un lienzo de 180 × 180, así que
+   todos se dibujan en la misma caja y quedan al mismo tamaño. */
+/* Muro de posteos: las diez piezas repartidas en cuatro columnas trabadas de
+   seis, que es el mínimo para que ninguna columna deje ver el fondo en los
+   extremos del recorrido a ningún ancho. El offset va en porcentaje del alto
+   de la columna, así la posición de reposo escala con el bloque. */
+const FEED = '1135/1570';
+const A = 'Posteo de Washington School';
+const columnasFeed = [
+  {
+    offset: '-14%',
+    velocidad: -1,
+    piezas: [
+      { src: post1, alt: A, ratio: FEED },
+      { src: post5, alt: A, ratio: FEED },
+      { src: post9, alt: A, ratio: FEED },
+      { src: post3, alt: A, ratio: FEED },
+      { src: post7, alt: A, ratio: FEED },
+      { src: post10, alt: A, ratio: FEED },
+    ],
+  },
+  {
+    offset: '-19%',
+    velocidad: 1,
+    piezas: [
+      { src: post6, alt: A, ratio: FEED },
+      { src: post2, alt: A, ratio: FEED },
+      { src: post4, alt: A, ratio: FEED },
+      { src: post8, alt: A, ratio: FEED },
+      { src: post1, alt: A, ratio: FEED },
+      { src: post5, alt: A, ratio: FEED },
+    ],
+  },
+  {
+    offset: '-16%',
+    velocidad: -1,
+    piezas: [
+      { src: post3, alt: A, ratio: FEED },
+      { src: post7, alt: A, ratio: FEED },
+      { src: post10, alt: A, ratio: FEED },
+      { src: post6, alt: A, ratio: FEED },
+      { src: post2, alt: A, ratio: FEED },
+      { src: post9, alt: A, ratio: FEED },
+    ],
+  },
+  {
+    offset: '-21%',
+    velocidad: 1,
+    piezas: [
+      { src: post8, alt: A, ratio: FEED },
+      { src: post4, alt: A, ratio: FEED },
+      { src: post1, alt: A, ratio: FEED },
+      { src: post2, alt: A, ratio: FEED },
+      { src: post5, alt: A, ratio: FEED },
+      { src: post7, alt: A, ratio: FEED },
+    ],
+  },
+];
+
+const iconosPrograma = [ico1, ico2, ico3, ico4, ico5, ico6, ico7, ico8, ico9, ico10];
+
+/* Tira de programas: seis piezas de 34 de alto. El ancho de cada una va en
+   porcentaje del marco de grilla (1410) para que la fila entera escale sin
+   deformarse; el sobrante se reparte en cinco separaciones iguales. */
+const GRILLA = 1410;
+const tiraProgramas = [
+  { src: pl1, alt: 'WS Giving Back', ancho: 197 },
+  { src: pl2, alt: 'WS College Connections', ancho: 263 },
+  { src: pl3, alt: 'WS Global Immersion', ancho: 243 },
+  { src: pl4, alt: 'WS Sports', ancho: 149 },
+  { src: pl5, alt: 'WS for Parents', ancho: 184 },
+  { src: pl6, alt: 'WS Vanguard', ancho: 167 },
+];
+
+const programas = [
+  { icono: poster1, alt: 'Pieza del programa WS for Leaders' },
+  { icono: poster2, alt: 'Pieza del programa WS Expeditions' },
+  { icono: poster3, alt: 'Pieza del programa WS Spirit' },
+  { icono: poster4, alt: 'Pieza del programa WS Arts' },
+];
+
+/* Tira cromática: ocho divs, no una imagen. Los porcentajes son los del
+   diseño sobre el marco de 1780 × 50 y suman 100. */
+const COLORES = [
+  { hex: '#002E82', parte: 25 },
+  { hex: '#001F4E', parte: 20 },
+  { hex: '#3A9328', parte: 15 },
+  { hex: '#FFAF00', parte: 15 },
+  { hex: '#3AC2E1', parte: 10 },
+  { hex: '#DA0069', parte: 5 },
+  { hex: '#A0A0FF', parte: 5 },
+  { hex: '#95DE8E', parte: 5 },
+];
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.cliente}
+    solape={0}
+  />
+
+  <Intro espacio="l">
+    Washington School es sinónimo de prestigio educativo en Buenos Aires.
+    Para honrar sus 75 años de trayectoria sin dejar de mirar al futuro, nos
+    consolidamos como su agencia bajo nuestro modelo de acompañamiento
+    continuo. Al conocer de cerca su cultura, directivos y dinámica diaria,
+    construimos e implementamos estrategias que no solo destacan
+    visualmente, sino que traccionan en la realidad operativa del colegio.
+  </Intro>
+
+  {/* ── Identidad institucional ─────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="La identidad" titulo="Evolución de signos marcarios">
+    <p>
+      Ordenamos los emblemas históricos del colegio para modernizar su
+      herencia institucional. Establecimos normativas claras de aplicación
+      para garantizar que el escudo tradicional conserve su jerarquía y se
+      adapte de forma precisa a cualquier soporte, desde interfaces
+      digitales hasta la indumentaria escolar.
+    </p>
+  </BloqueTexto>
+
+  <ColumnaDerecha espacio="m">
+    <div class="flex items-end justify-center gap-16 lg:gap-[104px]" data-revelar-grupo>
+      <figure class="text-center">
+        <Media efecto="fade" src={escudo1990} alt="Escudo institucional de 1990" class="w-[140px] lg:w-[218px]" />
+        <figcaption class="mt-6 text-[1.125rem] leading-[1.4]">Antes</figcaption>
+      </figure>
+      <figure class="text-center">
+        <Media efecto="fade" src={escudo2016} alt="Escudo institucional rediseñado en 2016" class="w-[140px] lg:w-[224px]" />
+        <figcaption class="mt-6 text-[1.125rem] leading-[1.4]">Después</figcaption>
+      </figure>
+    </div>
+  </ColumnaDerecha>
+
+  {/* ── Elementos de marca ──────────────────────────────────────────────── */}
+  <Banda color={CLARO} espacio="m" class="py-[112px]">
+    {/* En mobile la tira toma casi todo el ancho de la pantalla: con el
+        margen de 20 px de la columna los tres signos quedaban chicos. */}
+    <div class="elementos-marca mx-auto w-[calc(100%-1rem)] lg:w-auto lg:max-w-[1182px]">
+      <Media efecto="fade" src={elementos} alt="Escudo, monograma y signo del sistema de marca" recorte={false} />
+    </div>
+  </Banda>
+
+  {/* ── Concepto gráfico ────────────────────────────────────────────────── */}
+  <section style={margenArriba('m')}>
+    <div class="contenido grid gap-10 lg:grid-cols-[42.5%_57.5%] lg:gap-0">
+      <div>
+        <h2 class="rotulo rotulo-caso" data-revelar>
+          Universo visual
+        </h2>
+        {/* la estrella y su cuadriculado vienen en un solo SVG, contra el borde del sector */}
+        {/* En mobile la estrella baja a 170 px y se acerca al rótulo: a 317
+            ocupaba casi el ancho de la pantalla y se comía el bloque. */}
+        <div class="mt-8 w-full max-w-[170px] lg:mt-[112px] lg:max-w-[317px]">
+          <Media efecto="fade" src={estrellaWs} alt="Símbolo de la estrella sobre la grilla del sistema" recorte={false} />
+        </div>
+      </div>
+
+      <div class="max-w-[810px]">
+        <p class="mb-4 text-[1.375rem] font-bold leading-none tracking-[-0.02em] lg:text-[1.625rem]" data-lineas>
+          Sistema gráfico y concepto rector
+        </p>
+        <p class="text-[1.125rem] leading-[1.4] tracking-[-0.02em]" data-revelar style="--retardo:180ms">
+          Definimos una paleta cromática propietaria y construimos un nuevo
+          ecosistema visual. Como eje conceptual, tomamos la «estrella»
+          —símbolo de excelencia y proyección de la institución— para articular
+          el key visual, desarrollando iconografía, tramas a medida y recursos
+          gráficos que le aportan dinamismo a la marca.
+        </p>
+
+        <div class="flex items-end justify-center gap-10 lg:gap-[100px]" style={margenArriba('m')} data-revelar-grupo>
+          <Media efecto="fade" src={circulos} alt="Recurso gráfico de círculos" class="w-[70px] lg:w-[150px]" />
+          <Media efecto="fade" src={forma} alt="Recurso gráfico de forma" class="w-[70px] lg:w-[150px]" />
+          <Media efecto="fade" src={faro} alt="Recurso gráfico del faro" class="w-[110px] lg:w-[246px]" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tira full-width" aria-label="Paleta cromática del sistema" style={margenArriba('m')} data-revelar>
+    {COLORES.map((c) => <div style={`--parte:${c.parte};background-color:${c.hex}`} />)}
+  </div>
+
+  {/* ── Merchandising ───────────────────────────────────────────────────── */}
+  <Composicion alto={380} colsMobile={3} espacio="m" alinear="centro" class="px-5 lg:px-0">
+    <Pieza src={agenda} alt="Agenda institucional" x={63} y={22} w={210} alto={380} efecto="fade" />
+    <Pieza src={botella} alt="Botella con identidad del colegio" x={310} y={0} w={204} alto={380} efecto="fade" />
+    <Pieza src={bufanda} alt="Bufanda con los colores institucionales" x={560} y={10} w={302} alto={380} efecto="fade" />
+    <Pieza src={bolsa} alt="Bolsa de tela institucional" x={900} y={7} w={309} alto={380} efecto="fade" />
+    <Pieza src={gorra} alt="Gorra institucional" x={1216} y={61} w={311} alto={380} efecto="fade" />
+    <Pieza src={llavero} alt="Llavero institucional" x={1519} y={41} w={257} alto={380} efecto="fade" />
+  </Composicion>
+
+  <Media class="full-width" src={welcomeKit} alt="Welcome kit de Washington School" efecto="parallax" proporcion="1780/918" espacio="m" />
+
+  {/* ── Arquigrafía ─────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Arquigrafía" titulo="Diseño ambiental y señalética">
+    <p>
+      Intervenimos los edificios y el campo de deportes con un sistema de
+      arquigrafía funcional e inspirador. A través de cartelería y gráficas
+      de gran formato, logramos que el entorno físico comunique los valores
+      del colegio, mejorando la orientación y la experiencia diaria de toda
+      la comunidad educativa.
+    </p>
+  </BloqueTexto>
+
+  <Grilla class="full-width" cols="1176fr 593fr" gap="0.65rem" espacio="m">
+    <Media efecto="reveal" src={mesa} alt="Arquigrafía en espacios comunes" proporcion="1176/628" />
+    <Media efecto="reveal" src={puertas} alt="Intervención gráfica en puertas" proporcion="593/628" />
+  </Grilla>
+
+  {/* ── Sistema de programs ─────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Sistema de programas" titulo="Identidad para WS Programs">
+    <p>
+      Estructuramos el ecosistema «WS Programs» para dotar a las distintas
+      actividades académicas de una identidad única y una narrativa propia.
+      Este desarrollo visual fue diseñado para inspirar orgullo y pertenencia,
+      convirtiendo cada propuesta educativa en una experiencia institucional
+      sólida.
+    </p>
+  </BloqueTexto>
+
+  <Banda color={CLARO} espacio="m" class="py-[112px]">
+    <ul class="franja grid grid-cols-3 place-items-center gap-x-8 gap-y-14 sm:grid-cols-5 lg:gap-x-[58px] lg:gap-y-[70px]" data-revelar-grupo>
+      {
+        iconosPrograma.map((icono, i) => (
+          <li class="w-full max-w-[180px]">
+            <Media efecto="fade" src={icono} alt={`Icono del programa ${i + 1}`} recorte={false} />
+          </li>
+        ))
+      }
+    </ul>
+  </Banda>
+
+  {/* Las cuatro láminas sobre el azul hondo; la tira de los demás programas
+      queda aparte, sobre el azul institucional. */}
+  <Banda color={AZUL_HONDO} espacio="nulo" class="py-[92px]">
+    <div class="franja grid grid-cols-2 gap-6 sm:grid-cols-4 lg:gap-[27px]" data-revelar-grupo>
+      {
+        programas.map((p) => (
+          <Image
+            src={p.icono}
+            alt={p.alt}
+            widths={[354, 708]}
+            sizes="(min-width: 1024px) 354px, 45vw"
+            class="h-auto w-full"
+          />
+        ))
+      }
+    </div>
+  </Banda>
+
+  <Banda color={AZUL} espacio="nulo" class="py-[48px]">
+    <div class="contenido tira-programas" data-revelar-grupo>
+      {
+        tiraProgramas.map((t) => (
+          <div style={`--pl-ancho:${((t.ancho / GRILLA) * 100).toFixed(3)}%;--pl-px:${t.ancho}px`}>
+            <Image src={t.src} alt={t.alt} class="h-auto w-full" />
+          </div>
+        ))
+      }
+    </div>
+  </Banda>
+
+  <Grilla class="full-width" cols="1176fr 593fr" gap="0.65rem" espacio="xs">
+    <Media efecto="reveal" src={remera1} alt="Remera del sistema Programs" proporcion="1176/628" />
+    <Media efecto="reveal" src={remera2} alt="Remera del sistema Programs" proporcion="593/628" />
+  </Grilla>
+  <Grilla class="full-width" cols="593fr 1176fr" gap="0.65rem" espacio="xs">
+    <Media efecto="reveal" src={remera3} alt="Remera del sistema Programs" proporcion="593/628" />
+    <Media efecto="reveal" src={remera4} alt="Remera del sistema Programs" proporcion="1176/628" />
+  </Grilla>
+
+  {/* ── School houses ───────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="School Houses" titulo="Branding interno: Earth, Wind & Fire">
+    <p>
+      La identidad de un colegio se consolida en el sentido de pertenencia de
+      sus alumnos. Potenciamos el sistema de Houses diseñando un universo
+      gráfico exclusivo para cada una, incluyendo escudos y estandartes.
+      Transformamos la competencia interna en una experiencia de marca
+      vibrante, logrando que los chicos lleven sus colores con pasión.
+    </p>
+  </BloqueTexto>
+
+  <ColumnaDerecha espacio="m">
+    {/* Los tres escudos a tamaño grande miden 487px más dos separaciones de
+        102, o sea 691px. La columna derecha es el 57,5 % del contenido, así
+        que recién pasa esos 691px arriba de los 1280 de viewport: con el corte
+        en `lg` (1024) la fila se pasaba del borde derecho de la pantalla y la
+        página quedaba con scroll horizontal. El corte va en `xl`. De 1280 para
+        arriba se ve exactamente igual que antes. */}
+    <div class="flex items-end justify-center gap-10 xl:gap-[102px]" data-revelar-grupo>
+      <Image src={earth} alt="Escudo de la house Earth" class="h-auto w-[80px] xl:w-[165px]" />
+      <Image src={wind} alt="Escudo de la house Wind" class="h-auto w-[80px] xl:w-[161px]" />
+      <Image src={fire} alt="Escudo de la house Fire" class="h-auto w-[80px] xl:w-[161px]" />
+    </div>
+  </ColumnaDerecha>
+
+  <Grilla class="full-width" cols="880fr 890fr" gap="0.65rem" espacio="m">
+    <Media efecto="reveal" src={houses1} alt="Estandartes de las houses" proporcion="880/620" />
+    <Media efecto="reveal" src={houses2} alt="Estandartes de las houses" proporcion="890/620" />
+  </Grilla>
+  <Grilla class="full-width" cols="1176fr 593fr" gap="0.65rem" espacio="xs">
+    <Media efecto="reveal" src={houses3} alt="Banderas de las houses" proporcion="1176/628" />
+    <Media efecto="reveal" src={houses4} alt="Remera de una house" proporcion="593/628" />
+  </Grilla>
+
+  {/* ── Brandbook ───────────────────────────────────────────────────────── */}
+  {/* Las ocho páginas del manual, sueltas: cuatro por fila. Las dos filas
+      cruzan en sentidos opuestos al scrollear. */}
+  <TiraDoble
+    espacio="xs"
+    fondo={CLARO}
+    filas={[
+      {
+        piezas: [
+          { src: manual1, alt: 'Páginas del manual de marca de las houses' },
+          { src: manual2 },
+          { src: manual3 },
+          { src: manual4 },
+        ],
+        sentido: -1,
+        traba: -34,
+      },
+      {
+        piezas: [
+          { src: manual5, alt: 'Más páginas del manual de marca de las houses' },
+          { src: manual6 },
+          { src: manual7 },
+          { src: manual8 },
+        ],
+        sentido: 1,
+        traba: -52,
+      },
+    ]}
+  />
+
+  <div class="contenido" style={margenArriba('m')}>
+    <div class="grid grid-cols-1 gap-[0.65rem] sm:grid-cols-2" data-revelar-grupo>
+      <Media efecto="reveal" src={edFisica} alt="Gráfica del área de Educación Física" proporcion="691/820" />
+      <Media efecto="reveal" src={edFisica1} alt="Gráfica del área de Educación Física" proporcion="691/820" />
+    </div>
+  </div>
+
+  <Media class="full-width" src={rugby} alt="Equipo de rugby de Washington School" efecto="parallax" espacio="m" proporcion="1782/800" />
+
+  {/* ── Mascots ─────────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Personajes institucionales" titulo="Desarrollo de Mascots">
+    <p>
+      Le dimos cuerpo y voz a las mascotas del colegio. Creamos un personaje
+      exclusivo para cada House, definiendo su carácter, gestos y reglas de
+      uso. Hoy funcionan como los portavoces lúdicos de los valores de la
+      institución y se convirtieron en el activo de marca que los alumnos
+      adoptaron con mayor velocidad.
+    </p>
+  </BloqueTexto>
+
+  <Media class="full-width" src={mascotasProceso} alt="Proceso de diseño de las mascotas" efecto="parallax" espacio="m" proporcion="1780/900" />
+  {/* Los dos aires van iguales y en la misma unidad. Antes eran 12 px fijos
+      arriba y 1,8 % del ancho abajo —32 px a 1780, 18 a 1024—, que es la misma
+      mezcla de medida fija con proporcional que venimos sacando. */}
+  <Media class="contenido my-[32px]" src={mascotasTrio} alt="Las tres mascotas de las houses" efecto="fade" recorte={false} />
+  <Media class="full-width" src={mascotasPiezas} alt="Mascotas aplicadas en piezas institucionales" efecto="parallax" espacio="xs" proporcion="1782/836" />
+
+  <div class="ancho" style={`--ancho:1495px;${margenArriba('m')}`}>
+    <Media efecto="fade" src={mascotaFicha} alt="Ficha técnica de una de las mascotas" recorte={false} />
+  </div>
+
+  <Grilla class="full-width" cols="593fr 1176fr" gap="0.65rem" espacio="m">
+    <Media efecto="reveal" src={mascotaAplicacion} alt="Mascota en aplicación gráfica" proporcion="593/628" />
+    <Media efecto="reveal" src={estandartes} alt="Estandartes de las houses" proporcion="1176/628" />
+  </Grilla>
+
+  {/* ── WS75 ────────────────────────────────────────────────────────────── */}
+  <div class="relative">
+    <Image
+      src={trama}
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-0 top-0 h-auto w-full select-none"
+    />
+    <div class="relative">
+      <BloqueTexto espacio="m" etiqueta="Experiencia de marca" titulo="Submarca y celebración WS75">
+        <p>
+          El 75º aniversario merecía un tratamiento especial. Creamos la
+          submarca WS75 y la desplegamos en todos los puntos de contacto de
+          la institución: desde una campaña digital estructurada en «75
+          historias» hasta la ambientación integral de un evento de
+          celebración para 500 personas, convirtiendo la fecha en un hito
+          memorable.
+        </p>
+      </BloqueTexto>
+
+      <div class="ancho" style={`--ancho:1330px;${margenArriba('m')}`}>
+        <Media efecto="fade" src={timeline} alt="Línea de tiempo: de la fundación en 1950 a los 75 años en 2025" recorte={false} />
+      </div>
+
+      {/* Las tres piezas en una sola grilla: así la separación entre el video y
+          el banner es la misma que la que los separa de la foto de abajo, y es
+          la del resto de las grillas del caso (0,65rem). */}
+      <div class="contenido grid grid-cols-1 gap-[0.65rem] sm:grid-cols-2" style={margenArriba('m')} data-revelar-grupo>
+        <Video
+          efecto="reveal"
+          src={videoBanderas}
+          poster={posterBanderas.src}
+          alt="Banderas de las houses en la tribuna durante el aniversario"
+          proporcion="750/890"
+        />
+        <Media efecto="reveal" src={banner75} alt="Antorcha y banner del aniversario" proporcion="691/820" />
+        <Media efecto="reveal" src={foto75} alt="Alumnos celebrando los 75 años" proporcion="1409/553" class="sm:col-span-2" />
+      </div>
+    </div>
+  </div>
+
+  {/* ── 75 historias ────────────────────────────────────────────────────── */}
+  {/* La foto de fondo va a 100vw como el color de la banda. Antes el
+      `overflow-hidden` de la sección recortaba el ::before de la banda —que es
+      el que sangra el color— y la foto se topaba en 1780, así que arriba de
+      ese ancho aparecía el blanco de la página a los costados. */}
+  <Banda color={AZUL} espacio="m" class="relative py-[112px]">
+    <Image
+      src={back75}
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-y-0 left-[calc(50%-50vw)] h-full w-screen max-w-none select-none object-cover"
+    />
+    <div class="contenido relative">
+      {/* En mobile van dos a media pantalla, igual que la grilla de cuatro de
+          más abajo; el tercero aparece recién cuando entran los tres. */}
+      <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 sm:gap-8 lg:gap-[95px]" data-revelar-grupo>
+        <Video efecto="reveal" src={video75Docente} alt="Docente de Washington School" proporcion="360/640" class="rounded-[30px]" />
+        <Video efecto="reveal" src={video75AlumnaMascota} alt="Alumna con una de las mascotas" proporcion="360/640" class="rounded-[30px]" />
+        <Video efecto="reveal" src={video75Clase} alt="Momento de clase" proporcion="360/640" class="hidden rounded-[30px] sm:block" />
+      </div>
+      <Media efecto="fade" src={historias75} alt="75 historias" recorte={false} class="mx-auto w-full max-w-[289px]" espacio="s" />
+    </div>
+  </Banda>
+
+  {/* ── Web & Social ────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Ecosistema digital" titulo="Desarrollo web y estrategia de contenidos">
+    <p>
+      Renovamos el sitio web bajo una lógica mobile-first, simplificando la
+      arquitectura de la información para que las familias naveguen sin
+      fricciones. En paralelo, gestionamos sus redes sociales con una
+      estrategia de contenido enfocada en mostrar la vida real del colegio
+      —eventos, logros y el día a día en las aulas— manteniendo una estética
+      cuidada, auténtica y dinámica.
+    </p>
+  </BloqueTexto>
+
+  <div class="contenido" style={margenArriba('m')}>
+    <div class="grid grid-cols-2 items-end gap-6 lg:grid-cols-4 lg:gap-7" data-revelar-grupo>
+      <Video efecto="reveal" src={videoAlumnas} alt="Alumnas del colegio" proporcion="331/589" class="rounded-[30px]" />
+      <Video efecto="reveal" src={videoDocente} alt="Docente de Washington School" proporcion="331/589" class="rounded-[30px]" />
+      <Video efecto="reveal" src={videoAlumnaMascota} alt="Alumna con una de las mascotas" proporcion="360/640" class="rounded-[30px]" />
+      <Video efecto="reveal" src={videoClase} alt="Momento de clase" proporcion="331/589" class="rounded-[30px]" />
+    </div>
+  </div>
+
+  {/* Feed: mosaico de 4 columnas trabadas, con parallax al scrollear. */}
+  <MosaicoFeed class="full-width" columnas={columnasFeed} recorrido={110} espacio="m" fondo="#071e4b" />
+
+  <div class="contenido" style={margenArriba('m')}>
+    <Video
+      efecto="fade"
+      src={videoWeb}
+      poster={posterWeb.src}
+      alt="Recorrido por la web nueva de Washington School"
+      proporcion="1530/850"
+    />
+  </div>
+
+  {/* Cierre: fondo azul con la trama repetida desde la izquierda, la marca
+      centrada y la barra amarilla al pie contra el margen derecho.
+      Medidas del marco de 1780 × 298 del diseño. */}
+  <div
+    class="ws-pie full-width"
+    style={`--ws-trama:url('${wsTramaPie.src}');${margenArriba('m')}`}
+    data-revelar
+  >
+    <div class="ws-pie-marca">
+      <Image src={wsLogoPie} alt="Washington School" class="h-auto w-full" />
+    </div>
+    <div class="ws-pie-barra" style={`background-color:${AMARILLO}`}></div>
+  </div>
+
+  <OtrosProyectos excluir="washington-school" />
+</Base>
+
+<style>
+  /* Tira de programas: las seis piezas en una sola fila, con el ancho en
+     porcentaje del marco de grilla y el sobrante repartido en cinco
+     separaciones iguales. Una sola regla para todos los anchos: la fila
+     entera se achica junto con la grilla, igual que hacía el SVG único que
+     había antes. */
+  .tira-programas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tira-programas > * {
+    flex: none;
+    width: var(--pl-ancho);
+  }
+
+  /* Pie de Washington School. La trama es un mosaico de 594 × 298 que se
+     repite en vertical contra el borde izquierdo, escalado al alto del
+     bloque: ocupa el tercio izquierdo y el resto queda liso. */
+  .ws-pie {
+    position: relative;
+    aspect-ratio: 1780 / 298;
+    background-color: #002d7d;
+    background-image: var(--ws-trama);
+    background-repeat: repeat-y;
+    background-position: left top;
+    background-size: auto 100%;
+  }
+
+  .ws-pie-marca {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 32.079%; /* 571 de 1780 */
+    transform: translate(-50%, -50%);
+  }
+
+  .ws-pie-barra {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 27.697%; /* 493 de 1780 */
+    height: 7.047%; /* 21 de 298 */
+  }
+
+  /* Tira cromática. Mantiene la proporción del diseño y crece con el ancho;
+     el mínimo evita que quede como un hilo en pantallas chicas. */
+  .tira {
+    display: grid;
+    grid-template-columns: 25fr 20fr 15fr 15fr 10fr 5fr 5fr 5fr;
+    aspect-ratio: 1780 / 50;
+    min-height: 1.75rem;
+  }
+</style>

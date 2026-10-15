@@ -1,8 +1,23 @@
-# Dependencias
-vendor/
-node_modules/
+# Salida del build (se regenera entera en cada build)
+dist/
+dist-previa/
+.astro/
 
-# Configuración / secretos
+# Dependencias
+node_modules/
+vendor/
+
+# Referencias de diseño: no se versionan, salvo el robots de la previa,
+# que usa `npm run build:previa`.
+_ref/*
+!_ref/robots-previa.txt
+_check/
+Claude outputs/
+_duplicados-revisar/
+_espejo.tgz
+_e2.tgz
+
+# Configuración / secretos (la config de Prometheo vive en tropi-privado/, fuera del repo)
 .env
 .env.*
 *.key

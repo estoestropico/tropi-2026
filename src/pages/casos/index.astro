@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Banda from '../../components/caso/Banda.astro';
+import TarjetaCaso from '../../components/ui/TarjetaCaso.astro';
+
+/* Todos los casos publicados, en el orden del sistema. */
+const casos = (await getCollection('casos'))
+  .filter((c) => c.data.publicado)
+  .sort((a, b) => a.data.orden - b.data.orden);
+
+const ARENA = '#f5f4eb';
+---
+
+<Base
+  titulo="Portfolio"
+  descripcion="Casos de branding, productos digitales y comunicación de Trópico."
+>
+  {/* El bloque de apertura usa el ritmo y la escala del hero de caso: rótulo
+      arriba, titular grande que entra línea por línea. La grilla es la misma
+      que la de la home, con todos los casos en lugar de los cuatro primeros. */}
+  <Banda color={ARENA} espacio="nulo">
+    <div class="contenido pb-[64px] pt-28 lg:pb-[100px] lg:pt-[202px]">
+      <p class="rotulo rotulo-cabecera" data-revelar>Nuestro portfolio</p>
+      <h1
+        class="mt-4 max-w-[981px] text-balance text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-[3.5rem] lg:mt-5 lg:text-[5rem]"
+        data-lineas
+        style="--retardo:60ms"
+      >
+        Casos de los que estamos orgullosos.
+      </h1>
+    </div>
+
+    <div class="contenido pb-[80px] lg:pb-[120px]">
+      <ul class="grid grid-cols-1 gap-x-[30px] gap-y-[56px] lg:grid-cols-2 lg:gap-y-[91px]">
+        {
+          casos.map((caso, i) => (
+            <li>
+              <TarjetaCaso caso={caso} eager={i < 2} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Banda>
+</Base>

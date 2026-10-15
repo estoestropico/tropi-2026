@@ -1,0 +1,50 @@
+# ──────────────────────────────────────────────────────────────────────────
+# Trópico · www.tropico.ar — Hostinger (Apache/LiteSpeed)
+#
+# Subir al directorio raíz del sitio público (public_html) RENOMBRADO
+# a ".htaccess", con el punto adelante. NO subirlo a 2026.tropico.ar:
+# las reglas de abajo mandan todo a www.tropico.ar y romperían la previa.
+# ──────────────────────────────────────────────────────────────────────────
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 1) Un solo dominio canónico: https://www.tropico.ar
+  #    Cubre http → https y tropico.ar → www.tropico.ar en un solo salto.
+  RewriteCond %{HTTPS} !=on [OR]
+  RewriteCond %{HTTP_HOST} !^www\.tropico\.ar$ [NC]
+  RewriteRule ^(.*)$ https://www.tropico.ar/$1 [R=301,L]
+
+  # 2) Páginas del sitio anterior. Las dos primeras tienen ficha nueva; las
+  #    otras tres todavía no, así que van al portfolio.
+  RewriteRule ^farmaexpert\.html$            /casos/farmaexpert/ [R=301,L]
+  RewriteRule ^washington-school\.html$      /casos/washington-school/ [R=301,L]
+  RewriteRule ^secretaria-medio-ambiente\.html$ /casos/ [R=301,L]
+  RewriteRule ^rosmar\.html$                 /casos/ [R=301,L]
+  RewriteRule ^malva\.html$                  /casos/ [R=301,L]
+
+  # 3) El index del sitio anterior.
+  RewriteRule ^index\.html$ / [R=301,L]
+</IfModule>
+
+# 4) Página 404 propia del sitio.
+ErrorDocument 404 /404.html
+
+# 5) Caché. Todo lo que Astro pone en /_astro/ lleva el hash del contenido en
+#    el nombre: si cambia el archivo, cambia el nombre. Se puede cachear un
+#    año. El HTML no, porque la dirección no cambia cuando cambia la página.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|woff2|woff|jpg|jpeg|png|webp|avif|svg|mp4)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(html|xml|txt)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# 6) Compresión, por si no viene activada en el plan.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>

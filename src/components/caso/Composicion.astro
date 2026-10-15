@@ -1,0 +1,126 @@
+---
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Composición absoluta tomada del Figma.
+ * Reproduce un bloque donde las piezas tienen posiciones fijas dentro del
+ * frame de 1780px. En mobile cae a una grilla simple.
+ */
+interface Props {
+  alto: number;
+  ancho?: number;
+  ancho_layout?: 'completo' | 'contenido';
+  colsMobile?: number;
+  /** En mobile, todas las piezas al mismo alto y centradas en su celda: sin
+   *  esto, la que tiene el archivo más ancho se ve mucho más grande. */
+  piezasParejas?: boolean;
+  /** Alto de las piezas en mobile cuando van parejas. */
+  altoMobile?: number;
+  /** "figma" respeta la altura de cada pieza; "base" las apoya en una misma
+   * línea; "centro" las centra verticalmente en el alto del bloque. */
+  alinear?: 'figma' | 'base' | 'centro';
+  espacio?: Espacio;
+  class?: string;
+}
+
+const {
+  alto,
+  ancho = 1780,
+  ancho_layout = 'completo',
+  colsMobile = 3,
+  piezasParejas = false,
+  altoMobile = 46,
+  alinear = 'figma',
+  espacio,
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'composicion',
+    alinear === 'base' ? 'alinear-base' : '',
+    alinear === 'centro' ? 'alinear-centro' : '',
+    piezasParejas ? 'piezas-parejas' : '',
+    ancho_layout === 'contenido' ? 'contenido' : '',
+    className,
+  ]}
+  style={[
+    `--comp-ratio:${ancho}/${alto}`,
+    `--comp-cols:${colsMobile}`,
+    `--comp-alto-mobile:${altoMobile}px`,
+    margenArriba(espacio),
+  ]
+    .filter(Boolean)
+    .join(';')}
+  data-revelar-grupo
+>
+  <slot />
+</div>
+
+<style>
+  .composicion {
+    display: grid;
+    grid-template-columns: repeat(var(--comp-cols), 1fr);
+    align-items: end;
+    gap: 1.25rem;
+  }
+
+  .composicion.alinear-centro {
+    align-items: center;
+  }
+
+  .composicion.piezas-parejas {
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .composicion.piezas-parejas :global(.pieza) {
+    width: auto;
+    max-width: 100%;
+    height: var(--comp-alto-mobile);
+    margin-inline: auto;
+    object-fit: contain;
+  }
+
+  @media (width >= 64rem) {
+    .composicion.piezas-parejas :global(.pieza) {
+      width: var(--pw);
+      max-width: none;
+      height: auto;
+      margin-inline: 0;
+    }
+  }
+
+  @media (width >= 64rem) {
+    /* Sin `width` propio: como bloque ya mide todo el contenedor, y así
+       `ancho_layout="contenido"` puede topar la composición en la grilla.
+       Un `width: 100%` acá le ganaba a la utilidad `.contenido`. */
+    .composicion {
+      display: block;
+      position: relative;
+      aspect-ratio: var(--comp-ratio);
+    }
+
+    /* Todas las piezas apoyadas en la misma línea de base */
+    .composicion.alinear-base :global(.pieza) {
+      top: auto;
+      bottom: 0;
+    }
+
+    /* Todas las piezas centradas en el alto del bloque. El centrado va dentro
+       del mismo `transform` que usa la entrada, y no en la propiedad
+       `translate`, porque la animación deja `transform` en `none` al terminar
+       y le ganaría al centrado. Las dos reglas pisan a las de la entrada por
+       especificidad, así que la pieza entra desde abajo y queda centrada. */
+    .composicion.alinear-centro :global(.pieza) {
+      top: 50%;
+      bottom: auto;
+      transform: translate3d(0, calc(-50% + 20px), 0);
+    }
+
+    .composicion.alinear-centro :global(.pieza.a-visible) {
+      transform: translate3d(0, -50%, 0);
+    }
+  }
+</style>

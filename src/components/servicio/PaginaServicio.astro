@@ -1,0 +1,402 @@
+---
+import Base from '../../layouts/Base.astro';
+import Banda from '../caso/Banda.astro';
+import TiraMarca from './TiraMarca.astro';
+import CasosAplicados from './CasosAplicados.astro';
+import Preguntas from './Preguntas.astro';
+
+/**
+ * Página de servicio: la estructura aprobada en Branding (Figma 1622:1902),
+ * compartida por todas las páginas de servicio. Cada página pasa sus textos,
+ * los casos aplicados y las imágenes del corredor.
+ *
+ * titular → tres tramos: antes, el resaltado en violeta y después.
+ *
+ * Slots para las páginas que necesitan módulos propios (Trópico 360):
+ *   tras-intro    → debajo de la intro, antes del corredor.
+ *   tras-casos    → debajo de los casos, cuando van arriba.
+ *   alternativas  → reemplaza el bloque de alternativas, en la banda oscura.
+ *   tras-servicio → entre "El servicio" y los casos aplicados.
+ */
+interface Etapa {
+  titulo: string;
+  texto: string;
+  /* Sin `href`, el nombre se escribe como texto y no como link: es lo que
+     necesita el build de previa cuando la página de destino no se publica. */
+  enlace?: { texto: string; href?: string };
+}
+
+interface Props {
+  slug: string;
+  titulo: string;
+  /* Texto del rótulo de la apertura. Por defecto es el título; se pasa
+     aparte cuando el rótulo dice más que el nombre del servicio, para no
+     arrastrar eso al <title> de la página. */
+  rotulo?: string;
+  descripcion: string;
+  titular: [string, string, string];
+  intro: string;
+  /* Sin corredor, la banda oscura pasa de la intro al bloque siguiente. */
+  corredor?: { src: ImageMetadata; alt: string }[];
+  /* `casosArriba` sube los casos aplicados a la banda oscura, debajo de la
+     intro, y los saca del bloque propio de abajo. */
+  casosArriba?: boolean;
+  /* Sin alternativas, la página tiene que pasar el slot "alternativas". */
+  alternativasTitulo?: string;
+  alternativas?: { titulo: string; texto: string }[];
+  servicioTitulo: string;
+  servicioTexto: string[];
+  etapas: Etapa[];
+  aplicadoRotulo: string;
+  casos: string[];
+  /* `respuestaHtml` permite links adentro de la respuesta. */
+  preguntas: { pregunta: string; respuesta?: string; respuestaHtml?: string }[];
+  /* `preguntasOscuras` pasa el bloque de preguntas a la banda oscura, como
+     en la home. Por defecto va sobre arena. */
+  preguntasOscuras?: boolean;
+}
+
+const {
+  slug,
+  titulo,
+  rotulo = Astro.props.titulo,
+  descripcion,
+  titular,
+  intro,
+  corredor: TIRA = [],
+  casosArriba = false,
+  alternativasTitulo,
+  alternativas: ALTERNATIVAS = [],
+  servicioTitulo,
+  servicioTexto,
+  etapas: ETAPAS,
+  aplicadoRotulo,
+  casos: IDS,
+  preguntas: PREGUNTAS,
+  preguntasOscuras = false,
+} = Astro.props;
+
+const ARENA = '#f5f4eb';
+const OSCURO = '#050515';
+---
+
+<Base titulo={titulo} descripcion={descripcion}>
+  {/* ── Apertura ──────────────────────────────────────────────────────────
+      Mismo ritmo y escala que la apertura del portfolio. El titular entra
+      con fade y no línea por línea: el reparto en líneas se come el color
+      de la segunda frase. */}
+  <Banda color={ARENA} espacio="nulo">
+    <div class="contenido pb-[64px] pt-28 lg:pb-[100px] lg:pt-[202px]">
+      <p class="rotulo rotulo-cabecera" data-revelar>{rotulo}</p>
+      <h1
+        class="mt-4 max-w-[981px] text-balance text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-[3.5rem] lg:mt-5 lg:text-[5rem]"
+        data-revelar
+        style="--retardo:60ms"
+      >
+        {titular[0]}<span class="text-violeta">{titular[1]}</span>{titular[2]}
+      </h1>
+    </div>
+  </Banda>
+
+  {/* ── Intro, tira y alternativas ──────────────────────────────────────── */}
+  <Banda color={OSCURO} espacio="nulo" class="text-arena">
+    <div class="contenido pt-[80px] lg:pt-[120px]">
+      <p class="grande max-w-[1000px]" data-revelar>{intro}</p>
+      <slot name="tras-intro" />
+    </div>
+
+    {casosArriba && (
+    <div class="contenido pt-[64px] lg:pt-[110px]">
+      <p class="rotulo text-aqua" data-revelar>{aplicadoRotulo}</p>
+      <CasosAplicados slug={slug} casos={IDS} />
+    </div>
+    )}
+
+    {/* La tira corre sola y frena al pasar el mouse. Va a sangre, por eso
+        cuelga de la banda y no de `.contenido`. */}
+    <TiraMarca piezas={TIRA} class="mt-[64px] lg:mt-[110px]" />
+
+    {
+      Astro.slots.has('alternativas') ? (
+        <div class="contenido pb-[96px] pt-[80px] lg:pb-[150px] lg:pt-[120px]">
+          <slot name="alternativas" />
+        </div>
+      ) : (
+    <div class="contenido pb-[96px] pt-[80px] lg:pb-[150px] lg:pt-[120px]">
+      <p class="rotulo text-aqua" data-revelar>Alternativas</p>
+      <p class="grande mt-6 max-w-[760px] lg:mt-[34px]" data-revelar>
+        {alternativasTitulo}
+      </p>
+
+      <ul class="mt-12 grid gap-10 lg:mt-[90px] lg:grid-cols-3 lg:gap-[30px]" data-revelar-grupo>
+        {
+          ALTERNATIVAS.map((a) => (
+            <li class="max-w-[460px]">
+              <h2 class="text-[1.75rem] font-bold leading-none tracking-[-0.02em] lg:text-[2rem]">{a.titulo}</h2>
+              <p class="mt-3 leading-[1.4] lg:mt-[14px]">{a.texto}</p>
+              <a href="/contacto" class="enlace mt-6 lg:mt-[28px]">
+                <span class="subraya">Empecemos</span>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+                  <path d="M0 5h12M8.5 1l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" />
+                </svg>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+      )
+    }
+  </Banda>
+
+  {/* ── El servicio ─────────────────────────────────────────────────────
+      La columna izquierda queda fija mientras la derecha pasa. */}
+  <Banda color={ARENA} espacio="nulo">
+    <div class="contenido servicio py-[80px] lg:py-[130px]">
+      <div class="servicio-fija">
+        <p class="rotulo text-violeta" data-revelar>El servicio</p>
+        <h2 class="mt-6 text-[1.5rem] font-bold leading-[1.3] tracking-[-0.02em] lg:mt-[22px] lg:text-[1.875rem]" data-revelar>
+          {servicioTitulo}
+        </h2>
+        <div class="mt-8 space-y-6 leading-[1.4] lg:mt-[40px]" data-revelar style="--retardo:180ms">
+          {servicioTexto.map((p) => <p>{p}</p>)}
+        </div>
+      </div>
+
+      {/* En mobile cada etapa es un acordeón: el listado completo abierto
+          ocupaba varias pantallas. Los `details` salen abiertos y es el
+          script el que los cierra abajo de 1024, así sin JS se lee todo. */}
+      <ol class="servicio-etapas">
+        {
+          ETAPAS.map((e) => (
+            <li data-revelar>
+              <details class="etapa" open>
+                <summary>
+                  <h3 class="text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.01em] lg:text-[1.5rem]">{e.titulo}</h3>
+                  <span class="signo" aria-hidden="true" />
+                </summary>
+                <div class="etapa-caja">
+                  <p class="etapa-texto">
+                    {e.texto}
+                    {e.enlace && (
+                      <>
+                        {' '}
+                        {e.enlace.href ? (
+                          <a href={e.enlace.href} class="underline underline-offset-2">
+                            {e.enlace.texto}
+                          </a>
+                        ) : (
+                          e.enlace.texto
+                        )}
+                        .
+                      </>
+                    )}
+                  </p>
+                </div>
+              </details>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </Banda>
+
+  <slot name="tras-servicio" />
+
+  {/* ── Casos aplicados ─────────────────────────────────────────────────── */}
+  {
+    !casosArriba && (
+  <Banda color={OSCURO} espacio="nulo" class="text-arena">
+    <div class="contenido py-[80px] lg:py-[160px]">
+      <p class="rotulo text-aqua" data-revelar>{aplicadoRotulo}</p>
+      <CasosAplicados slug={slug} casos={IDS} />
+    </div>
+  </Banda>
+    )
+  }
+
+  <Preguntas slug={slug} preguntas={PREGUNTAS} oscuras={preguntasOscuras} />
+</Base>
+
+<style>
+  /* Texto grande sobre el oscuro: la intro y el titular de alternativas. */
+  .grande {
+    font-size: clamp(1.75rem, 0.9rem + 3.2vw, 3.3rem);
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Enlace "Empecemos" ───────────────────────────────────────────── */
+  .enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  /* ── El servicio ──────────────────────────────────────────────────── */
+  .servicio {
+    display: grid;
+    gap: 56px;
+  }
+
+  .servicio-etapas li + li {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid rgb(5 5 21 / 0.6);
+  }
+
+  .etapa summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .etapa summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Mismo signo que las preguntas, un punto más chico. Las etapas van
+     siempre sobre la banda arena, así que toman el juego claro. */
+  .etapa .signo {
+    position: relative;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background-color: rgb(5 5 21 / 0.1);
+    transition: background-color 240ms var(--ease-salida);
+  }
+
+  .etapa .signo::before,
+  .etapa .signo::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 9px;
+    height: 1.5px;
+    translate: -50% -50%;
+    background-color: var(--color-oscuro);
+    transition: background-color 240ms var(--ease-salida);
+  }
+
+  .etapa .signo::after {
+    rotate: 90deg;
+    transition: opacity 240ms var(--ease-salida);
+  }
+
+  .etapa[open]:not([data-estado='cerrado']) .signo,
+  .etapa[data-estado='abierto'] .signo {
+    background-color: var(--color-oscuro);
+  }
+
+  .etapa[open]:not([data-estado='cerrado']) .signo::before,
+  .etapa[data-estado='abierto'] .signo::before {
+    background-color: var(--color-arena);
+  }
+
+  .etapa[open]:not([data-estado='cerrado']) .signo::after,
+  .etapa[data-estado='abierto'] .signo::after {
+    opacity: 0;
+  }
+
+  /* El aire va como padding de la caja y no como margen del párrafo: el
+     acordeón anima el alto de la caja y un margen adentro se colapsa contra
+     el borde, así que al terminar el bloque pegaba un salto. */
+  .etapa-caja {
+    padding-top: 16px;
+    padding-bottom: 4px;
+  }
+
+  .etapa-texto {
+    line-height: 1.4;
+  }
+
+  @media (width >= 64rem) {
+    .servicio {
+      grid-template-columns: 40% 49%;
+      justify-content: space-between;
+      align-items: start;
+      gap: 0;
+    }
+
+    /* Fija mientras la columna derecha pasa: el sticky la deja quieta hasta
+       que el bloque termina. */
+    .servicio-fija {
+      position: sticky;
+      top: 120px;
+    }
+
+    .servicio-etapas li + li {
+      margin-top: 38px;
+      padding-top: 38px;
+    }
+
+    /* De 1024 para arriba el acordeón desaparece: las etapas quedan abiertas
+       y el encabezado deja de ser un control. */
+    .etapa summary {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .etapa .signo {
+      display: none;
+    }
+
+    .etapa-caja {
+      padding-top: 18px;
+      padding-bottom: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .signo::after {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { iniciarAcordeon } from '../../scripts/acordeon';
+  /* Etapas del servicio: abajo de 1024 son un acordeón. Salen abiertas del
+     servidor —sin JS se lee todo— y acá se cierran al entrar en mobile; al
+     pasar a desktop se vuelven a abrir todas. */
+  const etapas = [...document.querySelectorAll<HTMLDetailsElement>('details.etapa')];
+
+  if (etapas.length) {
+    /* Los textos de etapa son mucho más altos que una respuesta de FAQ: con
+       la curva pareja los primeros cuadros casi no movían el alto y la
+       apertura se leía trabada. */
+    iniciarAcordeon('details.etapa', {
+      duracion: 420,
+      curva: 'cubic-bezier(0.32, 0.72, 0, 1)',
+      opacidadDesde: 0.35,
+    });
+    const chico = window.matchMedia('(width < 64rem)');
+
+    const ajustar = (enMobile: boolean) => {
+      etapas.forEach((d) => {
+        const abierta = !enMobile;
+        d.open = abierta;
+        d.dataset.estado = abierta ? 'abierto' : 'cerrado';
+        const caja = d.querySelector<HTMLElement>('.etapa-caja');
+        if (caja) {
+          caja.style.height = '';
+          caja.style.opacity = '';
+          caja.style.overflow = '';
+        }
+      });
+    };
+
+    ajustar(chico.matches);
+    chico.addEventListener('change', (e) => ajustar(e.matches));
+  }
+</script>

@@ -1,0 +1,325 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { SERVICIOS } from '../../lib/servicios';
+import logo360 from '../../assets/home/logo-360.svg';
+
+/**
+ * Los tres bloques de servicio, sobre banda oscura. Cada bloque entero es el
+ * enlace a su página. Con el mouse encima el bloque toma el color del
+ * servicio y aparece una mancha que sigue al cursor: adentro, la placa de ese
+ * servicio sube desde abajo, recortada por la forma. Es el mecanismo de
+ * "disciplinas" de la web anterior.
+ *
+ * Lo usan la home y la página de servicios.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+/* La mancha mide 300×244 en desktop; 600 de ancho cubre pantallas al doble.
+   El `await` va acá y no en el markup porque `getImage` es asíncrono. Un
+   servicio puede traer una imagen o varias: con varias, rotan en loop. */
+const PLACAS = await Promise.all(
+  SERVICIOS.map((s) => {
+    const fuentes = s.imagen ? (Array.isArray(s.imagen) ? s.imagen : [s.imagen]) : [];
+    return Promise.all(fuentes.map((src) => getImage({ src, width: 600, format: 'webp' })));
+  })
+);
+---
+
+<div class:list={['servicios', className]} data-servicios>
+  <div class="blob" data-blob aria-hidden="true">
+    <div class="blob-recorte">
+      {SERVICIOS.map((s, i) => (
+        <span class="blob-placa" style={`--placa:${s.color}`} data-placa>
+          {PLACAS[i].map((img, k) => (
+            <span
+              class:list={['placa-foto', k === 0 && 'visible']}
+              style={`background-image:url(${img.src})`}
+              data-foto
+            />
+          ))}
+        </span>
+      ))}
+    </div>
+  </div>
+  {
+    SERVICIOS.map((s, i) => {
+      const Bloque = s.href ? 'a' : 'div';
+      return (
+        <Bloque
+          class:list={['servicio', i > 0 && 'servicio-con-linea']}
+          style={`--servicio-color:${s.color}`}
+          href={s.href}
+          data-servicio={i}
+        >
+          {s.marca && (
+            <Image src={logo360} alt="" aria-hidden="true" class="servicio-marca" data-revelar />
+          )}
+          <h2 class="servicio-titulo" data-revelar>{s.titulo}</h2>
+          <p class="mt-5 max-w-[739px] lg:mt-[36px]" data-revelar>
+            {s.bajada}
+            {s.remate && <><br /><span class="text-verde">{s.remate}</span></>}
+          </p>
+          <ul class="mt-6 flex flex-wrap gap-[6px] lg:mt-[36px] lg:max-w-[850px]" data-revelar-grupo>
+            {s.etiquetas.map((e) => (
+              <li class="chip">{e}</li>
+            ))}
+          </ul>
+        </Bloque>
+      );
+    })
+  }
+</div>
+
+<style>
+  /* ── Bloques de servicio ─────────────────────────────────────────────── */
+  .servicios {
+    position: relative;
+  }
+
+  .servicio {
+    position: relative;
+    display: block;
+    color: inherit;
+    transition: color 320ms var(--ease-salida);
+  }
+
+  .servicio + .servicio {
+    margin-top: 56px;
+  }
+
+  /* El blob y el tinte son de puntero fino: en táctil el bloque es sólo un
+     enlace, sin hover. */
+  @media (hover: hover) and (pointer: fine) {
+    .servicio:hover,
+    .servicio:focus-visible {
+      color: var(--servicio-color);
+    }
+
+    /* Las etiquetas acompañan el tinte: el borde toma el color y el relleno
+       se queda quieto. */
+    .servicio:hover .chip,
+    .servicio:focus-visible .chip {
+      border-color: currentColor;
+    }
+
+    .blob {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 3;
+      width: 300px;
+      height: 244px;
+      translate: -50% -50%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 300ms var(--ease-salida);
+    }
+
+    /* La forma recorta el panel: adentro, una placa por servicio que sube
+       desde abajo. Van apiladas por orden, así al pasar de un servicio al
+       siguiente la nueva tapa a la anterior. */
+    .blob-recorte {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      -webkit-mask: url('/img/blob-mascara.svg') center / 100% 100% no-repeat;
+      mask: url('/img/blob-mascara.svg') center / 100% 100% no-repeat;
+    }
+
+    .blob-placa {
+      position: absolute;
+      inset: 0;
+      background-color: var(--placa);
+      translate: 0 101%;
+      transition: translate 550ms cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    .blob-placa.arriba {
+      translate: 0 0;
+    }
+
+    /* Las fotos de un mismo servicio van apiladas; se muestra una por vez y
+       el cambio lo hace el script cada segundo. */
+    .placa-foto {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 40ms linear;
+    }
+
+    .placa-foto.visible {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blob {
+      display: none;
+    }
+  }
+
+  .servicio-con-linea {
+    border-top: 1px solid rgb(245 244 235 / 0.35);
+    padding-top: 56px;
+  }
+
+  /* La marca 360 se apoya arriba del título en mobile y pasa al margen
+     derecho del bloque en desktop, como en el Figma. */
+  .servicio-marca {
+    width: 84px;
+    height: auto;
+    margin-bottom: 24px;
+  }
+
+  @media (width >= 64rem) {
+    .servicio {
+      position: relative;
+    }
+
+    .servicio-marca {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 127px;
+      margin-bottom: 0;
+    }
+  }
+
+  .servicio-titulo {
+    font-size: clamp(2.75rem, 1rem + 7vw, 6.25rem);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--color-arena);
+    border-radius: 999px;
+    padding: 11px 20px;
+    font-size: 0.875rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  @media (width >= 64rem) {
+    .servicio + .servicio {
+      margin-top: 100px;
+    }
+
+    .servicio-con-linea {
+      padding-top: 100px;
+    }
+
+    .chip {
+      padding: 12px 20px;
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<script>
+  /* Bloques de servicio: la mancha sigue al cursor y la placa del servicio
+     que se está mirando sube desde abajo. Sólo con mouse: en táctil el
+     bloque es un enlace y nada más. */
+  const zona = document.querySelector<HTMLElement>('[data-servicios]');
+  const finoS = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const quietoS = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (zona && finoS && !quietoS) {
+    const blob = zona.querySelector<HTMLElement>('[data-blob]')!;
+    const placas = [...zona.querySelectorAll<HTMLElement>('.blob-placa')];
+    const bloques = [...zona.querySelectorAll<HTMLElement>('[data-servicio]')];
+    placas.forEach((pl, i) => (pl.style.zIndex = String(i)));
+
+    /* Servicios con más de una foto: rotan en loop mientras el puntero está
+       sobre los bloques. El intervalo está acá para poder moverlo de un
+       lugar solo. */
+    const RITMO = 700;
+    const tiras = placas
+      .map((pl) => [...pl.querySelectorAll<HTMLElement>('[data-foto]')])
+      .filter((fotos) => fotos.length > 1);
+    let foto = 0;
+    let reloj = 0;
+
+    const girar = () => {
+      foto += 1;
+      tiras.forEach((fotos) =>
+        fotos.forEach((f, k) => f.classList.toggle('visible', k === foto % fotos.length))
+      );
+    };
+
+    /* Objetivo y posición pintada: la diferencia se recorta un 18 % por
+       cuadro, que es lo que le da el arrastre. */
+    let dx = 0;
+    let dy = 0;
+    let px = 0;
+    let py = 0;
+    let cuadro = 0;
+    /* Último cursor conocido: si se entra scrolleando, sin mover el mouse,
+       la mancha aparece donde está el puntero y no en el origen. */
+    let cx = window.innerWidth / 2;
+    let cy = window.innerHeight / 2;
+
+    window.addEventListener(
+      'mousemove',
+      (e) => {
+        cx = e.clientX;
+        cy = e.clientY;
+      },
+      { passive: true }
+    );
+
+    const paso = () => {
+      px += (dx - px) * 0.18;
+      py += (dy - py) * 0.18;
+      blob.style.translate = `calc(${px.toFixed(1)}px - 50%) calc(${py.toFixed(1)}px - 50%)`;
+      cuadro = requestAnimationFrame(paso);
+    };
+
+    zona.addEventListener('mouseenter', () => {
+      const r = zona.getBoundingClientRect();
+      dx = cx - r.left;
+      dy = cy - r.top;
+      px = dx;
+      py = dy;
+      blob.style.opacity = '1';
+      if (!cuadro) paso();
+      if (tiras.length && !reloj) reloj = window.setInterval(girar, RITMO);
+    });
+
+    zona.addEventListener('mouseleave', () => {
+      blob.style.opacity = '0';
+      placas.forEach((pl) => pl.classList.remove('arriba'));
+      cancelAnimationFrame(cuadro);
+      cuadro = 0;
+      clearInterval(reloj);
+      reloj = 0;
+    });
+
+    zona.addEventListener(
+      'mousemove',
+      (e) => {
+        const r = zona.getBoundingClientRect();
+        dx = e.clientX - r.left;
+        dy = e.clientY - r.top;
+      },
+      { passive: true }
+    );
+
+    /* Al entrar al servicio j suben las placas 0..j: la de j queda a la
+       vista y, al volver a uno anterior, las de arriba se retiran. */
+    bloques.forEach((b, j) =>
+      b.addEventListener('mouseenter', () =>
+        placas.forEach((pl, i) => pl.classList.toggle('arriba', i <= j))
+      )
+    );
+  }
+</script>

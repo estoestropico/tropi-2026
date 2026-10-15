@@ -1,0 +1,128 @@
+---
+import PaginaRubro from '../components/rubro/PaginaRubro.astro';
+import { CORREDOR_INDUSTRIA } from '../lib/corredores';
+import { L_360, L_BRANDING, L_WEB } from '../lib/rubros';
+
+/* Vertical de rubro: Industria y construcción. Fabricantes de sistemas y
+   materiales, constructoras, estudios y proveedores industriales. Caso
+   publicado: TAO. */
+
+const VENTAJAS = [
+  {
+    titulo: 'Una marca que acompaña el alcance real',
+    texto:
+      'Cuando la empresa pasa de vender un producto a ofrecer un sistema, la identidad y el discurso se reordenan para que el mercado entienda ese alcance.',
+  },
+  {
+    titulo: 'Documentación que el que especifica puede usar',
+    texto:
+      'Fichas, detalles constructivos, memorias y certificaciones quedan en un formato que un estudio puede incorporar a su proyecto.',
+  },
+  {
+    titulo: 'Las obras, disponibles como material de venta',
+    texto:
+      'Cada obra terminada queda registrada con fotografía, ficha y datos de ejecución, lista para el sitio, una presentación o una propuesta.',
+  },
+  {
+    titulo: 'Material para el técnico y para quien decide',
+    texto:
+      'La documentación técnica y la propuesta comercial se trabajan por separado, con el mismo sistema de marca detrás.',
+  },
+  {
+    titulo: 'El canal con material propio',
+    texto:
+      'Corralones, distribuidores e instaladores cuentan con piezas de tu marca y reglas de uso definidas.',
+  },
+  {
+    titulo: 'Con tu equipo o con el nuestro',
+    texto:
+      'Si tenés área de marketing o de comunicación, trabaja con nuestro manual, nuestras plantillas y nuestro criterio. Si preferís, la operación completa corre por nuestra cuenta con Trópico 360.',
+  },
+];
+
+const ALCANCE = [
+  {
+    titulo: 'Marca y arquitectura de sistemas',
+    texto:
+      'Marca madre, líneas de producto y nombres de sistema, con la jerarquía definida para que el cliente entienda qué está comprando y hasta dónde llega tu alcance.',
+  },
+  {
+    titulo: 'Documentación técnica',
+    texto:
+      'Fichas, detalles constructivos, memorias y certificaciones, resueltos como un sistema de piezas que tu área técnica puede completar sola cuando sale un producto nuevo.',
+  },
+  {
+    titulo: 'Registro de obras',
+    texto:
+      'Fotografía de obra, ficha de proyecto y organización del archivo, para que cada trabajo terminado quede listo para usar en el sitio, en una presentación o en una propuesta.',
+  },
+  {
+    titulo: 'Sitio, catálogo y cotización',
+    texto:
+      'Un sitio con el catálogo técnico, la descarga de documentación y el pedido de cotización, integrado con las herramientas de gestión que ya tenés.',
+  },
+  {
+    titulo: 'Ferias, jornadas técnicas y showroom',
+    texto:
+      'Stand, gráfica, muestras, material de mano y showroom, resueltos como parte del mismo sistema y planificados dentro del calendario anual.',
+  },
+  {
+    titulo: 'Contenido y pauta B2B',
+    texto:
+      'Contenido técnico sostenido y pauta segmentada por perfil profesional y por zona, midiendo las consultas y los pedidos de cotización que genera cada acción.',
+  },
+];
+
+const PREGUNTAS = [
+  {
+    pregunta: '¿Trabajan con fabricantes, con constructoras o con estudios?',
+    respuesta:
+      'Con los tres. El sistema de marca se trabaja igual y cambian las piezas: un fabricante necesita catálogo técnico y material para el canal, una constructora necesita el registro de obras y la propuesta comercial, un estudio necesita portfolio y presentación institucional.',
+  },
+  {
+    pregunta: '¿Pueden manejar la documentación técnica?',
+    respuesta:
+      'El contenido y el criterio técnico los pone tu área o tu asesor; nosotros ordenamos la información, definimos el sistema de piezas y le damos forma. Nada se publica sin que tu equipo lo revise, y queda armado para que puedan generar la ficha del producto nuevo sin volver a empezar.',
+  },
+  {
+    pregunta: '¿Hacen el registro fotográfico de obra?',
+    respuesta:
+      'Sí. Producimos la sesión en obra y organizamos el archivo con la ficha de cada proyecto, así el material queda disponible para el sitio, para una presentación o para una propuesta comercial.',
+  },
+  {
+    pregunta: '¿Sirve para presentarse a licitaciones o concursos?',
+    respuesta:
+      'La propuesta técnica y el precio los armás vos. Lo que aportamos es la presentación institucional, el registro de antecedentes y el formato de la documentación, que es la parte en la que se compara a las empresas entre sí cuando los números están cerca.',
+  },
+  {
+    pregunta: '¿Cuánto cuesta?',
+    respuesta:
+      'Depende del alcance y del momento de la empresa, así que no hay precio de lista. Con una reunión para entender el caso te pasamos rápido una propuesta con alcance, etapas y valores.',
+  },
+];
+
+/* Sin testimonios: el bloque no se arma hasta que lleguen las citas
+   reales del rubro. */
+---
+
+<PaginaRubro
+  slug="construccion"
+  rotulo="Industria y construcción"
+  titulo="Industria y construcción"
+  descripcion="Branding, web y comunicación para fabricantes de sistemas constructivos, constructoras, estudios y proveedores industriales, bajo un mismo criterio."
+  titular={['Que no te elijan ', 'sólo por precio', '.']}
+  intro="Trabajamos con fabricantes de materiales y sistemas, constructoras, estudios y proveedores industriales. Marca, documentación técnica, obra y canal, resueltos como un mismo sistema."
+  corredor={CORREDOR_INDUSTRIA}
+  ventajasTitulo="Una marca que acompaña la venta hasta la firma."
+  ventajas={VENTAJAS}
+  alcanceTitulo="Un mismo equipo para la marca, la documentación y los canales."
+  alcanceTexto={[
+    'El trabajo arranca por la marca y el sistema de aplicación, sigue por la documentación técnica y el registro de obras, y se sostiene con un plan mensual. Las instancias de aprobación con el área técnica se definen al inicio.',
+    `Es el tipo de trabajo que encaja con ${L_360}: un plan mensual, un equipo fijo y un reporte que muestra qué movió cada acción. Cuando lo que hace falta es ordenar la base, ${L_BRANDING} y ${L_WEB} se toman como proyectos aparte.`,
+  ]}
+  alcance={ALCANCE}
+  casosRotulo="Marcas de industria y construcción"
+  casosBajada="Empresas del rubro con su marca, su documentación y su comunicación trabajadas por un mismo equipo."
+  casos={['tao']}
+  preguntas={PREGUNTAS}
+/>

@@ -1,0 +1,151 @@
+---
+/**
+ * Tags del hero de caso. Rubro = esquinas rectas. Servicio = pill.
+ *
+ * Los dos se pintan de abajo hacia arriba al pasar el mouse: el rubro en
+ * amarillo, los servicios en aqua. El relleno es un pseudo-elemento que escala
+ * en Y desde el borde inferior, así la animación corre en la GPU y no toca el
+ * layout.
+ *
+ * Destinos: el rubro lleva a su vertical y sólo están las que ya existen como
+ * página; los rubros sin vertical publicada quedan sin link. Los servicios
+ * llevan a su página, y los que no tienen una propia caen en Trópico 360, que
+ * es donde se cuentan. El tag que no tiene adónde ir se dibuja como `span`,
+ * para no dejar anclas sin destino en el documento.
+ */
+/**
+ * `como` — con qué etiqueta se dibuja cada tag. Por defecto `a`, que es como
+ * están en el hero de caso. Adentro de la tarjeta de la grilla van como
+ * `span`: la tarjeta entera ya es un enlace, y un `<a>` adentro de otro `<a>`
+ * es HTML inválido —el navegador cierra el de afuera y deja anclas vacías
+ * sueltas, con lo que la mitad de la tarjeta deja de ser clickeable—.
+ */
+import { SIN_360 } from '../../lib/previa';
+
+interface Props extends astroHTML.JSX.HTMLAttributes {
+  rubro: string;
+  servicios: string[];
+  como?: 'a' | 'span';
+  class?: string;
+}
+
+const {
+  rubro,
+  servicios,
+  como: Etiqueta = 'a',
+  class: className = '',
+  ...resto
+} = Astro.props;
+
+/* Verticales publicadas. Parisi dice «Agroindustria» y Galarraga «Agro»: las
+   dos van a la misma página. El resto de los rubros todavía no tiene vertical
+   enlazada. */
+const VERTICALES: Record<string, string> = {
+  agro: '/agro',
+  agroindustria: '/agro',
+  deporte: '/deporte',
+  deportes: '/deporte',
+  educación: '/educacion',
+  educacion: '/educacion',
+  salud: '/salud',
+  'consumo masivo': '/consumo-masivo',
+  construcción: '/construccion',
+  construccion: '/construccion',
+};
+
+const PAGINAS_SERVICIO: Record<string, string> = {
+  branding: '/servicios/branding',
+  web: '/servicios/web',
+};
+
+const trescientos60 = SIN_360 ? undefined : '/servicios/360';
+
+const destino = (texto: string, esRubro: boolean) => {
+  if (Etiqueta !== 'a') return undefined;
+  const clave = texto.trim().toLowerCase();
+  if (esRubro) return VERTICALES[clave];
+  return PAGINAS_SERVICIO[clave] ?? trescientos60;
+};
+
+const TAGS = [
+  { texto: rubro, clase: 'tag-rubro', href: destino(rubro, true) },
+  ...servicios.map((s) => ({ texto: s, clase: 'tag-servicio', href: destino(s, false) })),
+];
+---
+
+<ul class:list={['flex flex-wrap items-center gap-x-1 gap-y-[6px] lg:gap-y-1', className]} {...resto}>
+  {
+    TAGS.map((t) => (
+      <li>
+        {t.href ? (
+          <a class:list={['tag', t.clase]} href={t.href}>
+            {t.texto}
+          </a>
+        ) : (
+          <span class:list={['tag', t.clase]}>{t.texto}</span>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .tag {
+    position: relative;
+    isolation: isolate;
+    transition:
+      color 240ms var(--ease-salida),
+      border-color 240ms var(--ease-salida);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 10px;
+    border: 1px solid var(--color-oscuro);
+    color: var(--color-oscuro);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  a.tag {
+    cursor: pointer;
+  }
+
+  .tag-servicio {
+    border-radius: 999px;
+  }
+
+  .tag::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--tag-relleno);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 420ms var(--ease-salida);
+  }
+
+  .tag-rubro {
+    --tag-relleno: var(--color-amarillo);
+  }
+
+  .tag-servicio {
+    --tag-relleno: var(--color-aqua);
+  }
+
+  /* El relleno sube sólo en los tags que llevan a algún lado. Los de las
+     tarjetas de portfolio son `span` y se pintan con el hover de la tarjeta
+     entera, que es la que se clickea. */
+  a.tag:hover::before,
+  a.tag:focus-visible::before {
+    transform: scaleY(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tag::before {
+      transition: none;
+    }
+  }
+</style>

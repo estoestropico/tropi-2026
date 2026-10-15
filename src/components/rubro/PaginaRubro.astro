@@ -1,0 +1,300 @@
+---
+import Base from '../../layouts/Base.astro';
+import Banda from '../caso/Banda.astro';
+import Boton from '../ui/Boton.astro';
+import TiraMarca from '../servicio/TiraMarca.astro';
+import CasosAplicados from '../servicio/CasosAplicados.astro';
+import Preguntas from '../servicio/Preguntas.astro';
+
+/**
+ * Vertical de rubro. Toma la estructura de las páginas de servicio
+ * —apertura, banda oscura con intro y corredor, bloque a dos columnas,
+ * casos y preguntas— y cambia el bloque de alternativas por las ventajas
+ * del sector. Cada rubro pasa sólo su contenido.
+ *
+ * `alcanceTexto` entra como HTML porque los párrafos llevan links a las
+ * páginas de servicio, y esos links dependen del build.
+ */
+interface Props {
+  slug: string;
+  rotulo: string;
+  titulo: string;
+  descripcion: string;
+  titular: [string, string, string];
+  intro: string;
+  /* Sin corredor, la banda oscura pasa de la intro al bloque siguiente. */
+  corredor?: { src: ImageMetadata; alt: string }[];
+  /* `casosArriba` sube los casos del sector a la banda oscura, debajo de la
+     intro, y los saca del bloque propio de abajo. Mismo criterio que la
+     página de Trópico 360. */
+  casosArriba?: boolean;
+  ventajasTitulo: string;
+  ventajas: { titulo: string; texto: string }[];
+  alcanceTitulo: string;
+  alcanceTexto: string[];
+  alcance: { titulo: string; texto: string }[];
+  casosRotulo: string;
+  casosBajada: string;
+  casos: string[];
+  /* Testimonios del rubro. Sin testimonios, el bloque no se arma. */
+  testimonios?: { nombre: string; cargo: string; empresa: string; texto: string }[];
+  preguntas: { pregunta: string; respuesta?: string; respuestaHtml?: string }[];
+}
+
+const {
+  slug,
+  rotulo,
+  titulo,
+  descripcion,
+  titular,
+  intro,
+  corredor: TIRA = [],
+  casosArriba = false,
+  ventajasTitulo,
+  ventajas: VENTAJAS,
+  alcanceTitulo,
+  alcanceTexto: ALCANCE_TEXTO,
+  alcance: ALCANCE,
+  casosRotulo,
+  casosBajada,
+  casos: CASOS,
+  testimonios: TESTIMONIOS = [],
+  preguntas: PREGUNTAS,
+} = Astro.props;
+
+const ARENA = '#f5f4eb';
+const OSCURO = '#050515';
+---
+
+<Base titulo={titulo} descripcion={descripcion}>
+  {/* ── Apertura ────────────────────────────────────────────────────────
+      Mismo ritmo y escala que la apertura de las páginas de servicio. */}
+  <Banda color={ARENA} espacio="nulo">
+    <div class="contenido pb-[64px] pt-28 lg:pb-[100px] lg:pt-[202px]">
+      <p class="rotulo rotulo-cabecera" data-revelar>{rotulo}</p>
+      <h1
+        class="mt-4 max-w-[981px] text-balance text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-[3.5rem] lg:mt-5 lg:text-[5rem]"
+        data-revelar
+        style="--retardo:60ms"
+      >
+        {titular[0]}<span class="text-violeta">{titular[1]}</span>{titular[2]}
+      </h1>
+      {/* A diferencia de las páginas de servicio, acá el CTA va arriba: estas
+          páginas son destino de campaña y el visitante llega con la intención
+          formada. El de abajo, en "Cómo trabajamos", sigue estando. */}
+      <div class="mt-8 lg:mt-10" data-revelar style="--retardo:120ms">
+        <Boton href="/contacto" tamano="chico" class="font-bold!">Empecemos</Boton>
+      </div>
+    </div>
+  </Banda>
+
+  {/* ── Intro, tira y ventajas ──────────────────────────────────────── */}
+  <Banda color={OSCURO} espacio="nulo" class="text-arena">
+    <div class="contenido pt-[80px] lg:pt-[120px]">
+      <p class="grande max-w-[1000px]" data-revelar>{intro}</p>
+    </div>
+
+    {casosArriba ? (
+      <div class="contenido pt-[64px] lg:pt-[110px]">
+        <p class="rotulo text-aqua" data-revelar>{casosRotulo}</p>
+        <p class="mt-6 max-w-[760px] text-[1.25rem] leading-[1.35] lg:mt-[28px] lg:text-[1.5rem]" data-revelar>
+          {casosBajada}
+        </p>
+        <CasosAplicados slug={slug} casos={CASOS} columnas={2} />
+      </div>
+    ) : (
+      <TiraMarca piezas={TIRA} class="mt-[64px] lg:mt-[110px]" />
+    )}
+
+    <div class="contenido pb-[96px] pt-[80px] lg:pb-[150px] lg:pt-[120px]">
+      <p class="rotulo text-aqua" data-revelar>Ventajas</p>
+      <p class="grande mt-6 max-w-[860px] lg:mt-[34px]" data-revelar>{ventajasTitulo}</p>
+
+      <ul class="mt-12 grid gap-10 sm:grid-cols-2 lg:mt-[90px] lg:grid-cols-3 lg:gap-x-[30px] lg:gap-y-[64px]" data-revelar-grupo>
+        {
+          VENTAJAS.map((v, i) => (
+            <li class="ventaja">
+              <p class="rotulo text-aqua">0{i + 1}</p>
+              <h2 class="mt-4 text-[1.5rem] font-bold leading-[1.1] tracking-[-0.02em] lg:text-[1.75rem]">{v.titulo}</h2>
+              <p class="mt-3 leading-[1.4] lg:mt-[14px]">{v.texto}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Banda>
+
+  {/* ── Cómo trabajamos ─────────────────────────────────────────────────
+      Dos columnas: la izquierda queda fija mientras la derecha pasa, igual
+      que "El servicio" en las páginas de servicio. */}
+  <Banda color={ARENA} espacio="nulo">
+    <div class="contenido alcance py-[80px] lg:py-[130px]">
+      <div class="alcance-fija">
+        <p class="rotulo text-violeta" data-revelar>Cómo trabajamos</p>
+        <h2 class="mt-6 text-[1.5rem] font-bold leading-[1.3] tracking-[-0.02em] lg:mt-[22px] lg:text-[1.875rem]" data-revelar>
+          {alcanceTitulo}
+        </h2>
+        <div class="mt-8 space-y-6 leading-[1.4] lg:mt-[40px]" data-revelar style="--retardo:180ms">
+          {ALCANCE_TEXTO.map((t) => <p set:html={t} />)}
+        </div>
+        <div class="mt-8 lg:mt-10" data-revelar>
+          <Boton href="/contacto" tamano="chico" class="font-bold!">Empecemos</Boton>
+        </div>
+      </div>
+
+      <ol class="alcance-lista">
+        {
+          ALCANCE.map((a) => (
+            <li data-revelar>
+              <h3 class="text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.01em] lg:text-[1.5rem]">{a.titulo}</h3>
+              <p class="mt-4 leading-[1.4] lg:mt-[18px]">{a.texto}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </Banda>
+
+  {/* ── Casos del sector ────────────────────────────────────────────── */}
+  {
+    !casosArriba && (
+  <Banda color={OSCURO} espacio="nulo" class="text-arena">
+    <div class="contenido py-[80px] lg:py-[160px]">
+      <p class="rotulo text-aqua" data-revelar>{casosRotulo}</p>
+      <p class="mt-6 max-w-[760px] text-[1.25rem] leading-[1.35] lg:mt-[28px] lg:text-[1.5rem]" data-revelar>
+        {casosBajada}
+      </p>
+      <CasosAplicados slug={slug} casos={CASOS} columnas={2} />
+    </div>
+  </Banda>
+    )
+  }
+
+  {/* ── Preguntas ───────────────────────────────────────────────────── */}
+  <Preguntas slug={slug} preguntas={PREGUNTAS} />
+
+  {/* ── Testimonios ─────────────────────────────────────────────────────
+      Mismo bloque que la home, sin el carrusel: en una vertical son pocos y
+      entran todos a la vista. Van al final, después de las preguntas, que es
+      la última objeción antes del cierre. */}
+  {
+    TESTIMONIOS.length > 0 && (
+      <Banda color={OSCURO} espacio="nulo" class="text-arena">
+        <div class="contenido py-[80px] lg:py-[120px]">
+          <p class="rotulo text-rojo" data-revelar>Testimonios</p>
+          <ul class="testimonios mt-10 lg:mt-[64px]" data-revelar-grupo>
+            {
+              TESTIMONIOS.map((t) => (
+                <li class="testimonio">
+                  <blockquote class="testimonio-texto">{t.texto}</blockquote>
+                  <p class="mt-6 font-bold lg:mt-[30px]">{t.nombre}</p>
+                  <p class="testimonio-cargo">
+                    {t.cargo}
+                    <br />
+                    {t.empresa}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </Banda>
+    )
+  }
+</Base>
+
+<style>
+  /* Mismo cuerpo que la intro de las páginas de servicio. */
+  .grande {
+    font-size: clamp(1.75rem, 0.9rem + 3.2vw, 3.3rem);
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .ventaja {
+    max-width: 460px;
+  }
+
+  /* ── Testimonios ──────────────────────────────────────────────────── */
+  .testimonio-texto {
+    max-width: 860px;
+    font-size: clamp(1.25rem, 0.9rem + 1.3vw, 1.75rem);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .testimonio-cargo {
+    margin-top: 4px;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+  }
+
+  .testimonios li + li {
+    margin-top: 48px;
+  }
+
+  /* Dos columnas desde 640, igual que la grilla de casos: son dos por
+     vertical y entran los dos a la vista, sin carrusel. Abajo de esa medida
+     no hay ancho para dos y se apilan. */
+  @media (width >= 40rem) {
+    .testimonios {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .testimonios li + li {
+      margin-top: 0;
+    }
+
+    /* En dos columnas el cuerpo baja: la medida de línea es la mitad. */
+    .testimonio-texto {
+      font-size: 1.125rem;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .testimonios {
+      gap: 30px;
+    }
+
+    .testimonio-texto {
+      font-size: 1.375rem;
+    }
+  }
+
+  /* ── Cómo trabajamos ──────────────────────────────────────────────── */
+  .alcance {
+    display: grid;
+    gap: 56px;
+  }
+
+  .alcance-lista li + li {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid rgb(5 5 21 / 0.6);
+  }
+
+  @media (width >= 64rem) {
+    .alcance {
+      grid-template-columns: 40% 49%;
+      justify-content: space-between;
+      align-items: start;
+      gap: 0;
+    }
+
+    .alcance-fija {
+      position: sticky;
+      top: 120px;
+    }
+
+    .alcance-lista li + li {
+      margin-top: 38px;
+      padding-top: 38px;
+    }
+  }
+</style>

@@ -1,0 +1,125 @@
+---
+import { Image } from 'astro:assets';
+import Tags from '../ui/Tags.astro';
+import type { ImageMetadata } from 'astro';
+
+/**
+ * Hero de caso. Ritmo vertical del Figma: 202 / 20 / 37 / 100.
+ * La imagen está desde el arranque —sin reveal— y sube más rápido que el
+ * scroll, así se monta sobre el bloque de texto de arriba.
+ *
+ * El marco sangra: sigue midiendo el ancho de la pantalla aunque el resto
+ * del contenido esté topado en 1780. Hasta 1780 conserva el alto fijo del
+ * Figma (748); de ahí para arriba crece manteniendo esa proporción, así la
+ * foto nunca se vuelve una franja en una pantalla grande.
+ *
+ * La caja de la imagen mide 134 % del marco: es exactamente el alto natural
+ * de un original 16:9 servido a ancho completo (1780 × 1001 sobre un marco
+ * de 748), así que ese 34 % de sobra es material de recorrido y no hay
+ * recorte lateral. La velocidad está calculada contra esa holgura: el marco
+ * deja de verse cuando el scroll pasa su borde inferior, y hasta ahí la
+ * imagen no puede quedarse corta. Por debajo de lg el marco pasa a medirse
+ * en vh mientras el bloque de texto de arriba sigue midiendo lo que mide, así
+ * que ahí hace falta un poco más de sobra: 145 %.
+ *
+ * Ese 134 % da por sentado un original 16:9, que es lo que usan casi todos
+ * los casos. Con una foto más panorámica no alcanza: para llegar al 134 % de
+ * alto, `object-cover` la agranda y el excedente se va por los costados. En un
+ * hero de 1780 × 752 eso son 298 px por lado, el 12,5 % de cada borde. Por eso
+ * `sobra` deja declarar cuánto material vertical tiene realmente la imagen;
+ * con 100 la foto entra entera y no hay recorrido que hacer.
+ *
+ * velocidad → cuánto se adelanta la imagen al scroll (0 la deja quieta).
+ * solape    → cuántos píxeles se monta sobre el bloque de texto.
+ * sobra     → alto de la imagen en % del marco. Sin valor, 145 / 134.
+ */
+interface Props {
+  cliente: string;
+  titular: string;
+  rubro: string;
+  servicios: string[];
+  imagen: ImageMetadata;
+  imagenAlt: string;
+  velocidad?: number;
+  solape?: number;
+  sobra?: number;
+}
+
+const {
+  cliente,
+  titular,
+  rubro,
+  servicios,
+  imagen,
+  imagenAlt,
+  velocidad = 0.17,
+  solape = 0,
+  sobra,
+} = Astro.props;
+
+const sobraBase = sobra ?? 145;
+const sobraLg = sobra ?? 134;
+---
+
+<section>
+  <div class="pb-16 pt-28 lg:pb-[100px] lg:pt-[202px]">
+    <div class="contenido">
+      <p class="rotulo rotulo-cabecera" data-revelar>
+        {cliente}
+      </p>
+      <h1
+        class="mt-4 max-w-[981px] text-balance text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-[3.5rem] lg:mt-5 lg:text-[5rem]"
+        data-lineas
+        style="--retardo:60ms"
+      >
+        {titular}
+      </h1>
+      <Tags
+        rubro={rubro}
+        servicios={servicios}
+        class="mt-8 lg:mt-[37px]"
+        data-revelar
+        style="--retardo:160ms"
+      />
+    </div>
+  </div>
+
+  <div
+    class="hero-marco full-width relative h-[46vh] overflow-hidden lg:h-[748px]"
+    style={`margin-top:-${solape}px`}
+  >
+    <Image
+      src={imagen}
+      alt={imagenAlt}
+      widths={[640, 960, 1280, 1600, 2048, 2560]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="hero-img w-full object-cover"
+      style={`--sobra:${sobraBase}%;--sobra-lg:${sobraLg}%`}
+      data-parallax-doc={String(velocidad)}
+    />
+  </div>
+</section>
+
+<style>
+  .hero-img {
+    height: var(--sobra);
+  }
+
+  @media (width >= 64rem) {
+    .hero-img {
+      height: var(--sobra-lg);
+    }
+  }
+
+  /* De 1780 para arriba el marco deja de tener alto fijo y crece con la
+     proporción del diseño. Va en una media query propia y no en variantes de
+     Tailwind: `lg:h-[748px]` le gana por orden a un `min-[1780px]:h-auto`. */
+  @media (width >= 1780px) {
+    .hero-marco {
+      height: auto;
+      aspect-ratio: 1780 / 748;
+    }
+  }
+</style>

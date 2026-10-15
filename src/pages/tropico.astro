@@ -1,0 +1,1177 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Banda from '../components/caso/Banda.astro';
+import Boton from '../components/ui/Boton.astro';
+
+import forma1 from '../assets/tropico/forma-1.svg';
+import forma2 from '../assets/tropico/forma-2.svg';
+import forma3 from '../assets/tropico/forma-3.svg';
+
+/* El mapa entra como markup y no como <img>: el script le prende los puntos de
+   a uno y le agranda el de Buenos Aires hasta tapar la pantalla, y para eso
+   tiene que poder tocar cada <circle>. */
+import mapaSvg from '../assets/tropico/mapa-dots.svg?raw';
+
+/* Página "Trópico" (Figma 1626:2194). El mapa de puntos y el pase al equipo
+   vienen de la web anterior; el resto se rehizo con los criterios del sitio
+   nuevo. */
+
+const ARENA = '#f5f4eb';
+const OSCURO = '#050515';
+/* Azul de la banda del mapa. Es el único lugar del sitio donde aparece, así
+   que no entra como token: queda acá, igual que los colores de la home. */
+const CELESTE = '#0077ff';
+
+const VALORES = [
+  {
+    titulo: 'Estamos cerca.',
+    texto: 'Entendemos lo que necesitás y te acompañamos en el proceso, con compromiso y criterio.',
+  },
+  {
+    titulo: 'Exploramos y probamos caminos nuevos.',
+    texto: 'Nos adaptamos al cambio con naturalidad para encontrar la mejor solución.',
+  },
+  {
+    titulo: 'Escuchamos para entender.',
+    texto: 'Diseñamos desde tu perspectiva, con empatía y precisión.',
+  },
+  {
+    titulo: 'Nos gusta lo que hacemos.',
+    texto: 'Esa energía se refleja en el trabajo y en los resultados.',
+  },
+];
+
+/* Fotos del equipo. `foto` es el nombre del archivo en `src/assets/equipo`;
+   quien no tiene foto va con sus iniciales, como una cámara apagada. */
+const fotosEquipo = import.meta.glob<{ default: ImageMetadata }>('../assets/equipo/*.png', {
+  eager: true,
+});
+const retrato = (clave?: string) =>
+  clave ? fotosEquipo[`../assets/equipo/${clave}.png`]?.default : undefined;
+
+/* Dos iniciales: la del nombre y la del apellido. */
+const iniciales = (nombre: string) =>
+  nombre
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((parte) => parte[0]?.toUpperCase() ?? '')
+    .join('')
+    /* Sin tildes: "Daniela Álvarez" da DA y no DÁ. */
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+/* El equipo, en el orden del Figma. `redes` sólo lo tiene Fer. */
+const EQUIPO: {
+  nombre: string;
+  cargo: string;
+  foto?: string;
+  redes?: { ig?: string; li?: string };
+}[] = [
+  {
+    nombre: 'Fer Acenso',
+    cargo: 'Director',
+    foto: 'fer',
+    redes: {
+      ig: 'https://instagram.com/feracenso',
+      li: 'https://www.linkedin.com/in/fernandoacenso/',
+    },
+  },
+  { nombre: 'Fran Espinosa', cargo: 'Ejecutivo Comercial', foto: 'fran' },
+  /* Nombres como los usa el equipo. Los completos, por si hay que volver:
+     Anti Morena, Ainhoa Hartivig, Martín Rozenwurcel, Carmela Uliarte,
+     Luciano Stasi, Daniela Álvarez, Caro Beneventana, Juli Peters y
+     Luna Díaz. */
+  { nombre: 'Anti', cargo: 'Directora Creativa', foto: 'anti' },
+  { nombre: 'Ainho', cargo: 'Ejecutiva de cuentas', foto: 'ainho' },
+  { nombre: 'Rozen', cargo: 'Full Stack Developer', foto: 'rozen' },
+  { nombre: 'Carme', cargo: 'Diseñadora', foto: 'carme' },
+  { nombre: 'Lucho', cargo: 'Trafficker', foto: 'lucho' },
+  { nombre: 'Danu', cargo: 'Administración', foto: 'danu' },
+  { nombre: 'Caro', cargo: 'Administración' },
+  { nombre: 'Juli', cargo: 'Filmaker', foto: 'juli' },
+  { nombre: 'Luna', cargo: 'Editora', foto: 'luna' },
+];
+---
+
+<Base
+  titulo="Sobre nosotros"
+  descripcion="Somos un equipo que busca resultados con ideas. Estrategia, identidad y comunicación para marcas que quieren proyectar su mejor versión."
+>
+  {/* ── Apertura ─────────────────────────────────────────────────────────
+      Mismo ritmo que la apertura de las páginas de servicio: rótulo, titular
+      y nada más. Las tres formas cierran el bloque. */}
+  <Banda color={ARENA} espacio="nulo" class="apertura">
+    <div class="contenido pb-[72px] pt-28 lg:pb-[120px] lg:pt-[202px]">
+      <p class="rotulo rotulo-cabecera text-rojo" data-revelar>Sobre nosotros</p>
+      <h1 class="titular mt-4 lg:mt-5" data-lineas>
+        Somos un equipo motivado por conseguir resultados a base de ideas.
+      </h1>
+      <p class="bajada mt-6 lg:mt-8" data-revelar style="--retardo:120ms">
+        Estrategia, identidad y comunicación. Trabajamos con marcas de distintos
+        rubros y tamaños, en proyectos puntuales o acompañándolas mes a mes.
+      </p>
+      <div class="formas" data-revelar-grupo>
+        <Image src={forma1} alt="" aria-hidden="true" class="forma forma-a" />
+        <Image src={forma2} alt="" aria-hidden="true" class="forma forma-b" />
+        <Image src={forma3} alt="" aria-hidden="true" class="forma forma-c" />
+      </div>
+    </div>
+    <span class="conocenos" aria-hidden="true">Conocenos</span>
+  </Banda>
+
+  {/* ── Valores ──────────────────────────────────────────────────────────
+      El bloque queda fijo y ocupa la pantalla entera mientras se recorre la
+      sección: los cuatro valores se van pintando de a uno, sin moverse de
+      lugar. Al terminar el recorrido, la banda azul del mapa sube por encima
+      y la pantalla pasa a azul. */}
+  <Banda color={OSCURO} espacio="nulo" class="text-verde valores-banda">
+    <div class="valores-recorrido" data-valores>
+      <div class="valores-pin">
+        <div class="contenido">
+          <p class="rotulo" data-revelar>Valores</p>
+          <div class="valores mt-12 lg:mt-[120px]">
+            {/* Va con `data-revelar` y no con `data-lineas`: el motor de líneas
+                rearma el titular palabra por palabra y se come el salto. */}
+            <h2 class="valores-titulo" data-revelar>Lo que<br />nos define.</h2>
+            <div class="valores-lista">
+              {
+                VALORES.map((v) => (
+                  <p class="valores-item" data-valor>
+                    <strong>{v.titulo}</strong> {v.texto}
+                  </p>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Banda>
+
+  {/* ── Mapa ─────────────────────────────────────────────────────────────
+      La sección mide más que la pantalla y el contenido queda pegado arriba
+      mientras se recorre: primero aparecen los puntos, que brotan desde
+      Buenos Aires, y al final el punto de Buenos Aires se agranda hasta tapar
+      todo de oscuro y entregar la pantalla al equipo. */}
+  <section class="mapa full-width" data-mapa>
+    <div class="mapa-fijo">
+      <div class="mapa-centro contenido">
+        <div class="mapa-txt">
+          <h2 class="mapa-titulo">Desde Argentina,<br />para el mundo.</h2>
+          <p class="mapa-bajada">
+            Trabajamos para más de 15 países, manteniendo el trato simple y cercano
+            para que el camino sea tan bueno como el resultado.
+          </p>
+        </div>
+        <div class="mapa-lienzo">
+          <div class="mapa-svg" set:html={mapaSvg} />
+          <span class="mapa-tag">Buenos Aires</span>
+        </div>
+      </div>
+      <div class="mapa-negro" data-mapa-negro></div>
+    </div>
+  </section>
+
+  {/* ── Equipo ───────────────────────────────────────────────────────────
+      El envoltorio sube una pantalla y se apoya encima del mapa: cuando el
+      tapado oscuro cierra, el bloque ya está puesto en su lugar y lo único
+      que pasa es que se enciende. No llega scrolleando.
+
+      El envoltorio es un div de esta página y no la banda: la raíz del
+      componente lleva el cid de `Banda`, así que una regla escopeada de acá
+      no la alcanza.
+
+      El fondo oscuro lo pinta el envoltorio y no el pseudo-elemento de la
+      banda. El envoltorio es el que se compone aparte, porque le anima la
+      opacidad; si el fondo vive en un nieto con `z-index: -1`, la capa queda
+      transparente y lo que asoma mientras Chrome no terminó de rasterizar es
+      el blanco del body. El mapa, que es lo único opaco que hay detrás en la
+      capa de scroll, termina justo debajo de la primera fila de fichas: ahí
+      aparecía la banda blanca. Con el fondo en el envoltorio la capa tiene
+      color propio y va a sangre, así que no hay nada que rellenar. */}
+  <div class="equipo-envoltorio full-width fondo-oscuro" data-equipo-envoltorio>
+  <Banda plana espacio="nulo" class="text-arena equipo-banda">
+    <div class="equipo-fade contenido pb-[90px] pt-[80px] text-center lg:pb-[150px] lg:pt-[120px]">
+      <p class="rotulo">El equipo</p>
+      <h2 class="equipo-titulo mt-5 lg:mt-7">
+        Gente cálida,<br /><strong>mentes torrenciales.</strong>
+      </h2>
+      <p class="equipo-bajada">
+        Trabajamos con procesos claros y <span class="text-verde">confianza en las
+        personas.</span> Eso sostiene la calidad del trabajo y una comunicación
+        simple en cada proyecto.
+      </p>
+
+      <div class="fichas">
+        {
+          EQUIPO.map((p, i) => (
+            <article
+              class:list={['ficha', !p.foto && 'ficha-sin-foto']}
+              style={`--retardo:${(i % 3) * 70}ms`}
+            >
+              {p.foto ? (
+                <Image
+                  src={retrato(p.foto)!}
+                  alt={p.nombre}
+                  widths={[280, 452, 904]}
+                  sizes="(min-width: 1024px) 23vw, 45vw"
+                  class="ficha-foto"
+                />
+              ) : (
+                <span class="ficha-iniciales" aria-hidden="true">{iniciales(p.nombre)}</span>
+              )}
+              {p.redes && (
+                <div class="ficha-redes">
+                  {p.redes.ig && (
+                    <a href={p.redes.ig} target="_blank" rel="noopener" aria-label={`Instagram de ${p.nombre}`}>
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5" stroke="currentColor" stroke-width="1.8" />
+                        <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8" />
+                        <circle cx="17.5" cy="6.6" r="1.25" fill="currentColor" />
+                      </svg>
+                    </a>
+                  )}
+                  {p.redes.li && (
+                    <a href={p.redes.li} target="_blank" rel="noopener" aria-label={`LinkedIn de ${p.nombre}`}>
+                      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M4.98 3.5a2 2 0 11-.02 4 2 2 0 01.02-4zM3.2 8.98h3.6V21H3.2zM9 8.98h3.45v1.64h.05c.5-.92 1.74-1.9 3.6-1.9 3.85 0 4.56 2.4 4.56 5.6V21h-3.6v-4.96c0-1.18-.02-2.7-1.7-2.7-1.7 0-1.96 1.28-1.96 2.62V21H9z" />
+                      </svg>
+                    </a>
+                  )}
+                </div>
+              )}
+              <div class="ficha-pie">
+                <p class="ficha-nombre">{p.nombre}</p>
+                <p class="ficha-cargo">{p.cargo}</p>
+              </div>
+            </article>
+          ))
+        }
+
+        <div class="ficha ficha-sumate" style={`--retardo:${(EQUIPO.length % 3) * 70}ms`}>
+          <p class="sumate-titulo">¡Sumate a Trópico!</p>
+          <p class="sumate-texto">Siempre buscamos creadores que quieran unirse a nuestro equipo.</p>
+          <div class="sumate-boton">
+            <Boton href="mailto:jobs@tropico.ar" variante="rojo" tamano="chico">Enviá tu CV</Boton>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Banda>
+  </div>
+</Base>
+
+<style>
+  /* ── Apertura ──────────────────────────────────────────────────────── */
+  .apertura {
+    position: relative;
+  }
+
+  .titular {
+    max-width: 1000px;
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* Bajada de la apertura: un escalón por debajo del titular, con el ancho
+     de columna que usan las intros del resto del sitio. */
+  .bajada {
+    max-width: 720px;
+    font-size: clamp(1.125rem, 0.95rem + 0.6vw, 1.375rem);
+    line-height: 1.4;
+  }
+
+  .formas {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 80px;
+  }
+
+  .forma {
+    height: auto;
+    width: auto;
+  }
+
+  /* Las tres miden distinto en el Figma; el alto es lo que las empareja. */
+  .forma-a {
+    height: 80px;
+  }
+
+  .forma-b {
+    height: 82px;
+  }
+
+  .forma-c {
+    height: 72px;
+  }
+
+  /* Rótulo vertical contra el borde derecho de la pantalla, fuera de la
+     columna de contenido. Es decorativo: no lo lee el lector de pantalla. */
+  .conocenos {
+    /* Detalle de borde: abajo de 1024 no hay margen libre y se le monta a las
+       formas, así que sólo aparece en desktop. */
+    display: none;
+    position: absolute;
+    right: 20px;
+    bottom: 40px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+  }
+
+  /* ── Valores ───────────────────────────────────────────────────────── */
+  /* El recorrido es el alto que se scrollea con el bloque quieto. Los
+     valores se pintan a lo largo de ese tramo. */
+  .valores-recorrido {
+    /* Alto del pintado más una pantalla extra: en esa última el azul del
+       mapa sube por encima del bloque, que sigue fijo. */
+    height: 330dvh;
+  }
+
+  /* El bloque fijo se promueve a capa propia. Si midiera lo que mide el
+     marco (1780), los costados los seguiría pintando el pseudo-elemento de
+     la banda, en otra capa, y en el borde quedaba una línea de corte. Va a
+     todo el ancho y con su propio fondo, así lo que se ve es una sola capa.
+     El PNG transparente es el mismo del resto de los oscuros. */
+  .valores-pin {
+    position: sticky;
+    top: 0;
+    display: grid;
+    align-items: center;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    min-height: 100dvh;
+    padding-block: 80px;
+    background-color: var(--color-oscuro);
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAC0lEQVR42mNgQAcAABIAAeRVjecAAAAASUVORK5CYII=');
+  }
+
+  @media (width >= 64rem) {
+    .valores-recorrido {
+      height: 360dvh;
+    }
+
+    .valores-pin {
+      padding-block: 130px;
+    }
+  }
+
+  /* Opacidad de arranque por si el script no corre: los valores se ven. El
+     script baja esta opacidad al cargar y la sube con el scroll. */
+  .valores-item {
+    transition: opacity 220ms linear;
+  }
+
+  .valores-titulo {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .valores-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 40px;
+  }
+
+  .valores-item {
+    max-width: 570px;
+    line-height: 1.45;
+  }
+
+  .valores-item strong {
+    font-weight: 700;
+  }
+
+  /* ── Mapa ──────────────────────────────────────────────────────────── */
+  /* El margen negativo hace que la banda azul empiece a subir una pantalla
+     antes de que termine el recorrido de los valores: el bloque de valores
+     sigue fijo y el azul lo va tapando hasta llenar la pantalla. */
+  .mapa {
+    position: relative;
+    height: 200dvh;
+    margin-top: -100dvh;
+    background-color: #0077ff;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAC0lEQVR42mNgQAcAABIAAeRVjecAAAAASUVORK5CYII=');
+  }
+
+  /* Respaldo opaco debajo del mapa.
+
+     El bloque del equipo se compone en una capa aparte, porque le anima la
+     opacidad. Mientras Chrome no termina de rasterizar esa capa, lo que
+     asoma es el color base del documento, que es blanco. El mapa es lo único
+     opaco que hay detrás en la capa de scroll y termina justo debajo de la
+     primera fila de fichas: ahí aparecía la banda blanca al scrollear
+     rápido.
+
+     Este respaldo continúa el oscuro en la capa de scroll hasta donde llega
+     el equipo. Queda detrás del bloque (el equipo lleva `z-index: 7`) y solo
+     cubre el tramo que el equipo no comparte con el mapa, así que nunca tapa
+     nada: lo peor que puede pasar ahora es un cuadro sin fotos. El alto lo
+     pone el script, que es el único que conoce el alto del bloque. */
+  .mapa::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 100vw;
+    height: var(--respaldo, 0px);
+    margin-left: -50vw;
+    background-color: var(--color-oscuro);
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAC0lEQVR42mNgQAcAABIAAeRVjecAAAAASUVORK5CYII=');
+  }
+
+  .mapa-fijo {
+    position: sticky;
+    top: 0;
+    display: grid;
+    height: 100dvh;
+    place-items: center;
+    overflow: hidden;
+    background-color: #0077ff;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAC0lEQVR42mNgQAcAABIAAeRVjecAAAAASUVORK5CYII=');
+  }
+
+  .mapa-centro {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .mapa-txt {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: var(--color-arena);
+  }
+
+  .mapa-titulo {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .mapa-bajada {
+    max-width: 430px;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  /* En pantallas chicas el mapa se sale de la columna y toma el ancho de la
+     pantalla: adentro de `.contenido` quedaba demasiado chico para leerse. */
+  .mapa-lienzo {
+    position: relative;
+    width: 100vw;
+    max-width: 1104px;
+    margin-inline: calc(50% - 50vw);
+  }
+
+  @media (width >= 64rem) {
+    .mapa-lienzo {
+      width: 100%;
+      margin-inline: auto;
+    }
+  }
+
+  .mapa-svg :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* El radio va por CSS y no en el SVG para poder animarlo en el latido de
+     Buenos Aires. La demora de cada punto la escribe el script. */
+  .mapa-svg :global(.pt) {
+    r: 8.5px;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+
+  .mapa-svg.puntos-si :global(.pt) {
+    opacity: 1;
+  }
+
+  .mapa-svg :global(.latido) {
+    fill: var(--color-oscuro);
+    opacity: 0;
+  }
+
+  .mapa-svg.puntos-si :global(.latido) {
+    animation: latido 2.6s ease-out infinite;
+  }
+
+  @keyframes latido {
+    0% {
+      r: 8.5px;
+      opacity: 0.45;
+    }
+    70%,
+    100% {
+      r: 34px;
+      opacity: 0;
+    }
+  }
+
+  /* Chapita de Buenos Aires: va sobre el punto oscuro del mapa, en
+     porcentajes del lienzo para que siga al SVG cuando escala. */
+  .mapa-tag {
+    position: absolute;
+    /* Centro del punto de Buenos Aires del SVG (330 / 613 sobre 1104 × 670),
+       corrido un poco para arriba para no taparlo. */
+    left: 29.9%;
+    top: 87.9%;
+    z-index: 3;
+    translate: -50% -50%;
+    border-radius: 30px;
+    background-color: var(--color-oscuro);
+    padding: 5px 7px;
+    color: var(--color-arena);
+    font-size: 0.4375rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* La mancha que se abre desde Buenos Aires y entrega la pantalla al
+     equipo. Arranca en cero: sin JS no aparece nunca. */
+  /* El `background-image` es el PNG transparente de 2×2 que usa el resto de
+     los fondos oscuros: no pinta nada y evita que Chrome resuelva los tiles
+     como color sólido, que es lo que hace aparecer el corte de tono. */
+  .mapa-negro {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    background-color: var(--color-oscuro);
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAC0lEQVR42mNgQAcAABIAAeRVjecAAAAASUVORK5CYII=');
+    clip-path: circle(0% at 38% 79%);
+    pointer-events: none;
+  }
+
+  /* ── Equipo ────────────────────────────────────────────────────────── */
+  .equipo-titulo {
+    font-size: 2.25rem;
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .equipo-titulo strong {
+    font-weight: 800;
+  }
+
+  .equipo-bajada {
+    margin-inline: auto;
+    margin-top: 28px;
+    max-width: 880px;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .fichas {
+    display: grid;
+    gap: 16px;
+    margin-top: 48px;
+    text-align: left;
+  }
+
+  .ficha {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    aspect-ratio: 452 / 545;
+    border-radius: 20px;
+    background-color: var(--color-rojo);
+    padding: 20px;
+  }
+
+  .ficha-foto {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Detrás de la foto va el gris del fondo de los retratos, no el rojo de la
+     placa: al alejar el zoom la foto deja una rendija de medio píxel y lo que
+     asomaba era el magenta. #848182 es la mediana del marco de las diez. */
+  .ficha:has(.ficha-foto) {
+    background-color: #848182;
+  }
+
+  /* Velo de abajo hacia arriba: el nombre tiene que leerse sobre la foto.
+     Sólo en las fichas que tienen foto. */
+  .ficha:has(.ficha-foto)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to top, rgb(5 5 21 / 0.6) 0%, rgb(5 5 21 / 0) 48%);
+    pointer-events: none;
+  }
+
+  /* Quien todavía no tiene foto va con las iniciales sobre la placa roja,
+     como una cámara apagada. */
+  .ficha-iniciales {
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    display: grid;
+    width: 46%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    place-items: center;
+    border-radius: 999px;
+    background-color: rgb(5 5 21 / 0.22);
+    color: var(--color-arena);
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  /* El nombre y las redes van por encima de la foto y del velo. */
+  .ficha-pie {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Hover: el nombre pasa a amarillo y la foto se acerca apenas. Sólo con
+     puntero fino: en táctil no hay hover y el zoom quedaría pegado. */
+  @media (hover: hover) and (pointer: fine) {
+    .ficha-foto {
+      transition: scale 560ms var(--ease-salida);
+    }
+
+    .ficha-nombre,
+    .ficha-cargo {
+      transition: color 240ms var(--ease-salida);
+    }
+
+    .ficha:hover .ficha-foto {
+      scale: 1.04;
+    }
+
+    .ficha:hover .ficha-nombre,
+    .ficha:hover .ficha-cargo {
+      color: var(--color-amarillo);
+    }
+
+    /* Las redes aparecen con el hover. `focus-within` las deja alcanzables
+       con el teclado; en táctil, donde no hay hover, quedan siempre a la
+       vista porque esta regla vive dentro del `@media`. */
+    .ficha-redes {
+      opacity: 0;
+      transition: opacity 240ms var(--ease-salida);
+    }
+
+    .ficha:hover .ficha-redes,
+    .ficha:focus-within .ficha-redes {
+      opacity: 1;
+    }
+  }
+
+  .ficha-redes {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 2;
+    display: flex;
+    gap: 6px;
+  }
+
+  .ficha-redes a {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 999px;
+    background-color: rgb(5 5 21 / 0.25);
+    color: var(--color-arena);
+    transition: background-color 240ms var(--ease-salida);
+  }
+
+  .ficha-redes a:hover,
+  .ficha-redes a:focus-visible {
+    background-color: var(--color-oscuro);
+  }
+
+  .ficha-redes svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .ficha-nombre {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .ficha-cargo {
+    margin-top: 4px;
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  /* La placa de "sumate" ocupa el lugar de una ficha: sin relleno, con borde
+     y el contenido centrado. */
+  .ficha-sumate {
+    justify-content: center;
+    border: 1px solid rgb(245 244 235 / 0.35);
+    background-color: transparent;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .sumate-titulo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .sumate-texto {
+    margin-top: 10px;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .sumate-boton {
+    margin-top: 28px;
+  }
+
+  @media (width >= 40rem) {
+    .fichas {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .formas {
+      gap: 32px;
+    }
+
+    /* Tope de 130 px de alto. Las tres mantienen la proporción que tenían
+       entre sí en el Figma, escaladas para que la más alta llegue al tope.
+       De acá para arriba no vuelven a crecer. */
+    .forma-a {
+      height: 127px;
+    }
+
+    .forma-b {
+      height: 130px;
+    }
+
+    .forma-c {
+      height: 114px;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .titular {
+      font-size: 3.875rem;
+    }
+
+    .formas {
+      gap: 45px;
+      margin-top: 190px;
+    }
+
+    .conocenos {
+      display: block;
+      right: 40px;
+      bottom: 64px;
+    }
+
+    /* El titular queda a la izquierda y las frases a la derecha, con el
+       titular al medio de la lista. */
+    .valores {
+      display: grid;
+      align-items: center;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 40px;
+    }
+
+    .valores-titulo {
+      grid-column: 1 / span 6;
+      font-size: 4.625rem;
+    }
+
+    .valores-lista {
+      grid-column: 8 / -1;
+      margin-top: 0;
+      gap: 48px;
+    }
+
+    .valores-item {
+      font-size: 1.3125rem;
+    }
+
+    .mapa-centro {
+      gap: 40px;
+    }
+
+    .mapa-txt {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .mapa-titulo {
+      font-size: 3.25rem;
+    }
+
+    .mapa-bajada {
+      text-align: right;
+    }
+
+    .mapa-tag {
+      border-radius: 30px;
+      padding: 8px 11px;
+      font-size: 0.625rem;
+    }
+
+    .equipo-titulo {
+      font-size: 4.5rem;
+    }
+
+    .equipo-bajada {
+      margin-top: 36px;
+      font-size: 1.125rem;
+    }
+
+    .fichas {
+      gap: 35px;
+      margin-top: 72px;
+    }
+
+    .ficha {
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .ficha-nombre {
+      font-size: 1.625rem;
+    }
+
+    .ficha-cargo {
+      font-size: 1rem;
+    }
+
+    .sumate-titulo {
+      font-size: 1.625rem;
+    }
+
+    .sumate-texto {
+      font-size: 1rem;
+    }
+  }
+
+  /* El equipo sube una pantalla y queda apoyado sobre el final del mapa, por
+     encima del tapado oscuro. Mientras el tapado no cerró está transparente y
+     se ve el mapa debajo; cuando cierra, se enciende en el lugar.
+
+     `z-index` por encima del mapa y `pointer-events` apagados mientras no se
+     ve, para que no se coma los clics del mapa. El apagado lo pone el script:
+     sin JS el bloque se ve siempre. */
+  .equipo-envoltorio {
+    position: relative;
+    z-index: 7;
+    /* El ancho a sangre y el color los trae la página (`full-width` y
+       `fondo-oscuro`): el envoltorio es la superficie pintada y la banda de
+       adentro va `plana`, sin pseudo-elemento ni color propio. */
+    /* El envoltorio abre rápido: es el que deja ver el encabezado. Las
+       fichas entran después, una atrás de otra. */
+    transition: opacity 320ms var(--ease-salida);
+  }
+
+  /* Entrada de a una. El encendido lo decide la posición de cada ficha en
+     pantalla y no un reloj: con el reloj, scrolleando rápido las primeras se
+     pasaban antes de terminar de aparecer. El retardo es por columna, así
+     cada fila entra de izquierda a derecha sin que la última quede a un
+     segundo de la primera. El fundido es más corto que la ventaja que le da
+     el observador (una pantalla), para que nunca se vea a medio camino. */
+  .equipo-envoltorio.equipo-montado .ficha {
+    opacity: 0;
+    transition: opacity 320ms var(--ease-salida) var(--retardo, 0ms);
+  }
+
+  .equipo-envoltorio.equipo-montado .ficha.ficha-entro {
+    opacity: 1;
+  }
+
+  .equipo-envoltorio.equipo-montado {
+    margin-top: -100dvh;
+  }
+
+  .equipo-envoltorio.equipo-montado.equipo-apagado {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .valores-recorrido {
+      height: auto;
+    }
+
+    .valores-pin {
+      position: static;
+      min-height: 0;
+    }
+
+    .valores-item {
+      opacity: 1 !important;
+    }
+
+    .mapa {
+      height: auto;
+      margin-top: 0;
+    }
+
+    .mapa-fijo {
+      position: static;
+      height: auto;
+      padding-block: 80px;
+    }
+
+    .mapa-svg :global(.pt) {
+      opacity: 1;
+      transition: none;
+    }
+
+    .mapa-svg :global(.latido) {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /* Valores: el bloque queda fijo y los cuatro valores se pintan de a uno a
+     medida que se recorre la sección. Sólo cambia la opacidad: ninguno se
+     mueve de lugar. Los tramos se pisan entre sí para que el pintado sea
+     continuo y terminan antes del final del recorrido, así el último queda
+     entero un rato antes de que la banda azul suba y tape la pantalla.
+
+     Si el script no corre, el CSS deja los valores en opacidad 1 y la
+     sección se lee igual: la opacidad baja recién acá. */
+  const zonaValores = document.querySelector<HTMLElement>('[data-valores]');
+  const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (zonaValores && !sinMovimiento) {
+    const items = [...zonaValores.querySelectorAll<HTMLElement>('[data-valor]')];
+    const APAGADO = 0.16;
+    /* Cada valor arranca 0,16 después del anterior y tarda 0,26 en pintarse:
+       el primero va de 0,05 a 0,31 y el último termina en 0,79. */
+    const PASO = 0.16;
+    const LARGO = 0.26;
+    const DESDE = 0.05;
+
+    const topeV = (n: number) => Math.min(1, Math.max(0, n));
+    items.forEach((it) => (it.style.opacity = String(APAGADO)));
+
+    let pendienteV = false;
+
+    const pintarValores = () => {
+      pendienteV = false;
+      const r = zonaValores.getBoundingClientRect();
+      /* Avance: 0 cuando el bloque recién se fija arriba y 1 cuando arranca
+         el tapado azul. La última pantalla del recorrido es ese tapado, así
+         que no cuenta para el pintado: para entonces ya están los cuatro. */
+      const tapa = window.innerHeight;
+      const recorrido = r.height - window.innerHeight - tapa;
+      const avance = recorrido > 0 ? topeV(-r.top / recorrido) : 1;
+
+      items.forEach((it, i) => {
+        const arranca = DESDE + i * PASO;
+        const t = topeV((avance - arranca) / LARGO);
+        it.style.opacity = String(APAGADO + (1 - APAGADO) * t);
+      });
+    };
+
+    const alScrollValores = () => {
+      if (pendienteV) return;
+      pendienteV = true;
+      requestAnimationFrame(pintarValores);
+    };
+
+    addEventListener('scroll', alScrollValores, { passive: true });
+    addEventListener('resize', alScrollValores, { passive: true });
+    pintarValores();
+  }
+</script>
+
+<script>
+  /* Mapa: los puntos brotan desde Buenos Aires y, al final del recorrido, el
+     punto de Buenos Aires se agranda hasta tapar la pantalla de oscuro. Es lo
+     que hace de pase al bloque del equipo, que es oscuro. */
+  const seccion = document.querySelector<HTMLElement>('[data-mapa]');
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Las fotos del equipo vienen con `loading="lazy"`. Como el bloque está
+     tapado hasta el final del mapa, el navegador recién las pide cuando ya
+     tienen que verse, y el pase se traba con los huecos cargando. Se piden
+     antes: apenas el mapa se acerca, con dos pantallas de margen, que es
+     tiempo de sobra para que estén listas cuando el tapado cierra. */
+  const retratosEquipo = [...document.querySelectorAll<HTMLImageElement>('.ficha img')];
+  if (seccion && retratosEquipo.length) {
+    const adelanto = new IntersectionObserver(
+      (entradas) => {
+        if (!entradas.some((e) => e.isIntersecting)) return;
+        retratosEquipo.forEach((f) => {
+          f.loading = 'eager';
+          f.fetchPriority = 'low';
+        });
+        adelanto.disconnect();
+      },
+      { rootMargin: '200% 0px' }
+    );
+    adelanto.observe(seccion);
+  }
+
+  if (seccion && !quieto) {
+    const fijo = seccion.querySelector<HTMLElement>('.mapa-fijo')!;
+    const caja = seccion.querySelector<HTMLElement>('.mapa-svg')!;
+    const svg = caja.querySelector('svg')!;
+    const texto = seccion.querySelector<HTMLElement>('.mapa-txt')!;
+    const chapa = seccion.querySelector<HTMLElement>('.mapa-tag')!;
+    const negro = seccion.querySelector<HTMLElement>('[data-mapa-negro]')!;
+
+    /* El bloque del equipo se monta sobre la última pantalla del mapa y
+       arranca apagado; se enciende cuando el tapado cubre la pantalla. Las
+       dos clases las pone el script, así que sin JS el equipo queda abajo
+       del mapa y a la vista, como cualquier sección. */
+    const equipo = document.querySelector<HTMLElement>('[data-equipo-envoltorio]');
+    equipo?.classList.add('equipo-montado', 'equipo-apagado');
+
+    /* El equipo sube una pantalla, así que sobresale del mapa por su alto
+       menos una pantalla. Ese es el tramo que el respaldo tiene que cubrir. */
+    const medirRespaldo = () => {
+      if (!equipo) return;
+      const alto = Math.max(0, equipo.offsetHeight - window.innerHeight);
+      seccion.style.setProperty('--respaldo', `${Math.ceil(alto)}px`);
+    };
+    medirRespaldo();
+    window.addEventListener('resize', medirRespaldo, { passive: true });
+    window.addEventListener('load', medirRespaldo);
+
+    /* Las fichas se encienden según dónde están en pantalla, no por reloj.
+       El observador se arma recién cuando el tapado cerró: si mirara antes,
+       las que ya estaban en pantalla se marcarían con el bloque todavía
+       invisible y después aparecerían todas juntas, sin escalonado.
+
+       El margen de una pantalla para arriba y para abajo es lo que evita el
+       corte: cada ficha arranca el fundido cuando todavía le falta un alto
+       de ventana para entrar, así termina de aparecer antes de ser visible
+       por rápido que se scrollee. Con el disparo sobre el borde, una pasada
+       veloz dejaba la primera fila encendida y todo lo de abajo en negro
+       hasta que entraba de golpe. */
+    let ojoFichas: IntersectionObserver | null = null;
+    const encenderFichas = () => {
+      if (ojoFichas || !equipo) return;
+      ojoFichas = new IntersectionObserver(
+        (entradas) => {
+          entradas.forEach((e) => {
+            if (!e.isIntersecting) return;
+            e.target.classList.add('ficha-entro');
+            ojoFichas!.unobserve(e.target);
+          });
+        },
+        { rootMargin: '100% 0px' }
+      );
+      equipo.querySelectorAll('.ficha').forEach((f) => ojoFichas!.observe(f));
+    };
+
+    const bx = Number(svg.dataset.baX ?? 330);
+    const by = Number(svg.dataset.baY ?? 613);
+    const ba = svg.querySelector<SVGCircleElement>('#ba');
+
+    /* Cada punto espera su turno según lo lejos que esté de Buenos Aires, con
+       una pizca de azar para que no se lea como un anillo perfecto. */
+    const puntos = [...svg.querySelectorAll<SVGCircleElement>('.pt')];
+    let lejos = 1;
+    const distancias = puntos.map((p) => {
+      const d = Math.hypot(Number(p.getAttribute('cx')) - bx, Number(p.getAttribute('cy')) - by);
+      if (d > lejos) lejos = d;
+      return d;
+    });
+    puntos.forEach((p, i) => {
+      p.style.transitionDelay = `${Math.round((Math.random() * 0.8 + (distancias[i] / lejos) * 0.2) * 500)}ms`;
+    });
+
+    /* Anillo que late sobre Buenos Aires una vez que el mapa está armado. */
+    const latido = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    latido.setAttribute('class', 'latido');
+    latido.setAttribute('cx', String(bx));
+    latido.setAttribute('cy', String(by));
+    svg.appendChild(latido);
+
+    const tope = (n: number) => Math.min(1, Math.max(0, n));
+    const tramo = (p: number, a: number, b: number) => tope((p - a) / (b - a));
+
+    texto.style.opacity = '0';
+    caja.style.opacity = '0';
+    chapa.style.opacity = '0';
+
+    let pendiente = false;
+
+    const pintar = () => {
+      pendiente = false;
+      const r = seccion.getBoundingClientRect();
+      const recorrido = seccion.offsetHeight - window.innerHeight;
+      if (recorrido <= 0) return;
+      const p = tope(-r.top / recorrido);
+
+      caja.style.opacity = String(tramo(p, 0.02, 0.1));
+      caja.classList.toggle('puntos-si', p > 0.06);
+      texto.style.opacity = String(tramo(p, 0.08, 0.17));
+      chapa.style.opacity = String(tramo(p, 0.2, 0.3));
+
+      /* La mancha se abre justo desde donde está el punto de Buenos Aires en
+         pantalla, así el pase arranca del mapa y no de un punto inventado. */
+      const abierto = tramo(p, 0.62, 1);
+      let cx = 38;
+      let cy = 79;
+      if (ba) {
+        const b = ba.getBoundingClientRect();
+        const f = fijo.getBoundingClientRect();
+        cx = ((b.left + b.width / 2 - f.left) / f.width) * 100;
+        cy = ((b.top + b.height / 2 - f.top) / f.height) * 100;
+      }
+      /* 115 en vez de 150: la mancha tapa la pantalla entera recién sobre el
+         final del recorrido, así no queda un tramo de oscuro sin nada antes
+         de que llegue el equipo. */
+      negro.style.clipPath = `circle(${(abierto * 115).toFixed(1)}% at ${cx.toFixed(1)}% ${cy.toFixed(1)}%)`;
+
+      /* El equipo se enciende con el tapado cerrado y se apaga al volver para
+         arriba: si quedara encendido taparía el mapa, que está debajo. */
+      const tapadoCerrado = abierto * 115 >= 100;
+      equipo?.classList.toggle('equipo-apagado', !tapadoCerrado);
+      if (tapadoCerrado) encenderFichas();
+    };
+
+    const alScrollear = () => {
+      if (!pendiente) {
+        pendiente = true;
+        requestAnimationFrame(pintar);
+      }
+    };
+
+    window.addEventListener('scroll', alScrollear, { passive: true });
+    window.addEventListener('resize', alScrollear, { passive: true });
+    window.addEventListener('load', pintar);
+    pintar();
+  }
+</script>

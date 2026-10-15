@@ -1,0 +1,265 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Banda from '../../components/caso/Banda.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import CarruselFeed from '../../components/caso/CarruselFeed.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import Intro from '../../components/caso/Intro.astro';
+import Media from '../../components/caso/Media.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+import Video from '../../components/caso/Video.astro';
+import { margenArriba } from '../../lib/espacios';
+
+import hero from '../../assets/casos/galarraga/hero.png';
+import chaleco from '../../assets/casos/galarraga/chaleco.png';
+import indumentaria from '../../assets/casos/galarraga/indumentaria.png';
+import bandera from '../../assets/casos/galarraga/bandera.png';
+import premio from '../../assets/casos/galarraga/premio.png';
+import credencial from '../../assets/casos/galarraga/credencial.png';
+import campo from '../../assets/casos/galarraga/campo.png';
+import invitacion from '../../assets/casos/galarraga/invitacion.png';
+import afiche from '../../assets/casos/galarraga/afiche-maipu.png';
+import cartelRuta from '../../assets/casos/galarraga/cartel-ruta.png';
+import repGuido from '../../assets/casos/galarraga/representante-guido.png';
+import repDolores from '../../assets/casos/galarraga/representante-dolores.png';
+import repFicha from '../../assets/casos/galarraga/representante-ficha.png';
+import webDesktop from '../../assets/casos/galarraga/web-desktop.png';
+import appIcono from '../../assets/casos/galarraga/app-icono.png';
+import appPantalla from '../../assets/casos/galarraga/app-pantalla.png';
+import cartelCircular from '../../assets/casos/galarraga/cartel-circular.png';
+import fachada from '../../assets/casos/galarraga/fachada.png';
+import almanaqueEscritorio from '../../assets/casos/galarraga/almanaque-escritorio.png';
+import almanaquePared from '../../assets/casos/galarraga/almanaque-pared.png';
+import fachadaPlaca from '../../assets/casos/galarraga/fachada.svg';
+import logoGalarraga from '../../assets/casos/galarraga/logo-galarraga.svg';
+
+import feed1 from '../../assets/casos/galarraga/feed-01.png';
+import feed2 from '../../assets/casos/galarraga/feed-02.png';
+import feed3 from '../../assets/casos/galarraga/feed-03.png';
+import feed4 from '../../assets/casos/galarraga/feed-04.png';
+import feed5 from '../../assets/casos/galarraga/feed-05.png';
+import feed6 from '../../assets/casos/galarraga/feed-06.png';
+import feed7 from '../../assets/casos/galarraga/feed-07.png';
+
+import reelTestimonio from '../../assets/casos/galarraga/video/1.mp4';
+import reelBandera from '../../assets/casos/galarraga/video/2.mp4';
+import reelDrone from '../../assets/casos/galarraga/video/3.mp4';
+import reelRecinto from '../../assets/casos/galarraga/video/4.mp4';
+
+const caso = await getEntry('casos', 'galarraga');
+if (!caso) throw new Error('Falta src/content/casos/galarraga.yaml');
+const { data } = caso;
+
+/* Azul institucional de la marca, muestreado del Figma. */
+const AZUL = '#00253c';
+
+const PIEZAS_FEED = [
+  { src: feed1, alt: 'Posteo sobre el traslado de hacienda' },
+  { src: feed2, alt: 'Posteo de campaña institucional' },
+  { src: feed3, alt: 'Posteo del resumen informativo mensual' },
+  { src: feed4, alt: 'Posteo con los resultados de un remate' },
+  { src: feed5, alt: 'Posteo de convocatoria a un remate' },
+  { src: feed6, alt: 'Posteo de divulgación sanitaria' },
+  { src: feed7, alt: 'Posteo con la agenda de próximos remates' },
+];
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.titular}
+    sobra={108}
+    velocidad={0.05}
+  />
+
+  <Intro espacio="l">
+    Galarraga consigna hacienda y administra campos desde 1980, con casa central
+    en Maipú y representantes en varios partidos de la provincia de Buenos
+    Aires. Trabajamos con la casa desde hace doce años, sobre una marca ya
+    instalada en el rubro y una operación amplia: asesoramiento ganadero,
+    consignación, organización de remates e inmobiliaria rural. El trabajo fue
+    ordenar todos sus puntos de contacto bajo un mismo sistema y sostenerlo
+    campaña tras campaña.
+  </Intro>
+
+  {/* ── El remate ───────────────────────────────────────────────────────── */}
+  <BloqueTexto
+    espacio="m"
+    etiqueta="Marca en el remate"
+    titulo="Presencia integral en cada jornada"
+  >
+    <p>
+      El remate concentra la operación y la comunicación de la casa, y por eso
+      trabajamos las tres etapas de cada jornada. La previa produce la
+      convocatoria y la difusión de la fecha. Durante el remate la marca sostiene
+      el entorno físico completo, de la indumentaria del equipo a la gráfica del
+      predio y la acreditación, junto con la cobertura que se publica mientras la
+      jornada transcurre. Después vienen los resultados, el agradecimiento a los
+      consignantes y el material que alimenta la convocatoria siguiente. Es un
+      ciclo que se repite remate tras remate, con el mismo criterio de aplicación
+      en cada pieza.
+    </p>
+  </BloqueTexto>
+
+  <Grilla class="full-width" cols="1fr 1fr" gap="0.65rem" espacio="m">
+    <Media efecto="reveal" src={chaleco} alt="Chaleco de trabajo con la marca bordada" proporcion="885/1051" />
+    <Media efecto="reveal" src={indumentaria} alt="Operador de Galarraga en el corral" proporcion="885/1051" />
+  </Grilla>
+
+  {/* Los cuatro reels sobre la banda azul, como en la jornada: el testimonio,
+      el campo, la vista aérea del predio y el recinto. */}
+  <Banda color={AZUL} espacio="xs" class="py-[80px] lg:py-[140px]">
+    <div class="contenido">
+      <div class="grid grid-cols-2 items-end gap-6 lg:grid-cols-4 lg:gap-7" data-revelar-grupo>
+        <Video efecto="reveal" src={reelTestimonio} alt="Testimonio de la cabaña en el remate de primavera" proporcion="360/640" class="rounded-[30px]" />
+        <Video efecto="reveal" src={reelBandera} alt="Bandera argentina en el campo al atardecer" proporcion="360/640" class="rounded-[30px]" />
+        <Video efecto="reveal" src={reelDrone} alt="Vista aérea del predio durante el remate" proporcion="360/640" class="rounded-[30px]" />
+        <Video efecto="reveal" src={reelRecinto} alt="Público en el recinto durante la subasta" proporcion="360/640" class="rounded-[30px]" />
+      </div>
+    </div>
+  </Banda>
+
+  <Grilla class="full-width" cols="1fr 1fr 1fr" gap="0.65rem" espacio="xs">
+    <Media efecto="reveal" src={bandera} alt="Bandera de la marca en el corral" proporcion="586/782" />
+    <Media efecto="reveal" src={premio} alt="Premio al lote reservado gran campeón" proporcion="586/782" />
+    <Media efecto="reveal" src={credencial} alt="Credencial de acreditación con lanyard" proporcion="586/782" />
+  </Grilla>
+
+  {/* ── Contenido y comunidad ───────────────────────────────────────────── */}
+  <BloqueTexto
+    espacio="m"
+    etiqueta="Contenido y comunidad"
+    titulo="Un sistema de contenidos que sostiene la cuenta"
+  >
+    <p>
+      La agenda de remates es la base del contenido, y alrededor de ella armamos
+      un esquema de secciones que sostiene la cuenta entre fecha y fecha:
+      resúmenes de lo que pasa en el sector, resultados de cada jornada,
+      divulgación técnica y las piezas del calendario comercial de la casa. Las
+      secciones se renuevan según el año y según lo que la marca necesita
+      comunicar; lo que se mantiene es la estructura y el criterio gráfico que
+      las ordena.
+    </p>
+  </BloqueTexto>
+
+  {/* La tira de posteos corre sobre la foto de campo, que va a sangre. */}
+  <CarruselFeed class="full-width" piezas={PIEZAS_FEED} proporcion="1780/900" fondo={AZUL} intervalo={4000} espacio="m">
+    <Image slot="fondo" src={campo} alt="" aria-hidden="true" data-fondo />
+  </CarruselFeed>
+
+  <div class="contenido" style={margenArriba('m')}>
+    <div class="grid grid-cols-1 gap-[0.65rem] sm:grid-cols-2" data-revelar-grupo>
+      <Media efecto="reveal" src={invitacion} alt="Invitación a un evento de la casa" proporcion="728/1029" />
+      <Media efecto="reveal" src={afiche} alt="Afiche de convocatoria a un remate" proporcion="728/1029" />
+    </div>
+  </div>
+
+  {/* ── Representantes ──────────────────────────────────────────────────── */}
+  <BloqueTexto
+    espacio="m"
+    etiqueta="Campaña de representantes"
+    titulo="Vía pública y pauta por zona"
+  >
+    <p>
+      Galarraga trabaja con un representante en cada partido, y la campaña está
+      construida sobre esa red. Producimos una pieza por representante, con su
+      foto, su nombre y su teléfono, y la llevamos a dos soportes: cartelería en
+      los accesos a cada localidad y pauta en redes segmentada por radio
+      geográfico. El productor de cada zona ve siempre la cara de quien lo
+      atiende, y la inversión no se dispersa en públicos que no corresponden.
+    </p>
+  </BloqueTexto>
+
+  <Media class="full-width" efecto="parallax" src={cartelRuta} alt="Cartel en la ruta con el representante de Dolores" espacio="m" proporcion="1780/1041" />
+
+  <Grilla class="full-width" cols="1fr 1fr 1fr" gap="0.65rem" espacio="xs">
+    <Media efecto="reveal" src={repGuido} alt="Pieza de campaña: estar donde tenemos que estar, General Guido" proporcion="1/1" />
+    <Media efecto="reveal" src={repFicha} alt="Pieza de campaña: datos del representante en Dolores" proporcion="1/1" />
+    <Media efecto="reveal" src={repDolores} alt="Pieza de campaña: representante en Dolores" proporcion="1/1" />
+  </Grilla>
+
+  {/* ── Web y app ───────────────────────────────────────────────────────── */}
+  <BloqueTexto
+    espacio="m"
+    etiqueta="Ecosistema digital"
+    titulo="Web y app con cotizaciones y agenda de remates"
+  >
+    <p>
+      El sitio ordena la información institucional y los cuatro servicios de la
+      casa: asesoramiento ganadero, consignación de hacienda, organización de
+      remates e inmobiliaria rural. La app resuelve la consulta diaria del
+      productor y abre con las cotizaciones del día, los próximos remates y las
+      novedades del sector, con acceso directo al representante de su zona.
+    </p>
+  </BloqueTexto>
+
+  <Media class="full-width" efecto="reveal" src={webDesktop} alt="Home del sitio de Galarraga en una notebook" espacio="m" proporcion="1780/962" />
+
+  <div class="contenido" style={margenArriba('m')}>
+    <div class="grid grid-cols-1 gap-[0.65rem] sm:grid-cols-2" data-revelar-grupo>
+      <Media efecto="reveal" src={appIcono} alt="Ícono de la app en la pantalla del teléfono" proporcion="750/891" />
+      <Media efecto="reveal" src={appPantalla} alt="Pantalla de inicio de la app, con las cotizaciones del día" proporcion="750/891" />
+    </div>
+  </div>
+
+  {/* ── Arquigrafía ─────────────────────────────────────────────────────── */}
+  <BloqueTexto
+    espacio="m"
+    etiqueta="Arquigrafía"
+    titulo="Las oficinas, dentro del mismo sistema"
+  >
+    <p>
+      La casa central de Maipú se resolvió con el mismo criterio de aplicación
+      que el resto del sistema: la señalización del frente, el acceso desde la
+      vereda y la gráfica interior que ordena la circulación y las áreas de
+      atención. Cada intervención se proyecta antes sobre plano, para que las
+      medidas y las proporciones de la marca se sostengan en cualquier soporte.
+    </p>
+  </BloqueTexto>
+
+  <Grilla class="full-width" cols="1fr 1fr" gap="0.65rem" espacio="m">
+    <Media efecto="reveal" src={fachadaPlaca} alt="Plano de la gráfica del frente" proporcion="884/932" />
+    <Media efecto="reveal" src={cartelCircular} alt="Cartel circular retroiluminado sobre el frente" proporcion="884/933" />
+  </Grilla>
+
+  <Media class="full-width" efecto="parallax" src={fachada} alt="Frente de la casa central de Maipú" espacio="xs" proporcion="1780/836" />
+
+  {/* ── Almanaque ───────────────────────────────────────────────────────── */}
+  <BloqueTexto
+    espacio="m"
+    etiqueta="Pieza anual"
+    titulo="El almanaque que acompaña todo el año"
+  >
+    <p>
+      El almanaque es la pieza de mayor permanencia del sistema: queda doce
+      meses a la vista en el escritorio o en la pared. Además del calendario
+      trae la información que el productor consulta durante la campaña, con las
+      fases de la luna, las efemérides del sector y las fechas de remates y
+      exposiciones. Se produce todos los años, en versión de escritorio y de
+      pared.
+    </p>
+  </BloqueTexto>
+
+  <div class="contenido" style={margenArriba('m')}>
+    <div class="grid grid-cols-1 gap-[0.65rem] sm:grid-cols-2" data-revelar-grupo>
+      <Media efecto="reveal" src={almanaqueEscritorio} alt="Almanaque de escritorio sobre la mesa" proporcion="750/896" />
+      <Media efecto="reveal" src={almanaquePared} alt="Almanaque de pared abierto en agosto" proporcion="750/896" />
+    </div>
+  </div>
+
+  {/* ── Cierre ──────────────────────────────────────────────────────────── */}
+  <Banda color={AZUL} espacio="m" class="py-[6%] lg:py-[1.85%]">
+    <div class="mx-auto w-[min(100%-2.5rem,320px)] lg:w-[26.01%] lg:max-w-none">
+      <Media efecto="fade" src={logoGalarraga} alt="Marca Consignataria Galarraga" recorte={false} />
+    </div>
+  </Banda>
+
+  <OtrosProyectos excluir="galarraga" />
+</Base>

@@ -1,0 +1,84 @@
+---
+import Base from '../layouts/Base.astro';
+import Boton from '../components/ui/Boton.astro';
+
+/* Pantalla de error. Va sobre el oscuro del sistema: el registro cambia lo
+   suficiente como para que se note que no es una página del recorrido, y los
+   dos botones devuelven a los dos lugares desde donde se llega a todo lo
+   demás. Sin marquesina ni placa de cierre: abajo queda sólo el pie. */
+const OSCURO = '#050515';
+---
+
+<Base
+  titulo="Página no encontrada"
+  descripcion="La dirección que buscás no existe o cambió de lugar."
+  noindex
+  tema="oscuro"
+  cierre={false}
+  fondo={OSCURO}
+>
+  <section class="aviso contenido text-arena">
+    <p class="rotulo text-aqua" data-revelar>Error 404</p>
+
+    <h1 class="aviso-titulo mt-4 lg:mt-5" data-lineas style="--retardo:60ms">
+      Esta página no está.
+    </h1>
+
+    <p class="aviso-bajada mt-6 lg:mt-8" data-revelar style="--retardo:160ms">
+      Puede que la dirección haya cambiado o que el enlace esté roto. Desde el
+      portfolio se llega a todos los casos, y desde servicios a lo que hacemos.
+    </p>
+
+    <div
+      class="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 lg:mt-[48px]"
+      data-revelar
+      style="--retardo:220ms"
+    >
+      <Boton href="/" variante="texto" tamano="chico">Ir al inicio</Boton>
+      <Boton href="/casos" variante="texto" tamano="chico">Ver el portfolio</Boton>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* La pantalla ocupa el alto de la ventana menos el header, así el bloque
+     queda centrado y el pie entra justo abajo sin dejar un hueco. */
+  .aviso {
+    display: flex;
+    min-height: calc(100dvh - 220px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-block: 128px 96px;
+    text-align: center;
+  }
+
+  @media (width >= 64rem) {
+    .aviso {
+      min-height: calc(100dvh - 260px);
+      padding-block: 208px 140px;
+    }
+  }
+
+  /* Misma escala que el titular de contacto. */
+  .aviso-titulo {
+    max-width: 981px;
+    font-size: clamp(2.5rem, 1rem + 5.6vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .aviso-bajada {
+    max-width: 620px;
+    font-size: 1.25rem;
+    line-height: 1.35;
+  }
+
+  @media (width >= 64rem) {
+    .aviso-bajada {
+      font-size: 1.5rem;
+    }
+  }
+</style>

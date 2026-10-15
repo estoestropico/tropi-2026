@@ -1,0 +1,84 @@
+---
+/**
+ * CTA principal del sistema (Figma: componente "CTA", 17:9435).
+ * Fondo amarillo, borde 2px, sombra dura 2px 4px, pill.
+ */
+interface Props {
+  /** Sin `href` se arma como botón de envío: es el del formulario de contacto. */
+  href?: string;
+  variante?: 'primario' | 'secundario' | 'claro' | 'aqua' | 'verde' | 'rojo' | 'texto';
+  /** `grande` es el CTA de cierre (66 de alto). `chico` es el del header (48). */
+  tamano?: 'grande' | 'chico';
+  class?: string;
+}
+
+const {
+  href,
+  variante = 'primario',
+  tamano = 'grande',
+  class: className = '',
+} = Astro.props;
+
+const Etiqueta = href ? 'a' : 'button';
+
+const base =
+  'inline-flex items-center justify-center gap-[5px] rounded-[80px] text-[0.875rem] font-semibold uppercase leading-[28px] tracking-[0.02em] transition-transform duration-150 ease-out';
+
+/* `chico` mide 48 de alto: con el interlineado de 28 y los 2 px de borde de
+   cada lado quedan 8 px de padding arriba y abajo. Es el del header y el de
+   los bloques de la home. `grande` es el CTA de cierre, de 66.
+   El tamaño no toca el peso: el que lo cambia lo pasa por `class`. */
+const tamanos = {
+  grande: 'px-5 py-[18px]',
+  chico: 'px-[19px] py-[8px]',
+};
+
+const variantes = {
+  primario:
+    'bg-amarillo text-oscuro border-2 border-oscuro [filter:drop-shadow(2px_4px_0px_var(--color-oscuro))] hover:-translate-y-[2px] hover:[filter:drop-shadow(3px_6px_0px_var(--color-oscuro))]',
+  secundario:
+    'bg-transparent text-oscuro border-2 border-oscuro hover:bg-oscuro hover:text-arena',
+  /* Las tres variantes de abajo son de la home. `claro` va sobre fondo
+     oscuro —header del hero—, `aqua` es el botón del bloque "sobre
+     nosotros" y `verde` el de "ver más casos". */
+  /* Header sobre el hero oscuro: fondo oscuro, borde y sombra dura en arena,
+     y el rótulo en bold. No es el primario en negativo —el primario es
+     amarillo con sombra oscura—, es su propia variante del Figma. */
+  claro:
+    'bg-oscuro text-arena border-2 border-arena [filter:drop-shadow(2px_4px_0px_var(--color-arena))] hover:-translate-y-[2px] hover:[filter:drop-shadow(3px_6px_0px_var(--color-arena))]',
+  aqua: 'bg-transparent text-aqua border-2 border-aqua hover:bg-aqua hover:text-oscuro',
+  verde:
+    'bg-verde text-oscuro border-2 border-verde hover:bg-transparent hover:text-verde',
+  /* Misma forma que `aqua`, en rojo: es la placa "sumate" de la página de
+     Trópico, que va sobre el oscuro entre las fichas del equipo. */
+  rojo: 'bg-transparent text-rojo border-2 border-rojo hover:bg-rojo hover:text-arena',
+  /* Sin caja: sólo el rótulo y la flecha, que se subraya al pasar el mouse.
+     Hereda el color del bloque, así sirve sobre cualquier fondo. Lo usan las
+     pantallas de aviso —404 y gracias—, donde la caja competía con el
+     titular. El padding lo saca `p-0`, que gana sobre el del tamaño. */
+  texto: 'bg-transparent border-0 p-0! subraya',
+};
+---
+
+<Etiqueta
+  href={href}
+  type={href ? undefined : 'submit'}
+  class:list={[base, tamanos[tamano], variantes[variante], className]}
+>
+  <slot />
+  <svg
+    width="13"
+    height="11"
+    viewBox="0 0 13 11"
+    fill="none"
+    aria-hidden="true"
+    class="shrink-0"
+  >
+    <path
+      d="M0 5.5h11M7.5 1l4 4.5-4 4.5"
+      stroke="currentColor"
+      stroke-width="1.6"
+      stroke-linecap="square"
+    />
+  </svg>
+</Etiqueta>

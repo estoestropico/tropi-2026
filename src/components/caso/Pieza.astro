@@ -1,0 +1,60 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+/**
+ * Pieza dentro de una <Composicion>. Las coordenadas son las del Figma,
+ * relativas al origen del bloque; se convierten a porcentaje.
+ */
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  /** "fade" entra con opacidad; "ninguno" queda quieta. */
+  efecto?: 'fade' | 'ninguno';
+  x: number;
+  y: number;
+  w: number;
+  marco?: number;
+  alto?: number;
+  redondeo?: string;
+}
+
+const {
+  src,
+  alt,
+  efecto = 'fade',
+  x,
+  y,
+  w,
+  marco = 1780,
+  alto = 1,
+  redondeo,
+} = Astro.props;
+
+const estilo = [
+  `--px:${(x / marco) * 100}%`,
+  `--py:${(y / alto) * 100}%`,
+  `--pw:${(w / marco) * 100}%`,
+].join(';');
+---
+
+<Image
+  src={src}
+  alt={alt}
+  widths={[320, 640, 960]}
+  sizes={`${Math.round((w / marco) * 100)}vw`}
+  class:list={['pieza h-auto w-full', redondeo]}
+  style={estilo}
+  data-revelar={efecto === 'fade' ? '' : undefined}
+/>
+
+<style>
+  @media (width >= 64rem) {
+    .pieza {
+      position: absolute;
+      left: var(--px);
+      top: var(--py);
+      width: var(--pw);
+    }
+  }
+</style>

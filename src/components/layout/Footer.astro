@@ -1,0 +1,330 @@
+---
+import Logo from '../ui/Logo.astro';
+import { SIN_360 } from '../../lib/previa';
+
+/**
+ * Footer global (Figma: componente "footer", 365:8439).
+ *
+ * `variante` sólo cambia los colores. `oscuro` es el de siempre, el que usan
+ * las páginas de caso. `violeta` es el de la home, donde el pie continúa el
+ * fondo del bloque de cierre sin corte.
+ */
+interface Props {
+  variante?: 'oscuro' | 'violeta';
+}
+
+const { variante = 'oscuro' } = Astro.props;
+const enVioleta = variante === 'violeta';
+
+interface Columna {
+  /* Sin título, la columna son sólo sus renglones: es lo que hace la de menú,
+     que alinea sus cuatro items con el encabezado más los tres renglones de
+     las columnas vecinas. */
+  titulo?: string;
+  tituloHref?: string;
+  items: { texto: string; href?: string }[];
+}
+
+/* La home tiene su propio juego de columnas: en el Figma el encabezado de cada
+   una es a la vez el primer enlace —"Portfolio" encabeza y linkea—, y los
+   items de Servicios no son los del pie de los casos. */
+const columnasHome: Columna[] = [
+  {
+    titulo: 'Trópico',
+    items: [
+      { texto: 'Buenos Aires, Argentina' },
+      { texto: '©2026 · Derechos reservados' },
+      { texto: 'Fernando Acenso · 20325239892' },
+    ],
+  },
+  {
+    items: [
+      { texto: 'Portfolio', href: '/casos' },
+      { texto: 'Servicios', href: '/servicios' },
+      { texto: 'Nosotros', href: '/tropico' },
+      { texto: 'Contacto', href: '/contacto' },
+    ],
+  },
+  {
+    titulo: 'Servicios',
+    tituloHref: '/servicios',
+    items: [
+      ...(SIN_360 ? [] : [{ texto: 'Trópico360', href: '/servicios/360' }]),
+      { texto: 'Branding', href: '/servicios/branding' },
+      { texto: 'Web', href: '/servicios/web' },
+    ],
+  },
+  {
+    titulo: 'Social',
+    items: [
+      { texto: 'Instagram', href: 'https://www.instagram.com/estoestropico' },
+      { texto: 'Linkedin', href: 'https://www.linkedin.com/company/estoestropico' },
+      { texto: 'Behance', href: 'https://www.behance.net/estoestropico' },
+    ],
+  },
+  {
+    titulo: 'Contacto',
+    tituloHref: '/contacto',
+    items: [
+      { texto: 'hola@tropico.ar', href: 'mailto:hola@tropico.ar' },
+      { texto: 'jobs@tropico.ar', href: 'mailto:jobs@tropico.ar' },
+      { texto: '(+54911) 2255·5938', href: 'tel:+5491122555938' },
+    ],
+  },
+];
+
+const columnasCasos: Columna[] = [
+  {
+    titulo: 'Trópico',
+    items: [
+      { texto: 'Buenos Aires, Argentina' },
+      { texto: '©2026 · Derechos reservados' },
+      { texto: 'Fernando Acenso · 20325239892' },
+    ],
+  },
+  {
+    titulo: 'Menú',
+    items: [
+      { texto: 'Portfolio', href: '/casos' },
+      { texto: 'Servicios', href: '/servicios' },
+      { texto: 'Nosotros', href: '/tropico' },
+    ],
+  },
+  {
+    titulo: 'Servicios',
+    items: [
+      ...(SIN_360 ? [] : [{ texto: 'Trópico360', href: '/servicios/360' }]),
+      { texto: 'Sprint', href: '/servicios/sprint' },
+      { texto: 'One shots', href: '/servicios/one-shots' },
+    ],
+  },
+  {
+    titulo: 'Social',
+    items: [
+      { texto: 'Instagram', href: 'https://www.instagram.com/estoestropico' },
+      { texto: 'Linkedin', href: 'https://www.linkedin.com/company/estoestropico' },
+      { texto: 'Behance', href: 'https://www.behance.net/estoestropico' },
+    ],
+  },
+  {
+    titulo: 'Contacto',
+    tituloHref: '/contacto',
+    items: [
+      { texto: 'hola@tropico.ar', href: 'mailto:hola@tropico.ar' },
+      { texto: 'jobs@tropico.ar', href: 'mailto:jobs@tropico.ar' },
+      { texto: '(+54911) 2255·5938', href: 'tel:+5491122555938' },
+    ],
+  },
+];
+
+const columnas = enVioleta ? columnasHome : columnasCasos;
+
+/* En mobile el pie se arma distinto: la marca con los legales arriba y las
+   cuatro columnas de info abajo, en dos filas. La primera columna es siempre
+   la de los legales. */
+const [legales, ...info] = columnas;
+/* El pie violeta pasa a una sola línea recién en xl; el oscuro, en lg. */
+const soloDesktop = enVioleta ? 'hidden xl:block' : 'hidden lg:block';
+const soloMobil = enVioleta ? 'xl:hidden' : 'lg:hidden';
+---
+
+<footer
+  class:list={[
+    /* Sin `overflow-hidden`: recortaba la última letra de la marca cuando la
+       ola la levanta por arriba del borde del pie.
+       La fila única —marca, legales y flecha— arranca en xl y no en lg: los
+       legales miden 832 px sin cortar renglón, y con la marca y la flecha no
+       entran en 1024; la flecha quedaba afuera de la pantalla. */
+    enVioleta
+      ? 'relative pb-10 pt-12 text-arena lg:pb-[60px] lg:pt-0 bg-violeta'
+      : 'relative pt-24 text-arena lg:pt-28 bg-oscuro',
+  ]}
+>
+  {/* En violeta el pie va en una sola línea —marca, columnas y flecha—, que es
+      como está en el diseño de la home. En oscuro queda la disposición de los
+      casos: columnas arriba y la marca grande abajo. */}
+  <div
+    class:list={[
+      'marco',
+      soloDesktop,
+      enVioleta && 'xl:flex xl:items-end xl:justify-between xl:gap-12',
+    ]}
+  >
+    {enVioleta && (
+      <a href="/" aria-label="Trópico — inicio" class="mb-10 hidden shrink-0 xl:mb-0 xl:block">
+        <Logo class="w-[120px] text-arena" />
+      </a>
+    )}
+    {/* En violeta el pie sigue la placa del Figma: Onest regular de 12 px con
+        interlineado 2, sin mayúsculas, columnas de ancho propio separadas por
+        45 px y una línea vertical de 93 px entre una y otra. El encabezado de
+        cada columna tiene el mismo peso y tamaño que sus items: lo que lo
+        distingue es la posición, no el estilo. */}
+    {
+      enVioleta ? (
+        <div class="legales">
+          {columnas.map((col, i) => (
+            <>
+              {i > 0 && <span class="legales-linea" aria-hidden="true" />}
+              <div class="legales-col">
+                {col.titulo && (
+                  <p class="legales-titulo">
+                    {col.tituloHref ? (
+                      <a href={col.tituloHref} class="subraya hover:text-amarillo">
+                        {col.titulo}
+                      </a>
+                    ) : (
+                      col.titulo
+                    )}
+                  </p>
+                )}
+                {col.items.map((item) => (
+                  <p>
+                    {'href' in item && item.href ? (
+                      <a href={item.href} class="subraya hover:text-amarillo">
+                        {item.texto}
+                      </a>
+                    ) : (
+                      item.texto
+                    )}
+                  </p>
+                ))}
+              </div>
+            </>
+          ))}
+        </div>
+      ) : (
+        <div class="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-3 lg:grid-cols-5">
+          {columnas.map((col) => (
+            <div>
+              <h2 class="mb-2 text-[0.75rem] uppercase leading-[2] tracking-[0.06em] text-arena">
+                {col.titulo}
+              </h2>
+              <ul>
+                {col.items.map((item) => (
+                  <li class="text-[0.875rem] uppercase leading-[2] tracking-[0.02em] text-verde">
+                    {'href' in item && item.href ? (
+                      <a href={item.href} class="subraya hover:text-amarillo">
+                        {item.texto}
+                      </a>
+                    ) : (
+                      <span>{item.texto}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )
+    }
+    {
+      enVioleta && (
+        <a
+          href="#top"
+          aria-label="Volver arriba"
+          class="hidden size-[49px] shrink-0 place-items-center rounded-full border border-arena text-arena transition-colors hover:bg-arena hover:text-violeta xl:grid"
+        >
+          <svg width="16" height="18" viewBox="0 0 16 18" fill="none" aria-hidden="true">
+            <path
+              d="M8 17V1M1 7.5 8 1l7 6.5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="square"
+            />
+          </svg>
+        </a>
+      )
+    }
+  </div>
+
+  <div
+    class:list={[
+      'marco mt-20 flex-col-reverse items-start justify-between gap-10 pb-10 lg:mt-28 lg:flex-row lg:items-end lg:gap-8',
+      enVioleta ? 'hidden' : 'hidden lg:flex',
+    ]}
+  >
+    <a href="/" aria-label="Trópico — inicio" class="block">
+      <Logo class={enVioleta ? 'w-[120px] text-arena' : 'w-[62vw] max-w-[625px] text-arena'} />
+    </a>
+    <a
+      href="#top"
+      aria-label="Volver arriba"
+      class:list={[
+        'grid size-[49px] lg:mb-2 shrink-0 place-items-center rounded-full border transition-colors',
+        enVioleta
+          ? 'border-arena text-arena hover:bg-arena hover:text-violeta'
+          : 'border-verde text-verde hover:bg-verde hover:text-oscuro',
+      ]}
+    >
+      <svg width="16" height="18" viewBox="0 0 16 18" fill="none" aria-hidden="true">
+        <path
+          d="M8 17V1M1 7.5 8 1l7 6.5"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="square"
+        />
+      </svg>
+    </a>
+  </div>
+
+  {/* ── Pie de mobile ────────────────────────────────────────────────────
+      La marca con los legales arriba, las cuatro columnas de info abajo en
+      dos filas y la flecha chica al pie, a la derecha. El logo mide lo mismo
+      que el del header. */}
+  <div class:list={['marco pb-10', soloMobil]}>
+    <a href="/" aria-label="Trópico — inicio" class="block">
+      <Logo class="w-[70px] text-arena" />
+    </a>
+
+    <div class:list={['mt-5', enVioleta ? 'text-arena/75' : 'text-arena/70']}>
+      {legales.items.map((item) => (
+        <p class="text-[0.75rem] leading-[1.9]">{item.texto}</p>
+      ))}
+    </div>
+
+    <div class="mt-10 grid grid-cols-2 gap-x-6 gap-y-9">
+      {info.map((col) => (
+        <div>
+          {col.titulo && (
+            <h2 class="text-[0.75rem] uppercase leading-[1.8] tracking-[0.06em] text-arena/60">
+              {col.tituloHref ? (
+                <a href={col.tituloHref} class="subraya">{col.titulo}</a>
+              ) : (
+                col.titulo
+              )}
+            </h2>
+          )}
+          <ul class="mt-1">
+            {col.items.map((item) => (
+              <li class:list={['text-[0.875rem] leading-[1.9]', enVioleta ? 'text-arena' : 'text-verde']}>
+                {'href' in item && item.href ? (
+                  <a href={item.href} class="subraya hover:text-amarillo">{item.texto}</a>
+                ) : (
+                  <span>{item.texto}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-10 flex justify-end">
+      <a
+        href="#top"
+        aria-label="Volver arriba"
+        class:list={[
+          'grid size-[36px] shrink-0 place-items-center rounded-full border transition-colors',
+          enVioleta
+            ? 'border-arena/60 text-arena hover:bg-arena hover:text-violeta'
+            : 'border-verde/60 text-verde hover:bg-verde hover:text-oscuro',
+        ]}
+      >
+        <svg width="13" height="15" viewBox="0 0 16 18" fill="none" aria-hidden="true">
+          <path d="M8 17V1M1 7.5 8 1l7 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</footer>

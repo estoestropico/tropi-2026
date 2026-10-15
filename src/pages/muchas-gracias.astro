@@ -1,0 +1,89 @@
+---
+import Base from '../layouts/Base.astro';
+import Boton from '../components/ui/Boton.astro';
+
+/* Destino del formulario de contacto. Sigue en violeta para que el envío se
+   lea como la continuación de la misma pantalla y no como otro lugar del
+   sitio. Igual que contacto: sin marquesina ni placa de cierre, y `noindex`,
+   porque sólo se llega acá después de enviar. */
+const VIOLETA = '#5d00ff';
+---
+
+<Base
+  titulo="Muchas gracias"
+  descripcion="Recibimos tu mensaje."
+  noindex
+  tema="violeta"
+  cierre={false}
+  fondo={VIOLETA}
+>
+  <section class="gracias contenido text-arena">
+    <p class="rotulo text-amarillo" data-revelar>Mensaje enviado</p>
+
+    <h1 class="gracias-titulo mt-4 lg:mt-5" data-lineas style="--retardo:60ms">
+      ¡Muchas gracias!
+    </h1>
+
+    <p class="gracias-bajada mt-6 lg:mt-8" data-revelar style="--retardo:160ms">
+      Ya tenemos tu mensaje. Lo leemos y te contactamos a la brevedad.
+    </p>
+
+    <p class="mt-8 lg:mt-10" data-revelar style="--retardo:200ms">
+      Si mientras tanto necesitás algo, escribinos a{' '}
+      <a href="mailto:hola@tropico.ar" class="subraya font-bold">hola@tropico.ar</a>{' '}
+      o llamanos al{' '}
+      <a href="tel:+5491122555938" class="subraya font-bold">(+54911) 2255·5938</a>.
+    </p>
+
+    <div
+      class="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 lg:mt-[48px]"
+      data-revelar
+      style="--retardo:260ms"
+    >
+      <Boton href="/casos" variante="texto" tamano="chico">Ver el portfolio</Boton>
+      <Boton href="/" variante="texto" tamano="chico">Volver al inicio</Boton>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .gracias {
+    display: flex;
+    min-height: calc(100dvh - 220px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-block: 128px 96px;
+    text-align: center;
+  }
+
+  @media (width >= 64rem) {
+    .gracias {
+      min-height: calc(100dvh - 260px);
+      padding-block: 208px 140px;
+    }
+  }
+
+  /* Mismo cuerpo que el titular del 404: las dos pantallas de aviso usan la
+     misma escala. */
+  .gracias-titulo {
+    max-width: 981px;
+    font-size: clamp(2.5rem, 1rem + 5.6vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .gracias-bajada {
+    max-width: 620px;
+    font-size: 1.25rem;
+    line-height: 1.35;
+  }
+
+  @media (width >= 64rem) {
+    .gracias-bajada {
+      font-size: 1.5rem;
+    }
+  }
+</style>

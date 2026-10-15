@@ -1,0 +1,904 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Banda from '../components/caso/Banda.astro';
+import Boton from '../components/ui/Boton.astro';
+import TarjetaCaso from '../components/ui/TarjetaCaso.astro';
+import BloqueServicios from '../components/servicio/BloqueServicios.astro';
+
+import home1 from '../assets/home/home-1.png';
+import home2 from '../assets/home/home-2.png';
+import home3 from '../assets/home/home-3.png';
+import home4 from '../assets/home/home-4.png';
+
+import logoSchneider from '../assets/home/logos/schneider.svg';
+import logoWs from '../assets/home/logos/ws.svg';
+import logoSuecia from '../assets/home/logos/suecia.svg';
+import logoPresidencia from '../assets/home/logos/presidencia.svg';
+import logoAaaj from '../assets/home/logos/aaaj.svg';
+import logoSteck from '../assets/home/logos/steck.svg';
+import logoPersonal from '../assets/home/logos/personal.svg';
+import logoWhatsapp from '../assets/home/logo-whatsapp.svg';
+
+/* Colores de la home. Salen de las variables del Figma T26; los tres últimos
+   se sumaron a global.css con esta página. */
+const OSCURO = '#050515';
+const ARENA = '#f5f4eb';
+
+/* Las cuatro tarjetas salen de la colección, ordenadas por `orden`, igual que
+   el listado y "ver más proyectos". El Figma muestra otras cuatro, pero ahí
+   estaban de ejemplo: la fuente es la metadata. */
+const casos = (await getCollection('casos'))
+  .filter((c) => c.data.publicado)
+  .sort((a, b) => a.data.orden - b.data.orden)
+  .slice(0, 4);
+
+
+/* Testimonios. Sólo el primero viene del Figma; los otros cuatro son texto de
+   relleno con la misma extensión, para probar el slider hasta que lleguen los
+   reales. */
+const TESTIMONIOS = [
+  {
+    nombre: 'Verónica Sartoni',
+    cargo: 'Directora de gestión institucional',
+    empresa: 'Washington School',
+    texto:
+      '“Lo mejor de Trópico es que primero trabajan para conocer la identidad de la institución. Investigan, preguntan, la viven, y después son un torbellino de ideas, siempre predispuestos a atender las demandas que vayan surgiendo.”',
+  },
+  {
+    nombre: 'Mariano Sella',
+    cargo: 'Socio fundador',
+    empresa: 'Farmaexpert',
+    texto:
+      '“Trabajar con Trópico es garantía de tranquilidad. Son muy profesionales, rápidos en la respuesta y con una atención al detalle excepcional en la estrategia de nuestras farmacias. Un equipo que está en todo y cumple con creces.”',
+  },
+  {
+    nombre: 'Fermín Parisi',
+    cargo: 'Director',
+    empresa: 'Parisi',
+    texto:
+      '“No esperan a que les pida las cosas. Me llegan propuestas antes de que se me ocurra que hacían falta, y más de una vez se adelantaron a temas de la campaña que yo todavía no había mirado.”',
+  },
+  {
+    nombre: 'Renato Monte',
+    cargo: 'Gerente administrativo',
+    empresa: 'Consignataria Galarraga',
+    texto:
+      '“Hace años que trabajamos juntos y eso se nota en los tiempos. Conocen el negocio, así que pedimos algo y sale, sin tener que explicar el contexto cada vez. Cuando aparece un imprevisto, responden.”',
+  },
+];
+
+/* Apertura: tres placas que se turnan con fade, misma mecánica que el slider
+   de fichas de Farmaexpert. */
+const APERTURA = [
+  { src: home1, alt: 'Trabajo de Trópico: identidad aplicada' },
+  { src: home2, alt: 'Trabajo de Trópico: pieza de campaña' },
+  { src: home3, alt: 'Trabajo de Trópico: producto digital' },
+  { src: home4, alt: 'Trabajo de Trópico: producto de consumo' },
+];
+
+/* Los siete logos vienen exportados al mismo alto y ya alineados, así que no
+   llevan ajuste por pieza: van todos a 85 px de alto en desktop. */
+const MARCAS = [
+  { src: logoSchneider, alt: 'Schneider Electric' },
+  { src: logoWs, alt: 'Washington School' },
+  { src: logoSuecia, alt: 'Embajada de Suecia' },
+  { src: logoPresidencia, alt: 'Presidencia de la Nación' },
+  { src: logoAaaj, alt: 'AAAJ' },
+  { src: logoSteck, alt: 'Steck' },
+  { src: logoPersonal, alt: 'Personal' },
+];
+
+/* Preguntas frecuentes. Borrador armado con lo que ya está en el sitio
+   —servicios, equipo remoto—: falta la revisión de
+   Trópico antes de publicar. */
+const PREGUNTAS = [
+  {
+    pregunta: '¿Cómo puedo trabajar con ustedes?',
+    respuesta:
+      'De dos maneras. Por proyecto, cuando hay una necesidad puntual con alcance, plazos y entregables definidos desde el inicio: una marca, un sitio, una campaña. Trabajamos por etapas y te entregamos todo terminado y listo para usar. O de forma continua con Trópico 360, donde planificamos mes a mes, producimos, medimos y ajustamos sobre la marcha: funciona como un área de comunicación propia, sin sumar estructura.',
+  },
+  {
+    pregunta: '¿Cuánto cuesta trabajar con ustedes?',
+    respuesta:
+      'No tenemos precios de lista, porque no vendemos un producto estandarizado: el presupuesto depende del alcance, de la complejidad y del momento en que está tu empresa. Lo que sí podemos es cotizar rápido. Con una reunión para entender qué necesitás, te pasamos una propuesta con alcance, etapas y valores.',
+  },
+  {
+    pregunta: '¿Cuánto tarda un proyecto?',
+    respuesta:
+      'Nuestros procesos están estandarizados y cada etapa tiene su plazo; lo que cambia de un caso a otro es el alcance. Un proyecto de marca lleva alrededor de un mes. Un sitio depende de la cantidad de secciones, las funcionalidades y las integraciones. Al aprobar el presupuesto ya tenés las fases del proyecto y la fecha estimada de entrega.',
+  },
+  {
+    pregunta: '¿Quién va a trabajar en mi proyecto?',
+    respuesta:
+      'Un equipo asignado desde el primer día y armado según lo que necesita tu marca: estrategia, diseño, desarrollo, contenido o performance. Tenés un responsable de cuenta como interlocutor directo, así siempre sabés con quién hablar y en qué estado está cada tarea. El equipo trabaja distribuido, con instancias de revisión pactadas al inicio y canales compartidos donde ves cómo avanza cada etapa.',
+  },
+  {
+    pregunta: '¿Trabajan con empresas de cualquier tamaño o rubro?',
+    respuesta:
+      'Trabajamos con startups que están armando su primera marca y con multinacionales que necesitan ordenar la comunicación de una operación ya grande. Cada tamaño trae problemas y alcances distintos, y eso se define en la primera reunión.',
+  },
+  {
+    pregunta: '¿Trabajan con clientes fuera de Argentina?',
+    respuesta:
+      'Sí. Trabajamos para más de 15 países. La operación es la misma: reuniones por videollamada, canales compartidos y plazos acordados al inicio.',
+  },
+];
+
+---
+
+<Base
+  titulo="Trópico · Comunicación y branding"
+  descripcion="Una agencia integral que combina branding, productos digitales y performance para que tu marca se note, se entienda y se elija."
+  tema="oscuro"
+>
+  {/* ── Hero ────────────────────────────────────────────────────────────── */}
+  {/* El hero arranca pegado arriba y el header se le apoya encima, por eso el
+      padding de arriba sale de la altura del header y no de la escala. */}
+  <Banda color={OSCURO} espacio="nulo" class="relative">
+    <div class="contenido pb-[80px] pt-[160px] lg:pb-[100px] lg:pt-[210px]">
+      <p class="rotulo text-rojo" data-revelar>¡Hola! Esto es Trópico</p>
+      <h1 class="titular mt-6 text-arena lg:mt-[25px]" data-revelar>
+        El clima ideal para<br /><strong>que tu marca crezca.</strong>
+      </h1>
+      <p class="mt-6 max-w-[663px] text-arena lg:mt-10" data-revelar>
+        Una agencia integral que combina branding, productos digitales y
+        performance para que tu marca se note, se entienda y se elija.
+      </p>
+    </div>
+
+  </Banda>
+
+  {/* WhatsApp: fijo al centro vertical de la pantalla, acompaña todo el
+      scroll. Va fuera del hero, que es lo que lo ataba al primer bloque. */}
+  <a
+    href="https://wa.me/5491122555938"
+    class="wsp"
+    aria-label="Escribinos por WhatsApp"
+    target="_blank"
+    rel="noopener"
+  >
+    <Image src={logoWhatsapp} alt="" aria-hidden="true" />
+  </a>
+
+  {/* ── Apertura ────────────────────────────────────────────────────────── */}
+  {/* Las tres placas se apilan en el mismo marco y se turnan con fade. El
+      marco tiene la proporción del archivo, así que el bloque no salta de
+      alto al cambiar de imagen. */}
+  {/* Barra de carga del slider: cruza la pantalla de 0 a 100 % en lo que dura
+      cada placa y cambia de color en cada pasada. Los colores se repiten en
+      ciclo, así que sumar placas no pide tocar nada. */}
+  <div class="cargador full-width" aria-hidden="true">
+    <span class="cargador-barra"></span>
+  </div>
+
+  <div class="apertura full-width" data-revelar>
+    {
+      APERTURA.map((im, i) => (
+        <Image
+          src={im.src}
+          alt={im.alt}
+          widths={[640, 960, 1280, 1828]}
+          sizes="100vw"
+          loading={i === 0 ? 'eager' : 'lazy'}
+          class:list={['apertura-placa', i === 0 && 'apertura-visible']}
+        />
+      ))
+    }
+  </div>
+
+  {/* ── Sobre nosotros ──────────────────────────────────────────────────── */}
+  <Banda color={OSCURO} espacio="nulo" class="relative">
+    {/* La forma se apoya en el borde izquierdo de la PANTALLA, no en el del
+        contenido: la capa mide 100vw y arranca en `calc(50% - 50vw)`. Antes
+        el recorte estaba en la banda, que se topa en 1780, y de ahí para
+        arriba la forma se cortaba antes de llegar al borde. El recorte ahora
+        vive en la capa, que ya mide lo mismo que la pantalla. */}
+    <div class="lunas" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="contenido relative py-[96px] text-center lg:py-[240px]">
+      <p class="rotulo text-aqua" data-revelar>Sobre nosotros</p>
+      <h2 class="titular mx-auto mt-6 text-arena lg:mt-[52px]" data-revelar>
+        Ágiles por instinto,<br /><strong>creativos por naturaleza.</strong>
+      </h2>
+      <p class="mx-auto mt-8 max-w-[690px] text-arena lg:mt-10" data-revelar>
+        Trabajamos con procesos claros y confianza en las personas. Eso
+        sostiene la calidad del trabajo y una comunicación simple en cada
+        proyecto.
+      </p>
+      <div class="mt-10 lg:mt-[39px]" data-revelar>
+        <Boton href="/tropico" tamano="chico" variante="aqua">Conocenos</Boton>
+      </div>
+    </div>
+  </Banda>
+
+  {/* ── Portfolio ───────────────────────────────────────────────────────── */}
+  <Banda color={ARENA} espacio="nulo">
+    <div class="contenido py-[80px] lg:py-[120px]">
+      <p class="rotulo text-[#8fbf00]" data-revelar>Nuestro portfolio</p>
+
+      <ul class="mt-10 grid grid-cols-1 gap-x-[30px] gap-y-[56px] lg:mt-[91px] lg:grid-cols-2 lg:gap-y-[91px]">
+        {
+          casos.map((caso) => (
+            <li>
+              <TarjetaCaso caso={caso} />
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="mt-12 text-center lg:mt-[80px]" data-revelar>
+        <Boton href="/casos" tamano="chico" variante="verde">Ver más casos</Boton>
+      </div>
+    </div>
+  </Banda>
+
+  {/* ── Lo que hacemos ──────────────────────────────────────────────────── */}
+  <Banda espacio="nulo" plana class="fondo-oscuro">
+    <div class="contenido py-[80px] text-arena lg:py-[85px]">
+      <p class="rotulo text-aqua" data-revelar>Lo que hacemos</p>
+
+      <BloqueServicios class="mt-10 lg:mt-[121px]" />
+    </div>
+  </Banda>
+
+  {/* ── Testimonios ─────────────────────────────────────────────────────── */}
+  <Banda color={ARENA} espacio="nulo">
+    <div class="contenido pt-[80px] lg:pt-[112px]">
+      <p class="rotulo text-rojo" data-revelar>Testimonios</p>
+
+      {/* La declaración es fija y va arriba del slider: lo que rota son sólo
+          los testimonios. */}
+      <p class="declaracion mt-8 lg:mt-[64px]" data-revelar>
+        Estamos cerca. Entendemos lo que necesitás y te acompañamos en el
+        proceso, con compromiso y criterio.
+      </p>
+
+      {/* Las fichas se apilan en la misma celda de la grilla: el contenedor toma
+          el alto de la más larga y el cambio es un fundido, sin saltos. */}
+      <div
+        class="testimonios mt-10 lg:mt-[147px]"
+        data-testimonios
+        aria-roledescription="carrusel"
+        aria-label="Testimonios"
+      >
+        {
+          TESTIMONIOS.map((t, i) => (
+            <article
+              id={`testimonio-${i}`}
+              class:list={['testimonio', i === 0 && 'testimonio-activo']}
+              aria-hidden={i > 0 ? 'true' : undefined}
+              aria-roledescription="testimonio"
+            >
+              <div class="grid gap-8 lg:grid-cols-2 lg:gap-[30px]">
+                <div>
+                  <p class="text-[1.25rem] font-bold leading-none lg:text-[1.5rem]">{t.nombre}</p>
+                  <p class="mt-2 text-[0.8125rem] uppercase leading-[1.6] tracking-[0.04em] lg:mt-[24px]">
+                    {t.cargo}
+                    <br />
+                    {t.empresa}
+                  </p>
+                </div>
+                <p class="leading-[1.4]">{t.texto}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="mt-8 flex gap-[10px] lg:mt-[37px]" role="tablist" aria-label="Elegir testimonio">
+        {
+          TESTIMONIOS.map((t, i) => (
+            <button
+              type="button"
+              class="punto"
+              data-punto={i}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              aria-controls={`testimonio-${i}`}
+              role="tab"
+              aria-label={`Testimonio de ${t.nombre}`}
+            />
+          ))
+        }
+      </div>
+    </div>
+
+    {/* Marcas: la tira se repite dos veces y corre en loop. Va a sangre, así
+        que cuelga de la banda y no de `.contenido`: `full-width` calcula su
+        margen contra el 50 % del padre, y adentro de una columna de 1410 ese
+        50 % no es el del viewport —la tira se pasaba del borde derecho y la
+        página ganaba scroll horizontal entre 1024 y 1680—. */}
+    <div class="marcas full-width mt-[80px] lg:mt-[110px]">
+      <div class="marcas-pista">
+        {
+          /* Cuatro copias, no dos: con dos, el ancho de una tira no llega a
+             cubrir la pantalla en monitores grandes y entre vuelta y vuelta
+             quedaba un hueco. La animación corre exactamente el ancho de una
+             copia —25 % de la pista—, así el empalme es invisible. */
+          [0, 1, 2, 3].map((copia) => (
+            <ul class="marcas-tira" aria-hidden={copia > 0 ? 'true' : undefined}>
+              {MARCAS.map((m) => (
+                <li>
+                  <Image src={m.src} alt={copia === 0 ? m.alt : ''} class="marca-logo" />
+                </li>
+              ))}
+            </ul>
+          ))
+        }
+      </div>
+    </div>
+  </Banda>
+
+  {/* ── Preguntas ───────────────────────────────────────────────────────── */}
+  <Banda color={OSCURO} espacio="nulo">
+    <div class="contenido py-[80px] text-arena lg:py-[147px]">
+      <p class="rotulo text-aqua" data-revelar>¿Tenés preguntas?</p>
+
+      <div class="mt-8 lg:mt-[67px]">
+        {
+          PREGUNTAS.map((p, i) => (
+            <details class="pregunta" name="preguntas">
+              <summary>
+                <span>{p.pregunta}</span>
+                <span class="signo" aria-hidden="true" />
+              </summary>
+              <div class="respuesta-caja"><p class="respuesta">{p.respuesta}</p></div>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </Banda>
+
+</Base>
+
+<style>
+  /* ── Tipografía de la home ──────────────────────────────────────────────
+     El titular del hero y el de "sobre nosotros" son el mismo estilo: la
+     primera línea en regular y la segunda en extrabold. Escala con el
+     viewport y se topa en los 80px del Figma. */
+  .titular {
+    font-size: clamp(2.25rem, 1.1rem + 4.6vw, 5rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .titular strong {
+    font-weight: 800;
+  }
+
+  /* ── Barra de carga de la apertura ───────────────────────────────────── */
+  .cargador {
+    height: 5px;
+    /* El tramo que todavía no cargó: oscuro al 80 %, en vez del blanco del
+       lienzo. */
+    background-color: rgb(5 5 21 / 0.8);
+    overflow: hidden;
+  }
+
+  .cargador-barra {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--cargador-color, var(--color-rojo));
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .cargador-barra.corre {
+    animation: cargar var(--cargador-tiempo, 4000ms) linear forwards;
+  }
+
+  @keyframes cargar {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Con menos movimiento la barra queda llena, con el color de la placa. */
+  @media (prefers-reduced-motion: reduce) {
+    .cargador-barra,
+    .cargador-barra.corre {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+
+  /* ── Apertura ────────────────────────────────────────────────────────── */
+  .apertura {
+    position: relative;
+    aspect-ratio: 1828 / 941;
+    /* Fondo del marco: se ve mientras la placa todavía no cargó y en el
+       cruce entre una y otra. */
+    background-color: var(--color-oscuro);
+    overflow: hidden;
+  }
+
+  .apertura-placa {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 700ms var(--ease-salida);
+  }
+
+  .apertura-placa.apertura-visible {
+    opacity: 1;
+  }
+
+  /* ── WhatsApp ────────────────────────────────────────────────────────── */
+  /* Fijo al centro vertical de la pantalla: acompaña todo el scroll y no se
+     mueve con el contenido. A 46 px del borde del marco de 1780, igual que en
+     el Figma, con el `max` que lo apoya en 20 px cuando la pantalla es más
+     angosta que el marco. */
+  .wsp {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    z-index: 40;
+    display: block;
+    width: 44px;
+    translate: 0 -50%;
+    transition: transform 200ms var(--ease-salida);
+  }
+
+  .wsp :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .wsp:hover {
+    transform: scale(1.08);
+  }
+
+  @media (width >= 64rem) {
+    .wsp {
+      right: max(46px, calc(50% - 890px + 46px));
+      width: 50px;
+    }
+  }
+
+  /* ── Forma del bloque "sobre nosotros" ──────────────────────────────── */
+  /* Tres arcos violetas apoyados en el borde izquierdo de la pantalla. La capa
+     mide 100vw y recorta lo que sobresale, así nunca suma scroll horizontal.
+     Abajo de 1024 no hay margen lateral para que respiren sin pisar el texto
+     centrado, así que no se dibujan. */
+  .lunas {
+    display: none;
+  }
+
+  @media (width >= 64rem) {
+    .lunas {
+      position: absolute;
+      top: 50%;
+      left: calc(50% - 50vw);
+      display: block;
+      width: 100vw;
+      height: 300px;
+      margin-top: -150px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .lunas span {
+      position: absolute;
+      top: 50%;
+      width: 260px;
+      height: 260px;
+      border: 1.5px solid var(--color-violeta);
+      border-radius: 999px;
+      translate: 0 -50%;
+    }
+
+    .lunas span:nth-child(1) {
+      left: -195px;
+    }
+    .lunas span:nth-child(2) {
+      left: -160px;
+    }
+    .lunas span:nth-child(3) {
+      left: -125px;
+    }
+  }
+
+  /* ── Testimonios ─────────────────────────────────────────────────────── */
+  .declaracion {
+    font-size: clamp(1.75rem, 0.9rem + 3.4vw, 3.75rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+
+  /* Ocho de las doce columnas de la grilla de 1410 con calles de 30 px: ocho
+     columnas más las siete calles que quedan entre ellas. */
+  @media (width >= 64rem) {
+    .declaracion {
+      max-width: calc((100% - 11 * 30px) / 12 * 8 + 7 * 30px);
+    }
+  }
+
+  .testimonios {
+    display: grid;
+    /* El gesto horizontal es del slider; el vertical sigue siendo scroll. */
+    touch-action: pan-y;
+  }
+
+  .testimonio {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 700ms var(--ease-salida),
+      visibility 0s linear 700ms;
+  }
+
+  .testimonio-activo {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 700ms var(--ease-salida),
+      visibility 0s;
+  }
+
+  .punto {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background-color: rgb(5 5 21 / 0.18);
+    transition: background-color 240ms var(--ease-salida);
+  }
+
+  .punto[aria-selected='true'] {
+    background-color: var(--color-rojo);
+  }
+
+  /* ── Marcas ──────────────────────────────────────────────────────────── */
+  .marcas {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgb(5 5 21 / 0.2);
+    border-bottom: 1px solid rgb(5 5 21 / 0.2);
+    padding-block: 28px;
+  }
+
+  .marcas-pista {
+    display: flex;
+    width: max-content;
+    animation: correr-cuarto 38s linear infinite;
+  }
+
+  .marcas-tira {
+    display: flex;
+    align-items: center;
+    gap: 64px;
+    padding-right: 64px;
+  }
+
+  /* Los siete archivos vienen al mismo alto y ya alineados, así que alcanza
+     con fijar la altura de render: el ancho lo pone cada pieza. */
+  .marca-logo {
+    width: auto;
+    height: 52px;
+  }
+
+  @media (width >= 64rem) {
+    .marca-logo {
+      height: 85px;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .marcas {
+      padding-block: 36px;
+    }
+
+    .marcas-tira {
+      gap: 104px;
+      padding-right: 104px;
+    }
+  }
+
+  /* ── Preguntas ───────────────────────────────────────────────────────── */
+  .pregunta {
+    border-bottom: 1px solid rgb(245 244 235 / 0.35);
+  }
+
+  .pregunta summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-block: 20px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+    list-style: none;
+    transition: color 180ms var(--ease-salida);
+  }
+
+  /* Hover sólo en las preguntas cerradas: el texto y el signo pasan a
+     amarillo. Abierta no cambia, así el color marca lo que queda por abrir. */
+  .pregunta:not([open]) summary:hover,
+  .pregunta[data-estado='cerrado'] summary:hover {
+    color: var(--color-amarillo);
+  }
+
+  .pregunta:not([open]) summary:hover .signo::before,
+  .pregunta:not([open]) summary:hover .signo::after,
+  .pregunta[data-estado='cerrado'] summary:hover .signo::before,
+  .pregunta[data-estado='cerrado'] summary:hover .signo::after {
+    background-color: var(--color-amarillo);
+  }
+
+  .pregunta summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Signo del acordeón. Los cuatro colores salen de variables para que cada
+     bloque los fije según su fondo: sobre claro el círculo es oscuro al 20 %
+     y las barras oscuras; abierto se llena de oscuro y las barras pasan a
+     arena. Sobre fondo oscuro es el mismo juego al revés. */
+  .signo {
+    position: relative;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    /* Banda oscura: arena al 20 %, y al abrir arena llena. */
+    background-color: rgb(245 244 235 / 0.1);
+  }
+
+  /* El signo se dibuja con dos barras: la vertical se apaga al abrir y queda
+     el menos. Así no hay dos íconos ni un sprite. */
+  .signo::before,
+  .signo::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 1.5px;
+    translate: -50% -50%;
+    background-color: var(--color-arena);
+    transition: background-color 240ms var(--ease-salida);
+  }
+
+  .signo {
+    transition: background-color 240ms var(--ease-salida);
+  }
+
+  .signo::after {
+    rotate: 90deg;
+    transition: opacity 240ms var(--ease-salida);
+  }
+
+  /* El signo sigue al estado que maneja el script del acordeón y no al
+     atributo `open`: al cerrar, `open` recién se va cuando termina la
+     animación, y el signo cambiaba tarde, en un segundo tiempo. Sin JS,
+     manda `open`. */
+  .pregunta[open]:not([data-estado='cerrado']) .signo,
+  .pregunta[data-estado='abierto'] .signo {
+    background-color: var(--color-arena);
+  }
+
+  .pregunta[open]:not([data-estado='cerrado']) .signo::before,
+  .pregunta[data-estado='abierto'] .signo::before {
+    background-color: var(--color-oscuro);
+  }
+
+  .pregunta[open]:not([data-estado='cerrado']) .signo::after,
+  .pregunta[data-estado='abierto'] .signo::after {
+    opacity: 0;
+  }
+
+  .respuesta {
+    max-width: 690px;
+    padding-bottom: 24px;
+    line-height: 1.4;
+  }
+
+  @media (width >= 64rem) {
+    .pregunta summary {
+      padding-block: 28px;
+      font-size: 1.5rem;
+    }
+
+    .signo {
+      width: 26px;
+      height: 26px;
+    }
+
+    .signo::before,
+    .signo::after {
+      width: 12px;
+    }
+
+    .respuesta {
+      padding-bottom: 36px;
+    }
+  }
+
+  /* La pista tiene cuatro copias: recorrer el 25 % equivale a una copia
+     exacta, y al volver a cero el empalme cae en el mismo punto. */
+  @keyframes correr-cuarto {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-25%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marcas-pista {
+      animation: none;
+    }
+
+    .wsp,
+    .testimonio {
+      transition: none;
+    }
+  }
+
+</style>
+
+
+<script>
+  import { iniciarAcordeon } from '../scripts/acordeon';
+  /* Apertura: las tres placas se turnan cada 4 s. El intervalo sólo corre
+     mientras el bloque está en pantalla, así no gasta ciclos ni fuerza
+     repintados cuando el visitante ya scrolleó más abajo. */
+  const apertura = document.querySelector<HTMLElement>('.apertura');
+  const barra = document.querySelector<HTMLElement>('.cargador-barra');
+  /* Un color por placa, en ciclo. Sumar placas no pide tocar esta lista: la
+     quinta vuelve al primer color. */
+  const COLORES = [
+    'var(--color-rojo)',
+    'var(--color-aqua)',
+    'var(--color-amarillo)',
+    'var(--color-verde)',
+  ];
+  const DURACION = 3200;
+
+  if (apertura) {
+    const placas = [...apertura.querySelectorAll<HTMLElement>('.apertura-placa')];
+    let actual = 0;
+    let reloj: number | undefined;
+
+    /* La barra arranca de cero en cada placa: se saca la clase, se fuerza un
+       reflow y se vuelve a poner, que es la forma de reiniciar una animación
+       CSS sin duplicarla. */
+    const cargar = () => {
+      if (!barra) return;
+      barra.style.setProperty('--cargador-color', COLORES[actual % COLORES.length]);
+      barra.style.setProperty('--cargador-tiempo', `${DURACION}ms`);
+      barra.classList.remove('corre');
+      void barra.offsetWidth;
+      barra.classList.add('corre');
+    };
+
+    const pasar = () => {
+      placas[actual].classList.remove('apertura-visible');
+      actual = (actual + 1) % placas.length;
+      placas[actual].classList.add('apertura-visible');
+      cargar();
+    };
+
+    const quieto = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (placas.length > 1 && !quieto.matches) {
+      new IntersectionObserver((entradas) => {
+        for (const e of entradas) {
+          if (e.isIntersecting && reloj === undefined) {
+            cargar();
+            reloj = window.setInterval(pasar, DURACION);
+          } else if (!e.isIntersecting && reloj !== undefined) {
+            window.clearInterval(reloj);
+            reloj = undefined;
+            barra?.classList.remove('corre');
+          }
+        }
+      }).observe(apertura);
+    } else if (barra) {
+      /* Una sola placa, o movimiento reducido: la barra queda con el color de
+         la primera y sin animación. */
+      barra.style.setProperty('--cargador-color', COLORES[0]);
+    }
+  }
+
+  /* Slider de testimonios: pasa solo cada 4 s con fundido y los puntos
+     permiten elegir uno. El reloj corre sólo con el bloque en pantalla, se
+     reinicia cuando el visitante elige a mano y no arranca si pidió menos
+     movimiento. */
+  const contenedor = document.querySelector<HTMLElement>('[data-testimonios]');
+  const puntos = [...document.querySelectorAll<HTMLButtonElement>('[data-punto]')];
+  const fichas = [...document.querySelectorAll<HTMLElement>('.testimonio')];
+
+  if (contenedor && fichas.length > 1) {
+    let actual = 0;
+    let reloj: number | undefined;
+    let enPantalla = false;
+    const quietoT = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const mostrar = (i: number) => {
+      actual = (i + fichas.length) % fichas.length;
+      fichas.forEach((f, j) => {
+        const activa = j === actual;
+        f.classList.toggle('testimonio-activo', activa);
+        if (activa) f.removeAttribute('aria-hidden');
+        else f.setAttribute('aria-hidden', 'true');
+      });
+      puntos.forEach((p, j) => p.setAttribute('aria-selected', String(j === actual)));
+    };
+
+    const parar = () => {
+      if (reloj !== undefined) window.clearInterval(reloj);
+      reloj = undefined;
+    };
+    const arrancar = () => {
+      parar();
+      if (!quietoT && enPantalla) reloj = window.setInterval(() => mostrar(actual + 1), 4000);
+    };
+
+    puntos.forEach((p, i) =>
+      p.addEventListener('click', () => {
+        mostrar(i);
+        arrancar();
+      })
+    );
+
+    /* Swipe: en táctil se pasa de testimonio arrastrando para los costados.
+       El gesto se toma como horizontal sólo si se movió más en X que en Y,
+       así no le roba el scroll vertical a la página. */
+    let x0 = 0;
+    let y0 = 0;
+    let siguiendo = false;
+
+    contenedor.addEventListener(
+      'touchstart',
+      (e) => {
+        if (e.touches.length !== 1) return;
+        x0 = e.touches[0].clientX;
+        y0 = e.touches[0].clientY;
+        siguiendo = true;
+      },
+      { passive: true }
+    );
+
+    contenedor.addEventListener(
+      'touchend',
+      (e) => {
+        if (!siguiendo) return;
+        siguiendo = false;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - x0;
+        const dy = t.clientY - y0;
+        if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
+        mostrar(actual + (dx < 0 ? 1 : -1));
+        arrancar();
+      },
+      { passive: true }
+    );
+
+    new IntersectionObserver((entradas) => {
+      for (const e of entradas) {
+        enPantalla = e.isIntersecting;
+        if (enPantalla) arrancar();
+        else parar();
+      }
+    }).observe(contenedor);
+  }
+
+  /* Preguntas: abren y cierran con transición, y abrir una cierra las
+     demás. */
+  iniciarAcordeon();
+</script>

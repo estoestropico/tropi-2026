@@ -1,0 +1,197 @@
+---
+import { Image } from 'astro:assets';
+
+/**
+ * Corredor de imágenes a sangre. Sale de la página de servicio, donde vivía
+ * embebido; lo usan las páginas de servicio y las verticales de rubro.
+ *
+ * El markup, el CSS y el script son los mismos: se movieron tal cual.
+ */
+interface Props {
+  piezas: { src: ImageMetadata; alt: string }[];
+  class?: string;
+}
+
+const { piezas: TIRA, class: clase } = Astro.props;
+---
+
+{
+  TIRA.length > 0 && (
+    <div class:list={['tira full-width', clase]} data-tira-marca>
+      <div class="tira-pista">
+        {
+          [0, 1].map((copia) =>
+            TIRA.map((t) => (
+              <div class="tira-item" aria-hidden={copia > 0 ? 'true' : undefined}>
+                <Image
+                  src={t.src}
+                  alt={copia > 0 ? '' : t.alt}
+                  widths={[300, 424, 640, 848]}
+                  sizes="(min-width: 1024px) 24vw, 55vw"
+                  class="h-auto w-full"
+                  draggable="false"
+                />
+              </div>
+            ))
+          )
+        }
+      </div>
+    </div>
+  )
+}
+
+<style>
+  /* Se puede agarrar y arrastrar. `pan-y` deja pasar el scroll vertical
+     en el celular y reserva el gesto horizontal para el corredor. */
+  .tira {
+    overflow: hidden;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .tira.agarrado {
+    cursor: grabbing;
+  }
+
+  .tira :global(img) {
+    pointer-events: none;
+  }
+
+  .tira-pista {
+    display: flex;
+    gap: 15px;
+    width: max-content;
+    will-change: transform;
+  }
+
+  /* Las piezas son 3:4. El ancho se eligió para que el alto quede en los
+     564 px de la tira del Figma. */
+  .tira-item {
+    flex: none;
+    width: 55vw;
+    max-width: 424px;
+  }
+
+  @media (width >= 64rem) {
+    .tira-item {
+      width: 23.8vw;
+    }
+  }
+</style>
+
+<script>
+  /* Corredor de imágenes: corre solo hacia la izquierda y, con el mouse
+     encima, baja a un cuarto de la velocidad. Se puede agarrar y arrastrar
+     para los dos lados: mientras se arrastra sigue al puntero, y al soltar
+     conserva el impulso y vuelve de a poco a su ritmo. La velocidad siempre
+     se acerca de a poco a la que corresponde, así ni el freno ni la vuelta
+     son a los saltos. Corre sólo con el corredor en pantalla; con
+     movimiento reducido no avanza solo, pero se puede arrastrar igual. */
+  const tira = document.querySelector<HTMLElement>('[data-tira-marca]');
+  const pista = tira?.querySelector<HTMLElement>('.tira-pista');
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (tira && pista) {
+    const NORMAL = quieto ? 0 : 60; // px por segundo
+    let encima = false;
+    let objetivo = NORMAL;
+    let velocidad = NORMAL;
+    let x = 0;
+    let ultimo = 0;
+    let cuadro = 0;
+
+    /* Arrastre */
+    let arrastrando = false;
+    let puntero = 0;
+    let previoX = 0;
+    let previoT = 0;
+    let impulso = 0;
+
+    const ritmo = () => (encima ? NORMAL / 4 : NORMAL);
+    const envolver = () => {
+      const mitad = pista.scrollWidth / 2;
+      x = ((x % mitad) + mitad) % mitad;
+    };
+    const pintar = () => {
+      pista.style.transform = `translate3d(${(-x).toFixed(2)}px, 0, 0)`;
+    };
+
+    tira.addEventListener('mouseenter', () => {
+      encima = true;
+      objetivo = ritmo();
+    });
+    tira.addEventListener('mouseleave', () => {
+      encima = false;
+      objetivo = ritmo();
+    });
+
+    tira.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      arrastrando = true;
+      puntero = e.pointerId;
+      previoX = e.clientX;
+      previoT = performance.now();
+      impulso = 0;
+      tira.setPointerCapture(e.pointerId);
+      tira.classList.add('agarrado');
+    });
+
+    tira.addEventListener('pointermove', (e) => {
+      if (!arrastrando || e.pointerId !== puntero) return;
+      const ahora = performance.now();
+      const dx = e.clientX - previoX;
+      const dt = Math.max(1, ahora - previoT) / 1000;
+      x -= dx;
+      envolver();
+      pintar();
+      /* Velocidad del gesto, suavizada para que un último tirón no la
+         dispare. Positiva es hacia la izquierda, como el avance normal. */
+      impulso = impulso * 0.6 + (-dx / dt) * 0.4;
+      previoX = e.clientX;
+      previoT = ahora;
+    });
+
+    const soltar = (e: PointerEvent) => {
+      if (!arrastrando || e.pointerId !== puntero) return;
+      arrastrando = false;
+      tira.classList.remove('agarrado');
+      /* Si el puntero quedó quieto antes de soltar, no hay impulso. */
+      if (performance.now() - previoT > 120) impulso = 0;
+      velocidad = Math.max(-3000, Math.min(3000, impulso));
+      objetivo = ritmo();
+      if (!cuadro) arrancar();
+    };
+    tira.addEventListener('pointerup', soltar);
+    tira.addEventListener('pointercancel', soltar);
+
+    const paso = (t: number) => {
+      const dt = ultimo ? Math.min(0.05, (t - ultimo) / 1000) : 0;
+      ultimo = t;
+      if (!arrastrando) {
+        /* Después de un arrastre la vuelta al ritmo es más lenta: el
+           impulso se va gastando en lugar de cortarse. */
+        velocidad += (objetivo - velocidad) * Math.min(1, dt * 2.5);
+        x += velocidad * dt;
+        envolver();
+        pintar();
+      }
+      cuadro = requestAnimationFrame(paso);
+    };
+
+    const arrancar = () => {
+      ultimo = 0;
+      cuadro = requestAnimationFrame(paso);
+    };
+
+    new IntersectionObserver((entradas) => {
+      for (const e of entradas) {
+        if (e.isIntersecting && !cuadro) arrancar();
+        else if (!e.isIntersecting && cuadro) {
+          cancelAnimationFrame(cuadro);
+          cuadro = 0;
+        }
+      }
+    }).observe(tira);
+  }
+</script>

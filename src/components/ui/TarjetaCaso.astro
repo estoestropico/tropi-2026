@@ -1,0 +1,127 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Tags from './Tags.astro';
+
+/**
+ * Tarjeta de caso de la grilla: miniatura cuadrada, cliente, titular y tags.
+ * La usan la home y el listado de portfolio.
+ *
+ * La miniatura está siempre recortada por su máscara; lo que cambia con el
+ * hover es la forma de la máscara, no la imagen. Los dos `path` comparten
+ * comandos y cantidad de puntos, así que el navegador los interpola y los
+ * semicírculos se marcan progresivamente desde el borde. Cada tarjeta lleva
+ * su propia máscara para que el hover la alcance con CSS y sin JS.
+ */
+interface Props {
+  caso: CollectionEntry<'casos'>;
+  eager?: boolean;
+}
+
+const { caso, eager = false } = Astro.props;
+
+/* Forma de reposo, en unidades de caja para que escale con la tarjeta: el
+   cuadrado con los lóbulos a profundidad cero. La forma con los lóbulos vive
+   en el `<style>`, que es donde se dispara el hover; acá va como atributo del
+   path para que, si no carga el CSS, la miniatura se vea cuadrada y entera. */
+const PLANA =
+  'M1 0.25C1 0.25 1 0 1 0H0V0.5H0C0 0.5 0 0.75 0 0.75C0 0.75 0 1 0 1H1V0.5H1C1 0.5 1 0.25 1 0.25Z';
+---
+
+<a href={`/casos/${caso.id}`} class="tarjeta group block">
+  <div class="tarjeta-foto" style={`clip-path:url(#mascara-${caso.id})`}>
+    <Image
+      src={caso.data.portada}
+      alt={caso.data.portadaAlt}
+      widths={[440, 690, 900, 1380]}
+      sizes="(min-width: 1024px) 690px, 92vw"
+      loading={eager ? 'eager' : 'lazy'}
+      class="tarjeta-img h-full w-full object-cover"
+    />
+  </div>
+  <svg width="0" height="0" aria-hidden="true" focusable="false" class="tarjeta-mascara">
+    <defs>
+      <clipPath id={`mascara-${caso.id}`} clipPathUnits="objectBoundingBox">
+        <path d={PLANA} />
+      </clipPath>
+    </defs>
+  </svg>
+  <h3 class="mt-6 text-[1.5rem] font-extrabold leading-none tracking-[-0.01em] lg:mt-[48px] lg:text-[2rem]">
+    {caso.data.cliente}
+  </h3>
+  <p class="mt-3 max-w-[484px] leading-[1.4] lg:mt-[16px]">{caso.data.titular}</p>
+  <Tags
+    rubro={caso.data.rubro}
+    servicios={caso.data.servicios}
+    como="span"
+    class="mt-5 lg:mt-[24px]"
+  />
+</a>
+
+<style>
+  /* En mobile la miniatura es más baja que ancha: el cuadrado del Figma, a
+     una columna, ocupaba casi una pantalla entera y la portada se leía como
+     un bloque vertical. De 1024 para arriba sigue siendo cuadrada. */
+  .tarjeta-foto {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+
+  @media (width >= 64rem) {
+    .tarjeta-foto {
+      aspect-ratio: 1;
+    }
+  }
+
+  .tarjeta-img {
+    transition: transform 900ms var(--ease-salida);
+  }
+
+  .tarjeta {
+    transition: color 240ms var(--ease-salida);
+  }
+
+  .tarjeta-mascara path {
+    d: path('M1 0.25C1 0.25 1 0 1 0H0V0.5H0C0 0.5 0 0.75 0 0.75C0 0.75 0 1 0 1H1V0.5H1C1 0.5 1 0.25 1 0.25Z');
+    /* Curva pareja a propósito, no la `--ease-salida` del sistema: esa
+       adelanta el 85 % del recorrido en el primer 15 % del tiempo y el
+       recorte aparecía casi de golpe. */
+    transition: d 480ms cubic-bezier(0.45, 0.05, 0.25, 1);
+  }
+
+  /* Sólo donde hay mouse: en touch no existe el hover y la miniatura quedaría
+     recortada para siempre después del primer toque. */
+  @media (hover: hover) and (pointer: fine) {
+    .tarjeta:hover .tarjeta-mascara path,
+    .tarjeta:focus-visible .tarjeta-mascara path {
+      d: path('M1 0.25C1 0.11183 0.89942 0 0.77573 0H0V0.5H0.22427C0.10032 0.5 0 0.61212 0 0.75C0 0.88817 0.10058 1 0.22427 1H0.99974V0.5H0.77547C0.89942 0.5 1 0.38788 1 0.25Z');
+    }
+
+    .tarjeta:hover .tarjeta-img,
+    .tarjeta:focus-visible .tarjeta-img {
+      transform: scale(1.06);
+    }
+
+    /* El hover es de la tarjeta entera: la máscara se abre y todo el texto
+       pasa al celeste del mapa. Los tags van de `Tags.astro`, con su propio
+       scope, así que la regla sale con `:global`; ahí no se llenan, sólo
+       cambian de color y de borde. */
+    .tarjeta:hover,
+    .tarjeta:focus-visible {
+      color: var(--color-celeste);
+    }
+
+    .tarjeta:hover :global(.tag),
+    .tarjeta:focus-visible :global(.tag) {
+      border-color: var(--color-celeste);
+      color: var(--color-celeste);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tarjeta-mascara path,
+    .tarjeta-img {
+      transition: none;
+    }
+  }
+</style>

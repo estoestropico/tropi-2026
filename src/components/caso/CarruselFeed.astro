@@ -1,0 +1,268 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Carrusel de piezas de feed: una tira que avanza sola, con la pieza del
+ * centro más grande que las de los costados. Las de los extremos se cortan
+ * contra el borde del marco.
+ *
+ * Las medidas salen del Figma sobre el marco de 1780: tarjeta 420, medianera
+ * 68, la del centro 545 (escala 1.298). Van en `cqw` para que todo escale con
+ * el ancho del bloque.
+ *
+ * Respeta prefers-reduced-motion: queda quieto en la primera pieza.
+ */
+export interface PiezaCarrusel {
+  src: ImageMetadata;
+  alt: string;
+}
+
+interface Props {
+  piezas: PiezaCarrusel[];
+  proporcion?: string;
+  fondo?: string;
+  /** cada cuánto pasa a la siguiente, en ms */
+  intervalo?: number;
+  espacio?: Espacio;
+  class?: string;
+}
+
+const {
+  piezas,
+  proporcion = '1780/900',
+  fondo = 'transparent',
+  intervalo = 4000,
+  espacio,
+  class: className = '',
+} = Astro.props;
+
+/* Tres copias: la del medio es la que se ve, las otras dan material para el
+   loop sin que se note el salto. */
+const copias = [...piezas, ...piezas, ...piezas];
+const arranque = piezas.length;
+---
+
+<div
+  class:list={['carrusel', className]}
+  style={[
+    `--ratio:${proporcion}`,
+    `background-color:${fondo}`,
+    margenArriba(espacio),
+  ]
+    .filter(Boolean)
+    .join(';')}
+  data-carrusel
+  data-intervalo={String(intervalo)}
+  data-piezas={String(piezas.length)}
+>
+  <slot name="fondo" />
+
+  <div class="pista" style={`--i:${arranque}`}>
+    {
+      copias.map((p, k) => (
+        <figure
+          class:list={['tarjeta', k === arranque ? 'activa' : '']}
+          style={`--dx:${k < arranque ? -1 : k > arranque ? 1 : 0}`}
+        >
+          <Image
+            src={p.src}
+            alt={k < piezas.length ? p.alt : ''}
+            widths={[420, 640, 960]}
+            sizes="(min-width: 64rem) 24vw, 62vw"
+            class="w-full"
+          />
+        </figure>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .carrusel {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+    touch-action: pan-y;
+
+    /* Medidas del Figma sobre 1780 */
+    --tarjeta: 23.596cqw;
+    --medianera: 3.82cqw;
+    --paso: 27.416cqw;
+    --escala: 1.298;
+    --curva: cubic-bezier(0.76, 0, 0.24, 1);
+    /* Lo que se pasa de su caja la tarjeta grande de cada lado. Las vecinas se
+       corren esa misma medida para afuera, así la medianera que se ve contra
+       la grande es la misma que hay entre dos chicas. */
+    --corrimiento: calc((var(--escala) - 1) * var(--tarjeta) / 2);
+  }
+
+  .carrusel :global(> [data-fondo]) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  .carrusel.arrastrando {
+    cursor: grabbing;
+  }
+
+  .pista {
+    position: absolute;
+    top: 51.6%;
+    left: 50%;
+    display: flex;
+    gap: var(--medianera);
+    margin-left: calc(var(--tarjeta) / -2);
+    transform: translate(calc(var(--i) * var(--paso) * -1), -50%);
+    transition: transform 0.9s var(--curva);
+    will-change: transform;
+  }
+
+  .pista.sin-transicion {
+    transition: none;
+  }
+
+  /* Sin esto el navegador arranca su propio arrastre de imagen y manda un
+     `pointercancel`, que corta el gesto a mitad de camino. */
+  .tarjeta :global(img) {
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .tarjeta {
+    flex: 0 0 var(--tarjeta);
+    margin: 0;
+    transform: translateX(calc(var(--dx, 0) * var(--corrimiento))) scale(1);
+    transition: transform 0.9s var(--curva);
+    will-change: transform;
+  }
+
+  .tarjeta.activa {
+    transform: translateX(0) scale(var(--escala));
+  }
+
+  /* En mobile entra una sola pieza por vez, y el marco se hace más alto
+     para que la tarjeta no quede cortada arriba y abajo. */
+  @media (width < 64rem) {
+    .carrusel {
+      aspect-ratio: 1780 / 1600;
+      --tarjeta: 62cqw;
+      --medianera: 5cqw;
+      --paso: 67cqw;
+      --escala: 1.06;
+    }
+
+    .pista {
+      top: 50%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pista,
+    .tarjeta {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-carrusel]').forEach((marco) => {
+    const pista = marco.querySelector<HTMLElement>('.pista');
+    if (!pista) return;
+    const tarjetas = [...pista.querySelectorAll<HTMLElement>('.tarjeta')];
+    const total = Number(marco.dataset.piezas) || 1;
+    const intervalo = Number(marco.dataset.intervalo) || 4000;
+    let i = total;
+
+    const pintar = () => {
+      pista.style.setProperty('--i', String(i));
+      tarjetas.forEach((t, k) => {
+        t.classList.toggle('activa', k === i);
+        t.style.setProperty('--dx', k < i ? '-1' : k > i ? '1' : '0');
+      });
+    };
+
+    /* Al salir de la copia del medio vuelve a ella sin transición, así el loop
+       no se ve. Vale para los dos sentidos. */
+    const reencuadrar = () => {
+      if (i < total || i >= total * 2) {
+        const salto = i < total ? total : -total;
+        setTimeout(() => {
+          pista.classList.add('sin-transicion');
+          i += salto;
+          pintar();
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => pista.classList.remove('sin-transicion'));
+          });
+        }, 950);
+      }
+    };
+
+    const mover = (paso: number) => {
+      i += paso;
+      pintar();
+      reencuadrar();
+    };
+
+    const avanzar = () => mover(1);
+
+    if (quieto) return;
+
+    let reloj: number | undefined;
+    const arrancar = () => {
+      if (reloj === undefined) reloj = window.setInterval(avanzar, intervalo);
+    };
+    const frenar = () => {
+      if (reloj !== undefined) {
+        clearInterval(reloj);
+        reloj = undefined;
+      }
+    };
+
+    /* Solo corre mientras se ve */
+    new IntersectionObserver(
+      ([e]) => (e.isIntersecting ? arrancar() : frenar()),
+      { rootMargin: '100px 0px' }
+    ).observe(marco);
+
+    document.addEventListener('visibilitychange', () => {
+      document.hidden ? frenar() : arrancar();
+    });
+
+    /* Arrastre: además de correr solo, se puede empujar con el mouse o con el
+       dedo. Cada arrastre mueve una pieza; mientras dura, el reloj se frena. */
+    const UMBRAL = 40;
+    let arranqueX: number | null = null;
+
+    marco.addEventListener('pointerdown', (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
+      e.preventDefault();
+      arranqueX = e.clientX;
+      /* Con la captura el gesto sigue siendo del marco aunque el mouse salga */
+      marco.setPointerCapture?.(e.pointerId);
+      marco.classList.add('arrastrando');
+      frenar();
+    });
+
+    const soltar = (e: PointerEvent) => {
+      if (arranqueX === null) return;
+      /* En un `pointercancel` la posición no sirve: se descarta el gesto. */
+      const dx = e.type === 'pointercancel' ? 0 : e.clientX - arranqueX;
+      arranqueX = null;
+      marco.classList.remove('arrastrando');
+      if (Math.abs(dx) >= UMBRAL) mover(dx < 0 ? 1 : -1);
+      arrancar();
+    };
+
+    marco.addEventListener('pointerup', soltar);
+    marco.addEventListener('pointercancel', soltar);
+  });
+</script>

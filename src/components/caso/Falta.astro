@@ -1,0 +1,42 @@
+---
+/**
+ * Placeholder visible para un asset o bloque del Figma que todavía no está
+ * exportado. Rojo a propósito: tiene que cantar en la maqueta.
+ * No debe quedar ninguno en producción.
+ */
+interface Props {
+  nombre: string;
+  nodo?: string;
+  proporcion?: string;
+  alto?: string;
+  ancho?: 'completo' | 'contenido';
+  class?: string;
+}
+
+const {
+  nombre,
+  nodo,
+  proporcion,
+  alto,
+  ancho = 'contenido',
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'falta grid place-items-center border-2 border-dashed border-[#e5241d] bg-[#e5241d]/10 text-center',
+    ancho === 'contenido' ? 'contenido' : 'w-full',
+    className,
+  ]}
+  style={[
+    proporcion ? `aspect-ratio:${proporcion}` : '',
+    alto ? `min-height:${alto}` : 'min-height:120px',
+  ].filter(Boolean).join(';')}
+  data-falta={nombre}
+>
+  <p class="px-4 py-6 text-[0.8125rem] font-semibold uppercase leading-[1.6] tracking-[0.06em] text-[#e5241d]">
+    Falta: {nombre}
+    {nodo && <><br />nodo {nodo}</>}
+  </p>
+</div>

@@ -1,0 +1,577 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Intro from '../../components/caso/Intro.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Media from '../../components/caso/Media.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import Composicion from '../../components/caso/Composicion.astro';
+import Pieza from '../../components/caso/Pieza.astro';
+import Video from '../../components/caso/Video.astro';
+import CarruselFeed from '../../components/caso/CarruselFeed.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+
+import hero from '../../assets/casos/acadi/hero.png';
+import estructura from '../../assets/casos/acadi/acadi-estructura.svg';
+import marcaFinal from '../../assets/casos/acadi/acadi-final.svg';
+import panelOjos from '../../assets/casos/acadi/panel-ojos.png';
+import compu1 from '../../assets/casos/acadi/compu-1.svg';
+import compu2 from '../../assets/casos/acadi/compu-2.svg';
+import taza from '../../assets/casos/acadi/taza.png';
+import paleta from '../../assets/casos/acadi/paleta.png';
+import cuadernos from '../../assets/casos/acadi/cuadernos.png';
+import cartuchera from '../../assets/casos/acadi/cartuchera.png';
+import clase from '../../assets/casos/acadi/clase.png';
+import presentacion from '../../assets/casos/acadi/video/presentacion.mp4';
+import logoAnimado from '../../assets/casos/acadi/video/logo-animado.mp4';
+import tramaFeed from '../../assets/casos/acadi/trama-feed.svg';
+import feed1 from '../../assets/casos/acadi/feed-1.png';
+import feed2 from '../../assets/casos/acadi/feed-2.png';
+import feed3 from '../../assets/casos/acadi/feed-3.png';
+import feed4 from '../../assets/casos/acadi/feed-4.png';
+import feed5 from '../../assets/casos/acadi/feed-5.png';
+import feed6 from '../../assets/casos/acadi/feed-6.png';
+import footerAcadi from '../../assets/casos/acadi/footer-acadi.svg';
+import merch1 from '../../assets/casos/acadi/merch-1.png';
+import merch2 from '../../assets/casos/acadi/merch-2.png';
+import merch3 from '../../assets/casos/acadi/merch-3.png';
+
+import placa1 from '../../assets/casos/acadi/placa-1.png';
+import placa2 from '../../assets/casos/acadi/placa-2.png';
+import placa3 from '../../assets/casos/acadi/placa-3.png';
+import placa4 from '../../assets/casos/acadi/placa-4.png';
+import placa5 from '../../assets/casos/acadi/placa-5.png';
+import placa6 from '../../assets/casos/acadi/placa-6.png';
+import placa7 from '../../assets/casos/acadi/placa-7.png';
+import placa8 from '../../assets/casos/acadi/placa-8.png';
+import placa9 from '../../assets/casos/acadi/placa-9.png';
+import placa10 from '../../assets/casos/acadi/placa-10.png';
+import placa11 from '../../assets/casos/acadi/placa-11.png';
+import placa12 from '../../assets/casos/acadi/placa-12.png';
+
+import ico1 from '../../assets/casos/acadi/ico-computadora.svg';
+import ico2 from '../../assets/casos/acadi/ico-sol.svg';
+import ico3 from '../../assets/casos/acadi/ico-smart-kids.svg';
+import ico4 from '../../assets/casos/acadi/ico-onda.svg';
+import ico5 from '../../assets/casos/acadi/ico-pez.svg';
+import ico6 from '../../assets/casos/acadi/ico-circulos.svg';
+import ico7 from '../../assets/casos/acadi/ico-burbujas.svg';
+import ico8 from '../../assets/casos/acadi/ico-lupa.svg';
+import ico9 from '../../assets/casos/acadi/ico-puntos.svg';
+import ico10 from '../../assets/casos/acadi/ico-nudo.svg';
+import ico11 from '../../assets/casos/acadi/ico-rulo.svg';
+import ico12 from '../../assets/casos/acadi/ico-eslabon.svg';
+
+/* Ejes de personalidad: los rótulos y la posición del punto sobre la línea,
+   en porcentaje. Salen del SVG original (línea de 245 a 926 sobre 1133). */
+const EJES = [
+  { izq: 'Formal', der: 'Informal', punto: 75 },
+  { izq: 'Accesible', der: 'Exclusiva', punto: 50 },
+  { izq: 'Tradicional', der: 'Moderna', punto: 75 },
+  { izq: 'Amigable', der: 'Seria', punto: 25 },
+];
+
+const caso = await getEntry('casos', 'acadi');
+if (!caso) throw new Error('Falta src/content/casos/acadi.yaml');
+const { data } = caso;
+
+/* Colores muestreados del export del Figma */
+const ARENA = '#f1f0e8';
+const AZUL = '#4141f0';
+const LILA = '#beaaff';
+const OSCURO = '#2d2d2d';
+
+/* Iconografía: dos filas de seis, posiciones del Figma sobre el marco de 1780 */
+const ICONOS = [
+  { src: ico1, alt: 'Ícono: computadora', x: 255, y: 0 },
+  { src: ico2, alt: 'Ícono: sol', x: 478, y: 0 },
+  { src: ico3, alt: 'Ícono: smart kids', x: 702, y: 0 },
+  { src: ico4, alt: 'Ícono: onda', x: 925, y: 0 },
+  { src: ico5, alt: 'Ícono: pez', x: 1149, y: 0 },
+  { src: ico6, alt: 'Ícono: círculos', x: 1372, y: 0 },
+  { src: ico7, alt: 'Ícono: burbujas', x: 255, y: 203 },
+  { src: ico8, alt: 'Ícono: lupa', x: 478, y: 203 },
+  { src: ico9, alt: 'Ícono: puntos', x: 702, y: 203 },
+  { src: ico10, alt: 'Ícono: nudo', x: 925, y: 203 },
+  { src: ico11, alt: 'Ícono: rulo', x: 1149, y: 203 },
+  { src: ico12, alt: 'Ícono: eslabón', x: 1372, y: 203 },
+];
+
+const PIEZAS_FEED = [
+  { src: feed1, alt: 'Pieza de feed: la gamificación como motor de aprendizaje' },
+  { src: feed2, alt: 'Pieza de feed: acadi' },
+  { src: feed3, alt: 'Pieza de feed: potenciá su talento' },
+  { src: feed4, alt: 'Pieza de feed de Acadi' },
+  { src: feed5, alt: 'Pieza de feed de Acadi' },
+  { src: feed6, alt: 'Pieza de feed de Acadi' },
+];
+
+/* Pared de placas: tres filas de cuatro, desfasadas, que se cruzan en
+   horizontal al scrollear igual que el brandbook.
+   Medidas del Figma sobre el marco de 1780 × 1000:
+   placa 493 × 280, medianera 27, entre filas 24.
+   Filas 1 y 3 arrancan en x −128; la fila 2, en x −297.
+   Cada fila repite sus cuatro placas tres veces para que nunca se vea el
+   borde, y arranca una pasada más a la izquierda: así la pasada del medio
+   queda donde estaba la fila original. Una pasada mide
+   4 × 27,6966 + 3 × 1,5169 = 115,3372, más la medianera de la siguiente. */
+const PASADA = 116.8541;
+const FILAS_PARED = [
+  {
+    top: 3.3708,
+    left: -7.191,
+    sentido: -1,
+    placas: [
+      { src: placa1, alt: 'Placa de cierre de la presentación' },
+      { src: placa2, alt: 'Placa: planes de aprendizaje Acadi' },
+      { src: placa3, alt: 'Placa: ¿quedan dudas?' },
+      { src: placa4, alt: 'Placa: mes de prueba' },
+    ],
+  },
+  {
+    top: 20.4494,
+    left: -16.6854,
+    sentido: 1,
+    placas: [
+      { src: placa5, alt: 'Placa: mes de prueba' },
+      { src: placa6, alt: 'Placa: desafíos semanales' },
+      { src: placa7, alt: 'Placa: plan de inglés' },
+      { src: placa8, alt: 'Placa: nivelamos por conocimiento' },
+    ],
+  },
+  {
+    top: 37.5281,
+    left: -7.191,
+    sentido: -1,
+    placas: [
+      { src: placa9, alt: 'Placa: podemos llegar muy lejos' },
+      { src: placa10, alt: 'Placa: plan de matemáticas' },
+      { src: placa11, alt: 'Placa: transformamos el tiempo frente a la pantalla' },
+      { src: placa12, alt: 'Placa de la presentación de Acadi' },
+    ],
+  },
+];
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.cliente}
+    solape={0}
+  />
+
+  <Intro espacio="l">
+    Acadi es una academia digital que enseña matemáticas e inglés a través
+    de la gamificación. Para potenciar su propuesta, desarrollamos la marca
+    gráfica, el sistema visual, el claim y la definición del tono.
+    Entregamos una base estratégica sólida y las herramientas comerciales
+    necesarias para que la marca escale en el mercado.
+  </Intro>
+
+  {/* ── Identidad institucional ─────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Identidad" titulo="Manual de marca y tono de voz">
+    <p>
+      Estructuramos un manual de marca y tono de voz pensado para su
+      aplicación práctica diaria. El objetivo es que el equipo interno haga
+      propio el ADN de Acadi y logre sostener una comunicación empática y
+      motivadora, aplicando la identidad con consistencia en todos sus
+      canales.
+    </p>
+  </BloqueTexto>
+
+  <Grilla cols="1fr 1fr 1fr" gap="30px" ancho="contenido" espacio="m">
+    <Media efecto="fade" src={estructura} alt="Construcción de la marca: aprendizaje más diversión" recorte={false} />
+    <Media efecto="fade" src={marcaFinal} alt="Marca Acadi, lúdica" recorte={false} />
+    <Video efecto="fade" src={logoAnimado} alt="El logo de Acadi animado" proporcion="750/626" ancho="completo" />
+  </Grilla>
+
+  {/* Ejes de personalidad, sobre la banda arena */}
+  {/* El ancho va en porcentaje, no en px: así el contenido y el aire de la
+      banda se achican juntos cuando el viewport baja de la medida de diseño.
+      Figma: contenido 1132 sobre 1780 (63.6 %), aire 107 arriba y 105 abajo. */}
+  <Banda color={ARENA} espacio="m">
+    <div class="ejes">
+      <div class="ejes-caja">
+        <ul class="ejes-lista" data-revelar-grupo>
+          {
+            EJES.map((e) => (
+              <li class="eje">
+                <span class="eje-rotulo">{e.izq}</span>
+                <span class="eje-barra">
+                  <span class="eje-punto" style={`left:${e.punto}%`} />
+                </span>
+                <span class="eje-rotulo eje-rotulo-der">{e.der}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </Banda>
+
+
+  <Grilla class="full-width" cols="593fr 1176fr" gap="0.65rem" espacio="xs">
+    <div class="relative">
+      <Media efecto="fade" src={panelOjos} alt="" proporcion="593/628" />
+      <div class="pointer-events-none absolute inset-0">
+        {/* Los ojos siguen el sentido del mouse: compu-1 mira a la derecha,
+            compu-2 a la izquierda. */}
+        <div class="compu absolute" style="left:23.44%;top:28.03%;width:51.77%" data-compu data-mira="der" data-revelar>
+          <Image src={compu1} alt="Personaje de Acadi" class="compu-cara" />
+          <Image src={compu2} alt="" aria-hidden="true" class="compu-cara compu-izq" />
+        </div>
+      </div>
+    </div>
+    <Media efecto="reveal" src={taza} alt="Taza de Acadi en el escritorio" proporcion="1176/628" />
+  </Grilla>
+
+  {/* Paleta cromática, sobre el azul de marca */}
+  <Banda color={AZUL} espacio="xs">
+    <Media efecto="fade" src={paleta} alt="Paleta cromática de Acadi: institucionales y secundarios" proporcion="1780/800" />
+  </Banda>
+
+  <Grilla class="full-width" cols="1176fr 593fr" gap="0.65rem" espacio="xs">
+    <Media efecto="reveal" src={cuadernos} alt="Cuadernos de bienvenida de Acadi" proporcion="1176/628" />
+    <Media efecto="reveal" src={cartuchera} alt="Cartuchera de Acadi" proporcion="593/628" />
+  </Grilla>
+
+  {/* ── Iconografía ─────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Universo visual" titulo="El sistema gráfico">
+    <p>
+      Desarrollamos un sistema visual e iconográfico propio para fortalecer
+      el lenguaje de la academia. A través de elementos gráficos dinámicos,
+      logramos tangibilizar el concepto de aprendizaje lúdico y articularlo
+      de forma natural en todo su ecosistema digital.
+    </p>
+  </BloqueTexto>
+
+  <Composicion alto={356} ancho_layout="completo" colsMobile={4} espacio="s" class="px-5 lg:px-0">
+    {ICONOS.map((i) => <Pieza src={i.src} alt={i.alt} efecto="fade" x={i.x} y={i.y} w={153} alto={356} />)}
+  </Composicion>
+
+  <Media class="full-width" efecto="parallax" src={clase} alt="Chico tomando clase en Acadi" espacio="m" proporcion="1780/836" />
+
+  {/* Pared de placas: sangra a los dos lados, por eso el marco recorta. */}
+  <Banda color="#f8f8f8" espacio="nulo">
+    <div class="pared" data-pared>
+      {
+        FILAS_PARED.map((fila) => (
+          <div
+            class="fila"
+            style={`--top:${fila.top}cqw;--left:${(fila.left - PASADA).toFixed(4)}%`}
+            data-fila
+            data-sentido={String(fila.sentido)}
+          >
+            {[0, 1, 2].map((pasada) =>
+              fila.placas.map((p) => (
+                <div class="placa">
+                  <Media
+                    efecto="fade"
+                    src={p.src}
+                    alt={pasada === 1 ? p.alt : ''}
+                    recorte={false}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </Banda>
+
+  {/* ── Presentación de servicios ───────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Herramientas de venta" titulo="Presentación comercial y pauta digital">
+    <p>
+      Diseñamos una presentación institucional que funciona como el soporte
+      principal del equipo comercial en la captación de nuevos alumnos. En
+      paralelo, creamos un set de piezas para pauta en redes sociales
+      enfocadas en comunicar el diferencial de la academia y generar
+      conversión.
+    </p>
+    <div slot="derecha" class="mt-8 w-full lg:mt-[6.25rem]">
+      <Video
+        efecto="fade"
+        src={presentacion}
+        alt="La presentación comercial de Acadi"
+        proporcion="1194/674"
+        ancho="completo"
+        class="acadi-sin-bandas"
+      />
+    </div>
+  </BloqueTexto>
+
+  {/* ── Feed ────────────────────────────────────────────────────────────── */}
+  <CarruselFeed piezas={PIEZAS_FEED} proporcion="1780/900" fondo={LILA} intervalo={4000} espacio="m">
+    <Image slot="fondo" src={tramaFeed} alt="" aria-hidden="true" data-fondo style="mix-blend-mode:multiply" />
+  </CarruselFeed>
+
+  <Grilla class="full-width" cols="1fr 1fr 1fr" gap="0.65rem" espacio="xs">
+    <Media efecto="reveal" src={merch1} alt="Chomba de Acadi" proporcion="585/628" />
+    <Media efecto="reveal" src={merch2} alt="Stickers de Acadi en una notebook" proporcion="585/628" />
+    <Media efecto="reveal" src={merch3} alt="Tote bag de Acadi" proporcion="585/628" />
+  </Grilla>
+
+  {/* ── Cierre ──────────────────────────────────────────────────────────── */}
+  {/* Figma: lockup de 767 sobre 1780 (43.09 %), con 43 de aire arriba y abajo */}
+  <Banda color={OSCURO} espacio="xs">
+    <div class="cierre">
+      <div class="cierre-caja">
+        <Media efecto="fade" src={footerAcadi} alt="En ACADI se aprende sin frustraciones" recorte={false} />
+      </div>
+    </div>
+  </Banda>
+
+  <OtrosProyectos excluir="acadi" />
+</Base>
+
+<script>
+  /* Pared de placas: las filas se cruzan en horizontal al scrollear, mismo
+     criterio que la tira doble del brandbook. */
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!quieto) {
+    document.querySelectorAll<HTMLElement>('[data-pared]').forEach((pared) => {
+      const filas = [...pared.querySelectorAll<HTMLElement>('[data-fila]')];
+      const sentidos = filas.map((f) => Number(f.dataset.sentido) || 1);
+      /* Fracción del ancho del bloque que recorre una fila de punta a punta. */
+      const RECORRIDO = 0.06;
+      let visible = false;
+      let pendiente = false;
+
+      const pintar = () => {
+        pendiente = false;
+        const r = pared.getBoundingClientRect();
+        const alto = window.innerHeight || 1;
+        const p = 1 - (r.top + r.height / 2) / (alto / 2 + r.height / 2);
+        const recorrido = r.width * RECORRIDO;
+        filas.forEach((f, i) => {
+          const x = p * sentidos[i] * recorrido;
+          f.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0)`;
+        });
+      };
+
+      const alScrollear = () => {
+        if (!pendiente && visible) {
+          pendiente = true;
+          requestAnimationFrame(pintar);
+        }
+      };
+
+      new IntersectionObserver(
+        ([e]) => {
+          visible = e.isIntersecting;
+          if (visible) pintar();
+        },
+        { rootMargin: '200px 0px' }
+      ).observe(pared);
+
+      window.addEventListener('scroll', alScrollear, { passive: true });
+      window.addEventListener('resize', alScrollear, { passive: true });
+      pintar();
+    });
+  }
+
+  /* El personaje mira hacia donde se mueve el mouse. */
+  const compus = document.querySelectorAll<HTMLElement>('[data-compu]');
+  if (compus.length) {
+    let ultimaX: number | null = null;
+    window.addEventListener(
+      'mousemove',
+      (e) => {
+        if (ultimaX === null) {
+          ultimaX = e.clientX;
+          return;
+        }
+        const dx = e.clientX - ultimaX;
+        if (Math.abs(dx) < 3) return;
+        ultimaX = e.clientX;
+        const mira = dx > 0 ? 'der' : 'izq';
+        compus.forEach((c) => {
+          if (c.dataset.mira !== mira) c.dataset.mira = mira;
+        });
+      },
+      { passive: true }
+    );
+  }
+</script>
+
+<style>
+  /* El mp4 de la presentación viene con 3px de banda negra a cada lado
+     (1200 de archivo, 1194 de imagen real). El marco toma la proporción ya
+     recortada y el video se ensancha para que las bandas caigan fuera del
+     `overflow: hidden`. Las dos medidas son proporcionales entre sí, así el
+     recorte es el mismo a cualquier ancho de pantalla. */
+  :global(.acadi-sin-bandas video) {
+    width: calc(100% * 1200 / 1194);
+    max-width: none;
+    margin-left: calc(100% * -3 / 1194);
+  }
+
+  /* Ejes de personalidad en divs. Los rótulos van al tamaño de párrafo del
+     sistema con el tracking de etiqueta, y el punto se ubica en porcentaje
+     sobre la línea, así la fila entera escala con el bloque. Medidas del SVG
+     original: punto de 13 sobre texto de 29 (0,45em) y línea al 50 % del
+     #2D2D2D. */
+  /* Las cuatro filas comparten la misma grilla —subgrid— para que las líneas
+     arranquen y terminen todas en el mismo lugar, sin importar el largo de
+     cada rótulo. */
+  .ejes-lista {
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    gap: 1.4rem 0.875rem;
+  }
+
+  @media (width >= 64rem) {
+    .ejes-lista {
+      gap: 1.85rem 1.25rem;
+    }
+
+    .eje-rotulo,
+    .eje-punto {
+      font-size: 1.125rem;
+    }
+  }
+
+  .eje {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+  }
+
+  /* En mobile los dos rótulos más la barra no entran a 18 px y la línea
+     quedaba de unos pocos píxeles. */
+  .eje-rotulo {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #2d2d2d;
+    white-space: nowrap;
+  }
+
+  .eje-rotulo-der {
+    text-align: left;
+  }
+
+  .eje-barra {
+    position: relative;
+    height: 1px;
+    background-color: rgb(45 45 45 / 0.5);
+  }
+
+  .eje-punto {
+    position: absolute;
+    top: 50%;
+    /* 0,45em era la relación del SVG original; va una vez y media */
+    width: 0.675em;
+    height: 0.675em;
+    font-size: 0.8125rem;
+    border-radius: 999px;
+    background-color: #fa7832;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Personaje: las dos caras apiladas, se cambia cuál se ve. */
+  .compu {
+    position: absolute;
+  }
+
+  .compu-cara {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* La cara que mira a la derecha queda siempre de fondo y la otra se prende
+     o se apaga encima. Si las dos hicieran fade a la vez, en el cruce se
+     transparentan las dos y se ve el panel gris de atrás. */
+  .compu-izq {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 120ms linear;
+  }
+
+  .compu[data-mira='izq'] .compu-izq {
+    opacity: 1;
+  }
+
+  /* Ejes de personalidad. El ancho y el aire son porcentuales, no px: en el
+     Figma el contenido ocupa 63.6 % del marco con un 6 % de aire arriba y
+     abajo, y esa relación se mantiene a cualquier ancho de viewport.
+     Los max() evitan que el gráfico quede ilegible en pantallas chicas. */
+  .ejes {
+    padding-block: max(6%, 2.5rem);
+  }
+  .ejes-caja {
+    width: clamp(0px, max(63.6%, 700px), 100% - 2.5rem);
+    margin-inline: auto;
+  }
+
+  /* Cierre: mismo criterio que los ejes.
+     Figma: lockup de 767 sobre 1780 (43.09 %) con 43 de aire arriba y abajo. */
+  .cierre {
+    padding-block: max(2.42%, 2rem);
+  }
+  .cierre-caja {
+    width: clamp(0px, max(43.09%, 420px), 100% - 2.5rem);
+    margin-inline: auto;
+  }
+
+  /* Pared de placas: el marco fija la proporción del Figma y recorta lo que
+     sangra a los costados. Todo en cqw para que escale con el ancho. */
+  .pared {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 1780 / 1000;
+    overflow: hidden;
+  }
+  .fila {
+    position: absolute;
+    top: var(--top);
+    left: var(--left);
+    display: flex;
+    gap: 1.5169cqw;
+    width: max-content;
+    will-change: transform;
+  }
+  .placa {
+    flex: 0 0 27.6966cqw;
+  }
+
+  @media (width < 64rem) {
+    /* Apiladas: sobra el material de las pasadas y no hay desplazamiento. */
+    .fila {
+      transform: none !important;
+    }
+
+    .placa:nth-child(n + 5) {
+      display: none;
+    }
+
+    .pared {
+      aspect-ratio: auto;
+      padding: 6cqw 5cqw;
+    }
+    .fila {
+      position: static;
+      width: auto;
+      flex-wrap: wrap;
+      gap: 2.5cqw;
+    }
+    .fila + .fila {
+      margin-top: 2.5cqw;
+    }
+    .placa {
+      flex: 0 0 calc(50% - 1.25cqw);
+    }
+  }
+</style>

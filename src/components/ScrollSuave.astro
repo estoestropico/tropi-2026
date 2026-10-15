@@ -1,0 +1,107 @@
+---
+/**
+ * Scroll suavizado.
+ *
+ * Interpola la posición del scroll real del documento —no mueve el body con
+ * transform—, así `getBoundingClientRect` sigue siendo correcto y el parallax,
+ * el mosaico y las entradas funcionan sin tocar nada.
+ *
+ * No se activa con prefers-reduced-motion ni en pantallas táctiles, donde el
+ * sistema ya tiene su propia inercia.
+ *
+ * Para ajustarlo: SUAVIDAD más bajo = más deslizamiento (0.08 es muy suelto,
+ * 0.2 es casi inmediato). Para desactivarlo, sacar <ScrollSuave /> del layout.
+ */
+---
+
+<script>
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tactil = window.matchMedia('(pointer: coarse)').matches;
+
+  if (!quieto && !tactil) {
+    const SUAVIDAD = 0.12;
+
+    // El scroll-behavior del CSS es el respaldo sin JS; acá lo manejamos a mano.
+    document.documentElement.style.scrollBehavior = 'auto';
+
+    let objetivo = window.scrollY;
+    let animando = false;
+    /* Última posición escrita por la animación. Si el scroll aparece en otro
+       lado, lo movió alguien más (teclado, barra, un salto programático) y hay
+       que resincronizar en vez de pelearle. */
+    let ultima = window.scrollY;
+
+    const limite = () =>
+      Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+
+    const paso = () => {
+      const actual = window.scrollY;
+      const dif = objetivo - actual;
+      if (Math.abs(dif) < 0.4) {
+        window.scrollTo(0, objetivo);
+        ultima = window.scrollY;
+        animando = false;
+        return;
+      }
+      window.scrollTo(0, actual + dif * SUAVIDAD);
+      ultima = window.scrollY;
+      requestAnimationFrame(paso);
+    };
+
+    const arrancar = () => {
+      if (!animando) {
+        animando = true;
+        requestAnimationFrame(paso);
+      }
+    };
+
+    const mover = (delta: number) => {
+      objetivo = Math.min(limite(), Math.max(0, objetivo + delta));
+      arrancar();
+    };
+
+    window.addEventListener(
+      'wheel',
+      (e) => {
+        if (e.ctrlKey) return; // zoom del navegador
+        e.preventDefault();
+        // deltaMode 1 = líneas, 2 = páginas
+        const factor = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
+        mover(e.deltaY * factor);
+      },
+      { passive: false }
+    );
+
+    // Teclado, barra de scroll y saltos programáticos: resincronizar.
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!animando || Math.abs(window.scrollY - ultima) > 4) {
+          objetivo = window.scrollY;
+          ultima = window.scrollY;
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener('resize', () => {
+      objetivo = window.scrollY;
+      ultima = window.scrollY;
+    });
+
+    // Anclas: las animamos nosotros, ya que apagamos el scroll-behavior del CSS.
+    document.addEventListener('click', (e) => {
+      const enlace = (e.target as HTMLElement)?.closest?.('a[href^="#"]');
+      if (!enlace) return;
+      const id = enlace.getAttribute('href')!.slice(1);
+      const destino = id ? document.getElementById(id) : document.body;
+      if (!destino) return;
+      e.preventDefault();
+      objetivo = Math.min(
+        limite(),
+        Math.max(0, window.scrollY + destino.getBoundingClientRect().top)
+      );
+      ultima = window.scrollY;
+      arrancar();
+    });
+  }
+</script>

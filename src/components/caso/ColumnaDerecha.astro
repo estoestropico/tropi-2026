@@ -1,0 +1,20 @@
+---
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Alinea contenido con la columna de texto del caso.
+ * En el Figma el texto arranca en x785 sobre un contenido de x185..1595,
+ * o sea 42,55% de offset y 57,45% de ancho.
+ */
+interface Props {
+  espacio?: Espacio;
+  class?: string;
+}
+const { espacio, class: className = '' } = Astro.props;
+---
+
+<div class="contenido" style={margenArriba(espacio)}>
+  <div class:list={['lg:ml-[42.55%] lg:w-[57.45%]', className]}>
+    <slot />
+  </div>
+</div>

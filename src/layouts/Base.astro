@@ -1,0 +1,171 @@
+---
+import '../styles/global.css';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import Marquesina from '../components/layout/Marquesina.astro';
+import Cierre from '../components/layout/Cierre.astro';
+import Animaciones from '../components/Animaciones.astro';
+import Preloader from '../components/Preloader.astro';
+import ScrollSuave from '../components/ScrollSuave.astro';
+import Seguimiento from '../components/Seguimiento.astro';
+import Analitica from '../components/Analitica.astro';
+import Datos from '../components/Datos.astro';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  imagenOg?: string;
+  noindex?: boolean;
+  /* La home apoya el header sobre el hero oscuro y cierra con el pie en
+     violeta. Los defaults son los de las páginas de caso, que no pasan
+     ninguna de las dos. */
+  tema?: 'claro' | 'oscuro' | 'violeta';
+  /* El pie es violeta en todo el sitio. La variante oscura queda disponible
+     por si alguna página futura la necesita. */
+  pie?: 'oscuro' | 'violeta';
+  /* `false` deja la página sin marquesina y sin la placa de cierre: sólo el
+     pie con los legales, en el flujo normal. Es lo que necesita contacto,
+     donde "hagamos algo juntos" ya es el titular de la página. */
+  cierre?: boolean;
+  /* Color del lienzo, el fondo de todo lo que va arriba del pie. */
+  fondo?: string;
+}
+
+const {
+  titulo,
+  descripcion,
+  imagenOg = '/og-default.jpg',
+  noindex = false,
+  tema = 'claro',
+  pie = 'violeta',
+  cierre = true,
+  fondo = '#ffffff',
+} = Astro.props;
+
+/* Build de previa (2026.tropico.ar): todas las páginas van noindex.
+   Ver el comentario de astro.config.mjs. */
+const PREVIA = process.env.PREVIA === '1';
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const tituloCompleto = titulo.includes('Trópico')
+  ? titulo
+  : `${titulo} · Trópico`;
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <Analitica parte="head" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+    {(noindex || PREVIA) && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#f5f4eb" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Trópico" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(imagenOg, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={tituloCompleto} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {/* El .ico cubre los navegadores viejos y el SVG, los actuales */}
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <Datos />
+
+    <noscript>
+      <style>
+        [data-revelar],
+        [data-lineas],
+        [data-mascara] > * {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+        [data-mascara] {
+          clip-path: none !important;
+        }
+      </style>
+    </noscript>
+  </head>
+  <body id="top" class="min-h-dvh overflow-x-clip bg-white text-oscuro antialiased">
+    <Analitica parte="body" />
+    <Preloader />
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-amarillo focus:px-4 focus:py-2 focus:text-[0.875rem] focus:font-semibold focus:uppercase"
+    >
+      Saltar al contenido
+    </a>
+    <Header tema={tema} />
+    {/* El cierre es igual en todo el sitio: la marquesina aqua termina el
+        contenido y abajo aparece la placa violeta —"hagamos algo juntos" más
+        el pie—, que queda fija al fondo por debajo y se descubre al
+        scrollear. El espaciador es el que deja scrollear lo suficiente para
+        verla entera. Sin JS, con movimiento reducido o si la placa no entra
+        en la pantalla, no se fija y queda en el flujo normal.
+        El lienzo es el fondo de todo lo que va arriba de la placa y mide el
+        100 % del ancho: el `main` sigue topado en 1780 y centrado, así que
+        las medidas de adentro no cambian, pero arriba de 1780 el fondo llega
+        igual a los dos bordes y la placa deja de asomar a los costados. */}
+    {
+      cierre ? (
+        <>
+          <div class="lienzo" style={`background-color:${fondo}`}>
+            <main id="contenido" class="tope">
+              <slot />
+              <Marquesina />
+            </main>
+          </div>
+          <div class="pie-solapa">
+            <Cierre />
+            <Footer variante={pie} />
+          </div>
+          <div class="pie-espaciador" aria-hidden="true" />
+        </>
+      ) : (
+        <div class="lienzo" style={`background-color:${fondo}`}>
+          <main id="contenido" class="tope">
+            <slot />
+          </main>
+          <Footer variante={pie} />
+        </div>
+      )
+    }
+    {cierre && (
+    <script is:inline>
+          (() => {
+            const solapa = document.querySelector('.pie-solapa');
+            const hueco = document.querySelector('.pie-espaciador');
+            if (!solapa || !hueco) return;
+            const quieto = window.matchMedia('(prefers-reduced-motion: reduce)');
+            const medir = () => {
+              const alto = solapa.offsetHeight;
+              /* Si el pie no entra en la pantalla, su borde de arriba quedaría
+                 siempre fuera de vista: en ese caso no se fija y queda en el
+                 flujo normal. */
+              const entra = alto <= window.innerHeight && !quieto.matches;
+              document.body.classList.toggle('con-solapa', entra);
+              hueco.style.height = entra ? alto + 'px' : '0px';
+            };
+            medir();
+            window.addEventListener('resize', medir, { passive: true });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+      })();
+    </script>
+    )}
+    <Animaciones />
+    <ScrollSuave />
+    <Seguimiento />
+  </body>
+</html>

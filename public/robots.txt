@@ -1,0 +1,9 @@
+# Trópico — https://www.tropico.ar
+# Sitio público: se indexa entero. La copia de trabajo del equipo
+# (2026.tropico.ar) reemplaza este archivo por el suyo en el build de previa
+# y queda cerrada a los buscadores.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://www.tropico.ar/sitemap-index.xml

@@ -1,0 +1,65 @@
+---
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Bloque de texto de caso: etiqueta a la izquierda, título y cuerpo a la
+ * derecha. Proporción del Figma: columna de 600 y columna de 810 sobre 1410.
+ *
+ * Acepta contenido extra debajo de la etiqueta (slot "izquierda") y debajo
+ * del cuerpo (slot "derecha").
+ *
+ * espacio → separación con el bloque anterior (default "m", 112px).
+ * efecto  → cómo entra el título: "lineas" | "fade" | "ninguno".
+ */
+interface Props {
+  etiqueta: string;
+  titulo?: string;
+  efecto?: 'lineas' | 'fade' | 'ninguno';
+  espacio?: Espacio;
+  class?: string;
+}
+
+const {
+  etiqueta,
+  titulo,
+  efecto = 'lineas',
+  espacio = 'm',
+  class: className = '',
+} = Astro.props;
+
+const tituloLineas = efecto === 'lineas' ? '' : undefined;
+const tituloFade = efecto === 'fade' ? '' : undefined;
+---
+
+<section class:list={[className]} style={margenArriba(espacio)}>
+  <div class="contenido grid gap-8 lg:grid-cols-[42.5%_57.5%] lg:gap-0">
+    <div>
+      <h2
+        class="rotulo rotulo-caso"
+        data-revelar
+      >
+        {etiqueta}
+      </h2>
+      {/* Contenido opcional bajo la etiqueta, en la columna izquierda */}
+      <slot name="izquierda" />
+    </div>
+    <div class="max-w-[810px]">
+      {
+        titulo && (
+          <p
+            class="mb-4 text-[1.375rem] font-bold leading-none tracking-[-0.02em] lg:text-[1.625rem]"
+            data-lineas={tituloLineas}
+            data-revelar={tituloFade}
+          >
+            {titulo}
+          </p>
+        )
+      }
+      <div class="text-[1.125rem] leading-[1.4] tracking-[-0.02em] [&>p+p]:mt-4" data-revelar style="--retardo:180ms">
+        <slot />
+      </div>
+      {/* Contenido opcional bajo el cuerpo, en la columna derecha */}
+      <slot name="derecha" />
+    </div>
+  </div>
+</section>

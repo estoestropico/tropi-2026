@@ -1,0 +1,438 @@
+---
+import Base from '../layouts/Base.astro';
+import Boton from '../components/ui/Boton.astro';
+
+/* Contacto es la única página sin marquesina y sin placa de cierre: acá
+   "hagamos algo juntos" ya es el titular, y abajo va sólo el pie con los
+   legales. Toda la página es violeta, así que el lienzo va de ese color. */
+const VIOLETA = '#5d00ff';
+
+/* Estos valores son las claves que `public/api/contacto.php` cruza con los
+   tags de Prometheo (sección `tags.servicios` del config privado). Si se
+   agrega o renombra un servicio, hay que sumarlo también ahí. */
+const SERVICIOS = ['Trópico360', 'Branding', 'Web'];
+
+const CAMPOS: {
+  id: string;
+  etiqueta: string;
+  tipo: 'text' | 'email' | 'tel';
+  requerido: boolean;
+  autocomplete: string;
+}[] = [
+  { id: 'nombre', etiqueta: '¿Cuál es tu nombre?', tipo: 'text', requerido: true, autocomplete: 'name' },
+  { id: 'email', etiqueta: '¿Cuál es tu e-mail?', tipo: 'email', requerido: true, autocomplete: 'email' },
+  /* Obligatorio: Prometheo identifica al lead por el teléfono y la bienvenida
+     sale por WhatsApp. */
+  { id: 'whatsapp', etiqueta: '¿Tu Whatsapp?', tipo: 'tel', requerido: true, autocomplete: 'tel' },
+];
+---
+
+<Base
+  titulo="Contacto"
+  descripcion="Contanos tu idea. Branding, productos digitales y comunicación."
+  tema="violeta"
+  cierre={false}
+  fondo={VIOLETA}
+>
+  {/* El frame de contacto no usa la columna de contenido de 1410 sino el
+      marco de 1680: en el Figma la columna izquierda va de x53 a x586 y la
+      derecha de x886 a x1683. Esas proporciones —32,7 % y 48,9 % con el
+      sobrante como separación— son las que se usan acá. */}
+  <div class="marco pb-[120px] pt-32 text-arena lg:pb-[180px] lg:pt-[208px]">
+    <div class="columnas grid gap-16">
+      {/* ── Columna izquierda: titular y datos ────────────────────────── */}
+      <div>
+        <h1 class="contacto-titulo" data-revelar>Hagamos<br />algo juntos.</h1>
+
+        <div class="mt-10 lg:mt-[45px]">
+          <p data-revelar>Buenos Aires, Argentina</p>
+          <p class="mt-5 font-bold lg:mt-[22px]" data-revelar>
+            <a href="tel:+5491122555938" class="subraya">(+54911) 2255·5938</a>
+          </p>
+          <p class="mt-5 text-[1.5rem] font-bold leading-none text-aqua lg:mt-[28px]" data-revelar>
+            <a href="mailto:hola@tropico.ar" class="subraya">hola@tropico.ar</a>
+          </p>
+          <p class="mt-6 lg:mt-[30px]" data-revelar>¿Querés sumarte a Trópico?</p>
+          <p class="font-bold" data-revelar>
+            <a href="mailto:jobs@tropico.ar" class="subraya">jobs@tropico.ar</a>
+          </p>
+        </div>
+
+        <ul class="mt-10 flex gap-3 lg:mt-[54px]" data-revelar>
+          <li>
+            <a
+              href="https://www.behance.net/estoestropico"
+              class="social"
+              aria-label="Behance"
+              target="_blank"
+              rel="noopener"
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M3 6.5h5.1c1.7 0 2.9.8 2.9 2.3 0 1.1-.6 1.8-1.5 2.1 1.2.3 1.9 1.1 1.9 2.4 0 1.8-1.4 2.7-3.3 2.7H3v-9.5Zm4.7 3.8c.8 0 1.3-.4 1.3-1.1 0-.7-.5-1-1.3-1H5.1v2.1h2.6Zm.2 4c.9 0 1.4-.4 1.4-1.2s-.5-1.2-1.4-1.2H5.1v2.4h2.8ZM14 6.9h4.6v1.3H14V6.9Zm2.4 9.2c-2.1 0-3.6-1.4-3.6-3.6s1.5-3.7 3.6-3.7c2.2 0 3.5 1.6 3.5 3.9v.4h-5.1c.1 1 .7 1.7 1.7 1.7.7 0 1.2-.3 1.4-.8h1.9c-.4 1.3-1.6 2.1-3.4 2.1Zm-1.6-4.3h3.2c-.1-.9-.7-1.5-1.6-1.5-.8 0-1.5.5-1.6 1.5Z"
+                  fill="currentColor"></path>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.instagram.com/estoestropico"
+              class="social"
+              aria-label="Instagram"
+              target="_blank"
+              rel="noopener"
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" stroke-width="1.8" />
+                <circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.8" />
+                <circle cx="17" cy="7" r="1.15" fill="currentColor" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {/* ── Columna derecha: formulario ───────────────────────────────── */}
+      {/* INTEGRACIÓN CON PROMETHEO — no cambiar sin revisar
+          `public/api/contacto.php`: el `action`, los `name` de los campos,
+          la trampa (`sitio_web`), el tiempo (`t`) y la casilla
+          `acepta_whatsapp` son los que lee el PHP. `npm run build` falla si
+          falta alguno (ver `scripts/verificar-contacto.mjs`).
+
+          Sin JavaScript el formulario se envía igual por POST y el PHP
+          redirige a /muchas-gracias/ o vuelve acá con ?error=.
+
+          Los campos ocultos de origen los completa `Seguimiento` con la
+          página de entrada, el referente y las UTMs de la visita. Quedan en
+          el registro privado; a Prometheo no se envían. */}
+      <form class="formulario" action="/api/contacto.php" method="post" novalidate>
+        <p class="trampa" aria-hidden="true">
+          <label>No completar <input type="text" name="sitio_web" tabindex="-1" autocomplete="off" /></label>
+        </p>
+        <input type="hidden" name="t" value="" />
+        {
+          ['landing', 'referrer', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid', 'msclkid'].map(
+            (c) => <input type="hidden" name={c} data-origen={c} />
+          )
+        }
+        {
+          CAMPOS.map((c) => (
+            <p class="campo" data-revelar>
+              <label class="sr-only" for={c.id}>
+                {c.etiqueta}
+              </label>
+              <input
+                id={c.id}
+                name={c.id}
+                type={c.tipo}
+                placeholder={c.etiqueta}
+                required={c.requerido || undefined}
+                autocomplete={c.autocomplete}
+              />
+              {c.requerido && <span class="aviso">¡Necesitamos saberlo!</span>}
+            </p>
+          ))
+        }
+
+        <fieldset class="mt-9 lg:mt-[46px]" data-revelar>
+          <legend class="mb-5 lg:mb-[28px]">¿Sobre qué servicio nos consultás?</legend>
+          <ul class="flex flex-wrap gap-x-6 gap-y-4 lg:gap-x-[23px]">
+            {
+              SERVICIOS.map((s) => (
+                <li>
+                  <label class="marca">
+                    <input type="checkbox" name="servicios[]" value={s} />
+                    <span class="caja" aria-hidden="true" />
+                    {s}
+                  </label>
+                </li>
+              ))
+            }
+          </ul>
+        </fieldset>
+
+        <p class="campo campo-alto mt-9 lg:mt-[54px]" data-revelar>
+          <label class="sr-only" for="idea">¿Qué idea tenés en mente?</label>
+          <textarea id="idea" name="idea" rows="3" placeholder="¿Qué idea tenés en mente?"></textarea>
+        </p>
+
+        <div
+          class="mt-9 flex flex-col items-start gap-6 lg:mt-[46px] lg:flex-row lg:items-center lg:justify-between"
+          data-revelar
+        >
+          <div class="flex flex-col gap-4">
+            <label class="marca">
+              <input type="checkbox" name="novedades" />
+              <span class="caja" aria-hidden="true" />
+              Quiero recibir información de Trópico
+            </label>
+            {/* Sin esta casilla no se envía la plantilla de bienvenida por
+                WhatsApp: el lead entra a Prometheo igual, pero nadie le
+                escribe primero. */}
+            <label class="marca">
+              <input type="checkbox" name="acepta_whatsapp" />
+              <span class="caja" aria-hidden="true" />
+              Acepto que Trópico me contacte por WhatsApp
+            </label>
+          </div>
+          <Boton tamano="chico" class="font-bold!">Empecemos</Boton>
+        </div>
+
+        <p class="estado-form" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</Base>
+
+<script>
+  /* Completa los campos ocultos con el origen que guardó `Seguimiento` en la
+     primera página de la visita. Si no hay nada guardado, quedan vacíos. */
+  try {
+    const guardado = sessionStorage.getItem('tropico-origen');
+    if (guardado) {
+      const datos = JSON.parse(guardado) as Record<string, string>;
+      for (const campo of document.querySelectorAll<HTMLInputElement>('[data-origen]')) {
+        const clave = campo.dataset.origen;
+        if (clave && datos[clave]) campo.value = datos[clave];
+      }
+    }
+  } catch {
+    /* Almacenamiento bloqueado o dato ilegible: se envía sin origen. */
+  }
+
+  /* Envío a `public/api/contacto.php`, que valida, registra el lead en
+     Prometheo y, si marcó la casilla, le manda la bienvenida por WhatsApp.
+     Si sale bien se pasa a /muchas-gracias/; si no, el error se muestra
+     abajo del botón y el formulario queda como estaba. */
+  const form = document.querySelector<HTMLFormElement>('form.formulario');
+
+  if (form) {
+    const estado = form.querySelector<HTMLElement>('.estado-form')!;
+    const boton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const tiempo = form.querySelector<HTMLInputElement>('input[name="t"]')!;
+    const inicio = performance.now();
+
+    const avisar = (texto: string, tipo: 'ok' | 'error' = 'ok') => {
+      estado.dataset.tipo = tipo;
+      estado.textContent = texto;
+    };
+
+    if (new URLSearchParams(location.search).has('error')) {
+      avisar('No pudimos enviar tu consulta. Revisá los datos y probá de nuevo.', 'error');
+    }
+
+    form.addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+
+      if (!form.checkValidity()) {
+        form.classList.add('intentado');
+        form.querySelector<HTMLElement>(':invalid')?.focus();
+        return;
+      }
+
+      tiempo.value = ((performance.now() - inicio) / 1000).toFixed(1);
+      boton.disabled = true;
+      avisar('Enviando…');
+
+      try {
+        const respuesta = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const datos = await respuesta.json();
+
+        if (datos.ok) {
+          window.location.href = '/muchas-gracias/';
+          return;
+        }
+        const detalle = Object.values(datos.errores ?? {}).join(' ');
+        avisar(detalle || datos.mensaje, 'error');
+      } catch {
+        avisar('No pudimos enviar tu consulta. Revisá tu conexión y probá de nuevo.', 'error');
+      }
+      boton.disabled = false;
+    });
+  }
+</script>
+
+<style>
+  @media (width >= 64rem) {
+    .columnas {
+      grid-template-columns: 32.7% 48.9%;
+      justify-content: space-between;
+      gap: 0;
+    }
+  }
+
+  .contacto-titulo {
+    font-size: clamp(2.75rem, 1rem + 6.4vw, 6.25rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  /* ── Campos ──────────────────────────────────────────────────────────
+     Cada campo es una línea: el rótulo hace de placeholder y abajo queda la
+     raya. El aviso de obligatorio va en amarillo, alineado a la derecha y
+     debajo de la raya, como en el Figma. */
+  .campo {
+    position: relative;
+    display: block;
+    padding-bottom: 26px;
+  }
+
+  .campo + .campo {
+    margin-top: 10px;
+  }
+
+  .campo :global(input),
+  .campo :global(textarea) {
+    width: 100%;
+    border-bottom: 1px solid currentColor;
+    padding-block: 12px;
+    background: transparent;
+    color: inherit;
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+
+  .campo :global(textarea) {
+    resize: vertical;
+  }
+
+  .campo-alto :global(textarea) {
+    min-height: 116px;
+  }
+
+  .campo :global(input::placeholder),
+  .campo :global(textarea::placeholder) {
+    color: currentColor;
+    opacity: 1;
+  }
+
+  .campo :global(input:focus),
+  .campo :global(textarea:focus) {
+    outline: none;
+    border-bottom-color: var(--color-aqua);
+  }
+
+  /* El aviso aparece recién cuando el visitante dejó el campo mal, no de
+     entrada: `:user-invalid` es justamente eso —inválido después de haber
+     interactuado—, a diferencia de `:invalid`, que marca desde el arranque. */
+  .aviso {
+    position: absolute;
+    right: 0;
+    bottom: 4px;
+    color: var(--color-amarillo);
+    font-size: 0.875rem;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 200ms var(--ease-salida);
+  }
+
+  .campo:has(input:user-invalid) .aviso,
+  .intentado .campo:has(input:invalid) .aviso {
+    opacity: 1;
+  }
+
+  /* Campo trampa para bots: fuera de la pantalla, no `display: none`, que
+     algunos bots detectan y saltean. */
+  .trampa {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  /* Mensaje de envío y de error, debajo del botón. */
+  .estado-form {
+    min-height: 1.4em;
+    margin-top: 20px;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  .estado-form:empty {
+    display: none;
+  }
+
+  .estado-form[data-tipo='error'] {
+    color: var(--color-amarillo);
+  }
+
+  /* ── Casillas ────────────────────────────────────────────────────────
+     La casilla real queda oculta pero sigue siendo la que recibe el foco y
+     el clic; lo que se ve es el cuadrado de al lado. */
+  .marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  .marca :global(input) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .caja {
+    display: grid;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid currentColor;
+    place-items: center;
+  }
+
+  .caja::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: var(--color-aqua);
+    transform: scale(0);
+    transition: transform 180ms var(--ease-salida);
+  }
+
+  .marca :global(input:checked) + .caja::before {
+    transform: scale(1);
+  }
+
+  .marca :global(input:focus-visible) + .caja {
+    outline: 2px solid var(--color-aqua);
+    outline-offset: 3px;
+  }
+
+  /* ── Redes ───────────────────────────────────────────────────────────── */
+  .social {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background-color: var(--color-aqua);
+    color: var(--color-oscuro);
+    place-items: center;
+    transition: transform 200ms var(--ease-salida);
+  }
+
+  .social svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .social:hover {
+    transform: scale(1.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .caja::before,
+    .social,
+    .aviso {
+      transition: none;
+    }
+  }
+</style>

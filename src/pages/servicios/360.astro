@@ -1,0 +1,326 @@
+---
+import PaginaServicio from '../../components/servicio/PaginaServicio.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Boton from '../../components/ui/Boton.astro';
+import TiraMarca from '../../components/servicio/TiraMarca.astro';
+import { CORREDOR_360 } from '../../lib/corredores';
+
+/* Servicio: Trópico 360. Parte de la estructura de Branding y Web, con dos
+   módulos propios: el ciclo de trabajo en lugar de las alternativas y, después
+   de "El servicio", la placa del diagnóstico. Los casos van arriba, en la
+   banda oscura. El corredor de imágenes no va arriba como en los otros
+   servicios: cierra el módulo del ciclo, debajo de los tres pasos.
+   Contenidos del documento de la página de 360. */
+
+const ARENA = '#f5f4eb';
+
+/* El ciclo de trabajo */
+const CICLO = [
+  {
+    titulo: 'Plan',
+    texto:
+      'Cada mes abre con un plan escrito que define objetivos, prioridades y piezas a producir. Se construye sobre los objetivos del trimestre y sobre los resultados del mes anterior.',
+  },
+  {
+    titulo: 'Operación',
+    texto:
+      'Producimos y publicamos lo planificado: contenidos, campañas, piezas y ajustes en el sitio. Al ejecutarlo un mismo equipo, el criterio se sostiene parejo en todos los canales.',
+  },
+  {
+    titulo: 'Evolución',
+    texto:
+      'Analizamos el rendimiento de cada acción, discontinuamos lo que no aporta y reasignamos la inversión. Esa lectura es la base del plan del mes siguiente.',
+  },
+];
+
+/* Qué entra: va en la columna que pasa de "El servicio". */
+const CAPACIDADES = [
+  {
+    titulo: 'Planning',
+    texto:
+      'Definimos qué comunica la marca, a qué audiencia y en qué canal. Es la decisión que ordena la producción de todo el período.',
+  },
+  {
+    titulo: 'Automation',
+    texto:
+      'Integramos CRM, embudos, WhatsApp y agentes para que el proceso comercial opere como un sistema y no como una suma de gestiones sueltas.',
+  },
+  {
+    titulo: 'Contenidos y redes',
+    texto:
+      'Producimos y publicamos de forma sostenida, con un criterio editorial único para todas las plataformas.',
+  },
+  {
+    titulo: 'Marca y sitio',
+    texto:
+      'Mantenemos la identidad y el sitio en evolución permanente, para que acompañen los cambios del negocio.',
+  },
+  {
+    titulo: 'Ads',
+    texto:
+      'Gestionamos las campañas en Google y Meta con foco en el costo de adquisición y el retorno de la inversión.',
+  },
+  {
+    titulo: 'Reporting',
+    texto:
+      'Entregamos un informe mensual con lo ejecutado, el rendimiento de cada acción y las prioridades del período siguiente.',
+  },
+];
+
+const PREGUNTAS = [
+  {
+    pregunta: '¿Cómo se define el fee?',
+    respuesta:
+      'En función de los servicios contratados y de las particularidades del caso. Después de la entrevista, cuando ya entendimos el problema de comunicación, te elaboramos una propuesta comercial con el alcance mensual y el valor.',
+  },
+  {
+    pregunta: '¿Hay permanencia?',
+    respuesta:
+      'Sí, seis meses. El primero es sobre todo carga de contexto, y un sistema de comunicación no se puede leer antes de ese plazo. Cumplidos los seis, sigue mes a mes.',
+  },
+  {
+    pregunta: '¿Y si después quiero cortar?',
+    respuesta:
+      'Nos avisás con quince días de anticipación y damos de baja el servicio. Todo lo que se produjo queda tuyo, y las cuentas y plataformas siguen a nombre de tu empresa: no perdés nada de lo realizado.',
+  },
+  {
+    pregunta: '¿La pauta entra en el fee?',
+    respuesta:
+      'No. El presupuesto de medios lo pagás directo a Google o Meta, desde cuentas a tu nombre. El fee cubre la gestión, y ves lo que se gasta sin intermediarios.',
+  },
+  {
+    pregunta: '¿Qué necesitan de mi lado cada mes?',
+    respuesta:
+      'Los objetivos comerciales del mes y la información que sólo está de tu lado: novedades de producto, acciones de venta, lo que se viene. Se habla en la reunión de plan, al abrir el mes, y al cierre hay otra reunión para leer juntos el reporte. El resto de la operación corre por nuestra cuenta.',
+  },
+  {
+    pregunta: '¿Puedo contratar solo redes, solo ads o solo automation?',
+    respuestaHtml:
+      'Por separado no: esas capacidades rinden dentro del sistema. Si buscás un proyecto puntual, trabajamos <a href="/servicios/branding" class="underline underline-offset-2">branding</a> y <a href="/servicios/web" class="underline underline-offset-2">web</a>.',
+  },
+  {
+    pregunta: '¿Y si necesito rehacer la marca o el sitio?',
+    respuesta: 'La evolución continua de los dos entra en el fee. Un rediseño integral se cotiza como proyecto aparte.',
+  },
+  {
+    pregunta: '¿Qué pasa si un mes necesito más?',
+    respuesta: 'Se ajusta el alcance. Se habla en la reunión de plan y queda escrito antes de que arranque el mes.',
+  },
+  {
+    pregunta: '¿Cómo sé qué se hizo?',
+    respuesta: 'Reporte mensual con lo ejecutado, lo que rindió y lo que sigue, más una reunión para leerlo juntos.',
+  },
+  {
+    pregunta: '¿Con quién hablo?',
+    respuesta: 'Con tu referente, que está en el proyecto desde la primera reunión.',
+  },
+];
+---
+
+<PaginaServicio
+  slug="360"
+  titulo="Trópico 360"
+  rotulo="Trópico 360 · Servicio Full Agency"
+  descripcion="Poné toda tu comunicación bajo una misma dirección. Planificamos, producimos y medimos todos los meses."
+  titular={['Un frente tropical ', 'soplando a tu favor', '.']}
+  intro="Poné toda tu comunicación bajo una misma dirección. Planificamos, producimos y medimos todos los meses. Ganá claridad, tiempo y foco para tu negocio."
+  servicioTitulo="Una empresa que crece produce más comunicación de la que puede coordinar."
+  servicioTexto={[
+    'Aparecen los pedidos sueltos: una campaña, un cambio en el sitio, contenido para el lanzamiento, un mail que hay que automatizar. Cada uno se resuelve con quien esté disponible ese día, y la marca termina diciendo cosas distintas según el canal.',
+    'En 360 hay un solo plan, un solo criterio y un equipo que ya conoce el negocio. La coherencia deja de depender de que alguien de tu lado la vigile pedido por pedido.',
+  ]}
+  etapas={CAPACIDADES}
+  aplicadoRotulo="Marcas que trabajamos todos los meses"
+  casos={['washington-school', 'farmaexpert', 'parisi']}
+  casosArriba
+  preguntas={PREGUNTAS}
+  preguntasOscuras
+>
+  {/* ── El ciclo ──────────────────────────────────────────────────────────
+      Reemplaza las alternativas. La cinta repite el ciclo y corre sola,
+      como la marquesina, para decir que no termina, y de paso separa el
+      portfolio de este módulo. */}
+  <div slot="alternativas">
+    <div class="cinta full-width mt-6 mb-12 lg:mt-10 lg:mb-[90px]" aria-hidden="true">
+      <div class="cinta-pista">
+        {
+          [0, 1].map(() => (
+            <span class="cinta-tramo">
+              {Array.from({ length: 6 }).map(() => (
+                <>
+                  <span>Plan</span>
+                  <span class="cinta-flecha">→</span>
+                  <span>Operación</span>
+                  <span class="cinta-flecha">→</span>
+                  <span>Evolución</span>
+                  <span class="cinta-flecha">→</span>
+                </>
+              ))}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <p class="rotulo" data-revelar>Cómo trabajamos</p>
+    <p class="grande-ciclo mt-6 max-w-[760px] lg:mt-[34px]" data-revelar>
+      Un círculo virtuoso que se repite.
+    </p>
+
+    <ol class="mt-12 grid gap-12 lg:mt-[70px] lg:grid-cols-3 lg:gap-[30px]" data-revelar-grupo>
+      {
+        CICLO.map((c, i) => (
+          <li class="ciclo-paso">
+            <p class="rotulo text-aqua">0{i + 1}</p>
+            <h2 class="mt-4 text-[1.75rem] font-bold leading-none tracking-[-0.02em] lg:text-[2rem]">{c.titulo}</h2>
+            <p class="mt-3 leading-[1.4] lg:mt-[14px]">{c.texto}</p>
+            <a href="/contacto" class="enlace ciclo-cta">
+              <span class="subraya">Empecemos</span>
+              <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+                <path d="M0 5h12M8.5 1l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" />
+              </svg>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+
+    {/* El corredor cierra el ciclo: va a sangre, por eso rompe el tope de
+        `.contenido` con `full-width`, igual que en los otros servicios. */}
+    <TiraMarca piezas={CORREDOR_360} class="mt-[64px] lg:mt-[110px]" />
+  </div>
+
+  {/* ── El primer paso ────────────────────────────────────────────────
+      El diagnóstico va en una placa aparte: es un producto con precio propio
+      y es la puerta de entrada al servicio. */}
+  <Banda slot="tras-servicio" color={ARENA} espacio="nulo">
+    <div class="contenido pb-[80px] lg:pb-[130px]">
+      <div class="diagnostico border-t border-[rgb(5_5_21/0.6)] pt-[64px] lg:pt-[110px]" data-revelar>
+        <div>
+          <p class="rotulo">El primer paso</p>
+          <h2 class="mt-6 text-[1.75rem] font-bold leading-[1.15] tracking-[-0.02em] lg:mt-[22px] lg:text-[2.5rem]">
+            Antes de proponerte un plan, entendemos dónde estás.
+          </h2>
+        </div>
+        <div>
+          <p class="leading-[1.4]">
+            El Diagnóstico 360 audita marca, presencia digital, comunicación y
+            proceso comercial, y termina en un informe con prioridades y un
+            orden para atacarlas. Tiene precio propio, y si contratás 360 se
+            descuenta del primer mes. Si llegás con el problema ya
+            identificado, se puede saltear y arrancamos por el plan.
+          </p>
+          <div class="mt-8">
+            <Boton href="/contacto" tamano="chico" class="font-bold!">Conocé el Diagnóstico</Boton>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Banda>
+
+</PaginaServicio>
+
+<style>
+  /* ── Ciclo ─────────────────────────────────────────────────────────── */
+  .grande-ciclo {
+    font-size: clamp(1.75rem, 0.9rem + 3.2vw, 3.3rem);
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .cinta {
+    overflow: hidden;
+    border-block: 1px solid rgb(245 244 235 / 0.35);
+    padding-block: 14px;
+  }
+
+  .cinta-pista {
+    display: flex;
+    width: max-content;
+    animation: cinta-correr 40s linear infinite;
+  }
+
+  .cinta-tramo {
+    display: flex;
+    gap: 28px;
+    padding-right: 28px;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .cinta-flecha {
+    color: var(--color-aqua);
+  }
+
+  /* Corre hacia la derecha: arranca desplazada media pista y vuelve a cero. */
+  @keyframes cinta-correr {
+    from {
+      transform: translate3d(-50%, 0, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .ciclo-paso {
+    display: flex;
+    flex-direction: column;
+    max-width: 460px;
+  }
+
+  /* Mismo enlace que las alternativas de las otras páginas de servicio. */
+  .enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .ciclo-cta {
+    margin-top: auto;
+    padding-top: 24px;
+  }
+
+  .ciclo-paso > p:nth-child(3) {
+    margin-bottom: 28px;
+  }
+
+  @media (width >= 64rem) {
+    .cinta-tramo {
+      gap: 40px;
+      padding-right: 40px;
+      font-size: 1.125rem;
+    }
+  }
+
+  /* ── Diagnóstico ───────────────────────────────────────────────────── */
+  .diagnostico {
+    display: grid;
+    gap: 28px;
+    padding: 32px 24px;
+    border: 1px solid var(--color-oscuro);
+    border-left-width: 6px;
+  }
+
+  @media (width >= 64rem) {
+    .diagnostico {
+      grid-template-columns: 40% 49%;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0;
+      padding: 64px 70px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cinta-pista {
+      animation: none;
+    }
+  }
+</style>

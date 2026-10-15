@@ -1,0 +1,20 @@
+cliente: Parisi
+titular: De vender rollos a hablar de nutrición.
+bajada: >-
+  Parisi ya era grande en la provincia de Buenos Aires. El desafío fue alinear
+  la imagen de la empresa con la calidad real de su producto.
+rubro: Agroindustria
+servicios:
+  - Trópico 360
+  - Branding
+  - Web
+  - Social
+  - Ads
+  - Growth
+anio: '2025'
+orden: 5
+publicado: true
+destacado: false
+portada: ../../assets/casos/portadas/parisi.png
+portadaAlt: Identidad de Parisi aplicada a la flota de camiones
+heroAlt: Camión de Parisi cargado de rollos en el campo

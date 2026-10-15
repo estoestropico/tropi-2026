@@ -1,0 +1,134 @@
+---
+import PaginaServicio from '../../components/servicio/PaginaServicio.astro';
+import { SIN_360 } from '../../lib/previa';
+import { CORREDOR_BRANDING } from '../../lib/corredores';
+
+/* Servicio: Branding (Figma 1622:1902). */
+
+const TIRA = CORREDOR_BRANDING;
+
+const ALTERNATIVAS = [
+  {
+    titulo: 'Creación',
+    texto:
+      'Una identidad nueva construida desde la estrategia: posicionamiento, sistema visual y discurso al servicio de los objetivos del negocio.',
+  },
+  {
+    titulo: 'Rediseño',
+    texto:
+      'Transformación profunda de una marca en marcha: realineamos estrategia e identidad cuando la marca quedó atrás.',
+  },
+  {
+    titulo: 'Revamp',
+    texto:
+      'Puesta al día del sistema visual sin tocar la base estratégica: la marca conserva su capital y recupera vigencia.',
+  },
+];
+
+/* Las etapas del servicio. `enlace` marca el tramo del texto que va con
+   link, cuando lo hay. */
+const ETAPAS: { titulo: string; texto: string; enlace?: { texto: string; href: string } }[] = [
+  {
+    titulo: 'Investigación y auditoría',
+    texto:
+      'Revisamos lo que tu marca ya hizo y lo comparamos con lo que hacen tus competidores, y también con marcas de otros rubros que resuelven bien lo mismo. Nos interesa qué percibe el mercado: qué te reconoce, qué te suma y qué te confunde con el resto. Encontramos qué está capitalizado en la cabeza de la gente y en qué puntos la categoría repite el mismo discurso.',
+  },
+  {
+    titulo: 'Estrategia y posicionamiento',
+    texto:
+      'Visión, misión, propósito, propuesta, posicionamiento, valores, personalidad y comportamientos. El fondo de la marca, definido para resistir el paso del tiempo y los cambios de gestión. Buscamos una posición propia, sostenida en algo que tu empresa pueda demostrar.',
+  },
+  {
+    titulo: 'Arquitectura de marca',
+    texto:
+      'Cuando conviven varias marcas, la jerarquía entre ellas deja de estar clara para el cliente. Definimos quién manda, quién acompaña, qué merece nombre propio y qué conviene que dependa de otra marca. Aparece cuando sumaste una línea, compraste una empresa o tenés dos productos compitiendo por el mismo cliente.',
+  },
+  {
+    titulo: 'Naming',
+    texto:
+      'Un nombre condiciona lo que la gente asume de vos antes de conocerte. Buscamos nombres que digan algo, que se recuerden y que se puedan registrar. Cada candidato pasa por cómo suena, qué significa en los idiomas donde vas a operar, si el dominio está libre y si hay alguien más usando algo parecido.',
+  },
+  {
+    titulo: 'Identidad visual',
+    texto:
+      'Marca gráfica, tipografía, color, iconografía, imagen y recursos gráficos, definidos como sistema, porque a una marca se la reconoce por el conjunto. La consistencia sostenida en el tiempo es lo que construye familiaridad y confianza.',
+  },
+  {
+    titulo: 'Voz y tono',
+    texto:
+      'Definimos el carácter de la marca y el registro que le corresponde a cada situación: un lanzamiento, una comunicación institucional, una respuesta a un reclamo. Incluye el léxico propio, lo que la marca dice y lo que evita, y ejemplos resueltos sobre los casos que aparecen seguido. El trato se mantiene parejo con varias personas escribiendo en su nombre.',
+  },
+  {
+    titulo: 'Implementación y acompañamiento',
+    texto:
+      'Llevamos el sistema a los soportes donde la marca vive, en entornos físicos y digitales, y acompañamos el lanzamiento y los primeros movimientos, ajustando y ampliando a medida que aparecen usos nuevos. Cuando ese acompañamiento pasa a ser permanente, se trabaja desde',
+    enlace: { texto: 'Trópico 360', href: SIN_360 ? undefined : '/servicios/360' },
+  },
+];
+
+/* Preguntas. En el Figma son de relleno salvo la del logotipo; el resto
+   está armado con el contenido de esta misma página y falta revisarlo. */
+const PREGUNTAS = [
+  {
+    pregunta: '¿Diseñan solo el logotipo?',
+    respuesta:
+      'No. Construimos la marca completa: estrategia, identidad visual y verbal, sistema gráfico y aplicaciones. Recibís el manual de marca junto con todos los editables y activos digitales listos para implementar en entornos físicos y web, organizados para que tu equipo o tus proveedores puedan usar la marca con autonomía y coherencia.',
+  },
+  {
+    pregunta: '¿Cuánto dura un proyecto de marca?',
+    respuesta:
+      'Alrededor de un mes. El plazo exacto depende del alcance y de lo que el caso necesite: no lleva lo mismo una identidad nueva que un revamp, ni una marca sola que una arquitectura con varias líneas. Al aprobar el presupuesto ya tenés las etapas y las fechas de cada instancia.',
+  },
+  {
+    pregunta: '¿Cuánto cuesta un proyecto de marca?',
+    respuesta:
+      'No hay precio de lista: depende del alcance, de la cantidad de aplicaciones y de si entran naming, arquitectura o identidad verbal. Con una reunión para entender el caso te pasamos rápido una propuesta con alcance, etapas y valores.',
+  },
+  {
+    pregunta: '¿Cuántas propuestas veo y cuántas rondas de ajuste hay?',
+    respuesta:
+      'Presentamos tres propuestas de marca y trabajamos con dos rondas de ajustes. Antes de llegar ahí definimos con vos el tipo de marca y el mood que buscamos, así las tres propuestas se mueven dentro de ese territorio.',
+  },
+  {
+    pregunta: '¿Y si ninguna de las propuestas me convence?',
+    respuesta:
+      'Es poco probable, y no por optimismo: antes de diseñar acordamos con vos el tipo de marca y el mood, y ese acuerdo achica mucho el margen. Las tres propuestas llegan alineadas a esa búsqueda, y con las dos rondas de ajuste se termina de afinar la elegida.',
+  },
+  {
+    pregunta: '¿Se encargan del registro de la marca?',
+    respuesta:
+      'El registro lo hace un estudio de abogados especializado. Te acercamos los proveedores con los que ya trabajamos, pero la elección es tuya, como con cualquier proveedor externo. Nosotros preparamos todo lo que el trámite necesita de nuestro lado.',
+  },
+  {
+    pregunta: '¿Qué recibo al terminar el proyecto?',
+    respuesta:
+      'Depende del alcance: el informe de auditoría y benchmark, la plataforma de marca, el mapa de arquitectura, el nombre verificado, el manual de marca con su key visual, el manual de tono y las aplicaciones y plantillas listas para usar.',
+  },
+  {
+    pregunta: '¿Qué pasa después del lanzamiento?',
+    respuesta:
+      'Acompañamos los primeros movimientos de la marca, ajustando y ampliando el sistema a medida que aparecen usos nuevos. Cuando ese acompañamiento pasa a ser permanente, se trabaja desde Trópico 360.',
+  },
+];
+---
+
+<PaginaServicio
+  slug="branding"
+  titulo="Branding"
+  descripcion="Estrategia, identidad y voz para que te elija la audiencia correcta."
+  titular={['Convertite en la marca ', 'de la que la gente hable', '.']}
+  intro="Tu marca es el activo que más pesa cuando te comparan. Estrategia, identidad y voz para que te elija la audiencia correcta."
+  corredor={TIRA}
+  alternativasTitulo="Ofrecemos diferentes desarrollos entendiendo el momento de cada empresa."
+  alternativas={ALTERNATIVAS}
+  servicioTitulo="Diseñamos la infraestructura visual de tu negocio: sistemas de marca integrales que marcan distancia con tus competidores desde el primer contacto."
+  servicioTexto={[
+    'Diseñamos sistemas estructurados para la realidad operativa de tu negocio. Unimos impacto visual y rigor estratégico para garantizar que tu identidad escale en todos tus canales.',
+    'Desde el posicionamiento inicial hasta la estandarización en guías de marca, te entregamos herramientas de trabajo reales para alinear a toda tu cadena de valor.',
+    'El objetivo es simple: una marca eficiente que asegura la confianza del mercado, se diferencia de forma evidente y comunica tu posición desde el primer impacto.',
+  ]}
+  etapas={ETAPAS}
+  aplicadoRotulo="Branding aplicado"
+  casos={['acadi', 'farmaexpert', 'fornaro']}
+  preguntas={PREGUNTAS}
+/>

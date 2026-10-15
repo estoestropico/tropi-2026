@@ -1,0 +1,117 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+
+/**
+ * Grilla de casos con la máscara de las miniaturas de portfolio. Sale de la
+ * página de servicio, donde estaba escrita dos veces —arriba y abajo—, y la
+ * usan también las verticales de rubro.
+ *
+ * `slug` sólo entra en el id del clip-path: tiene que ser único por página.
+ *
+ * `columnas` son las de 1024 para arriba. Tres es la medida de las páginas de
+ * servicio, que muestran tres casos. Las verticales van de a dos: tienen uno o
+ * dos casos por sector y a un tercio quedan chicos, con el hueco al lado.
+ */
+interface Props {
+  slug: string;
+  casos: string[];
+  columnas?: 2 | 3;
+}
+
+const { slug, casos: IDS, columnas = 3 } = Astro.props;
+
+const todos = await getCollection('casos');
+const aplicados = IDS.map((id) => todos.find((c) => c.id === id)).filter(
+  (c): c is (typeof todos)[number] => Boolean(c)
+);
+
+const PLANA =
+  'M1 0.25C1 0.25 1 0 1 0H0V0.5H0C0 0.5 0 0.75 0 0.75C0 0.75 0 1 0 1H1V0.5H1C1 0.5 1 0.25 1 0.25Z';
+---
+
+<ul
+  class:list={[
+    'mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-[56px] lg:gap-[27px]',
+    columnas === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3',
+  ]}
+  data-revelar-grupo
+>
+  {
+    aplicados.map((caso) => (
+      <li>
+        <a href={`/casos/${caso.id}`} class="tarjeta group block">
+          <div class="aspect-square overflow-hidden" style={`clip-path:url(#mascara-${slug}-${caso.id})`}>
+            <Image
+              src={caso.data.portada}
+              alt={caso.data.portadaAlt}
+              widths={[440, 640, 904]}
+              sizes="(min-width: 1024px) 452px, (min-width: 640px) 45vw, 90vw"
+              class="tarjeta-img h-full w-full object-cover"
+            />
+          </div>
+          <svg width="0" height="0" aria-hidden="true" focusable="false" class="tarjeta-mascara">
+            <defs>
+              <clipPath id={`mascara-${slug}-${caso.id}`} clipPathUnits="objectBoundingBox">
+                <path d={PLANA} />
+              </clipPath>
+            </defs>
+          </svg>
+          <p class="mt-4 text-[0.8125rem] uppercase tracking-[0.08em] text-arena/60">{caso.data.cliente}</p>
+          <p class="tarjeta-titular mt-1 text-[1.125rem] font-bold leading-tight tracking-[-0.02em]">
+            <span>{caso.data.titular}</span>
+          </p>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .tarjeta-img {
+    transition: transform 900ms var(--ease-salida);
+  }
+
+  .tarjeta-mascara {
+    position: absolute;
+  }
+
+  .tarjeta-mascara path {
+    d: path('M1 0.25C1 0.25 1 0 1 0H0V0.5H0C0 0.5 0 0.75 0 0.75C0 0.75 0 1 0 1H1V0.5H1C1 0.5 1 0.25 1 0.25Z');
+    transition: d 480ms cubic-bezier(0.45, 0.05, 0.25, 1);
+  }
+
+  .tarjeta-titular span {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    transition: background-size 600ms var(--ease-salida);
+    padding-bottom: 2px;
+  }
+
+  .tarjeta:hover .tarjeta-titular span,
+  .tarjeta:focus-visible .tarjeta-titular span {
+    background-size: 100% 1px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tarjeta:hover .tarjeta-mascara path,
+    .tarjeta:focus-visible .tarjeta-mascara path {
+      d: path('M1 0.25C1 0.11183 0.89942 0 0.77573 0H0V0.5H0.22427C0.10032 0.5 0 0.61212 0 0.75C0 0.88817 0.10058 1 0.22427 1H0.99974V0.5H0.77547C0.89942 0.5 1 0.38788 1 0.25Z');
+    }
+
+    .tarjeta:hover .tarjeta-img,
+    .tarjeta:focus-visible .tarjeta-img {
+      transform: scale(1.06);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tarjeta-img,
+    .tarjeta-mascara path,
+    .tarjeta-titular span {
+      transition: none;
+    }
+  }
+</style>

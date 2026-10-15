@@ -1,0 +1,384 @@
+---
+import Boton from '../ui/Boton.astro';
+import Logo from '../ui/Logo.astro';
+
+/**
+ * Header global (Figma: componente "Header", 365:7842).
+ *
+ * `tema` sólo cambia el color de la tipografía y la variante del botón, para
+ * cuando el header se apoya sobre un fondo oscuro —el hero de la home—. El
+ * default es el de siempre y las páginas de caso no lo pasan.
+ */
+interface Props {
+  /* `claro`  fondo claro: tipografía oscura y botón amarillo.
+     `oscuro` fondo oscuro: tipografía arena y botón oscuro con borde arena.
+     `violeta` fondo violeta: tipografía arena y el botón amarillo de siempre. */
+  tema?: 'claro' | 'oscuro' | 'violeta';
+}
+
+const { tema = 'claro' } = Astro.props;
+const enClaro = tema === 'claro';
+
+const enlaces = [
+  { texto: 'Portfolio', href: '/casos' },
+  { texto: 'Servicios', href: '/servicios' },
+  { texto: 'Trópico', href: '/tropico' },
+];
+
+/* La página actual se marca con coincidencia exacta y no por prefijo: con
+   prefijo, "Portfolio" quedaba subrayado también adentro de cada caso, que
+   es una página distinta. Se normaliza la barra final para que /casos y
+   /casos/ cuenten como la misma. */
+const sinBarra = (r: string) => (r.length > 1 ? r.replace(/\/$/, '') : r);
+const rutaActual = sinBarra(Astro.url.pathname);
+---
+
+<header class="absolute inset-x-0 top-0 z-50 pt-6 lg:pt-8">
+  <div class="marco flex items-center justify-between">
+    <a href="/" class="marca shrink-0" aria-label="Trópico — inicio">
+      <Logo class:list={['w-[70px] lg:w-[100px]', !enClaro && 'text-arena']} />
+    </a>
+
+    <nav aria-label="Principal" class="flex items-center gap-4 lg:gap-8">
+      <ul class="hidden items-center gap-8 md:flex">
+        {
+          enlaces.map((e) => (
+            <li>
+              <a
+                href={e.href}
+                aria-current={rutaActual === sinBarra(e.href) ? 'page' : undefined}
+                class:list={[
+                  'subraya text-[0.875rem] uppercase tracking-[0.03em]',
+                  enClaro ? 'text-oscuro' : 'text-arena',
+                ]}
+              >
+                {e.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      {/* El rótulo va en bold, que es como está en el Figma. El `!` es porque
+          la clase base trae `font-semibold` y entre dos utilidades del mismo
+          tipo gana la que Tailwind emita última, no la del atributo. */}
+      <Boton
+        href="/contacto"
+        tamano="chico"
+        variante={tema === 'oscuro' ? 'claro' : 'primario'}
+        class="font-bold!"
+      >
+        Empecemos
+      </Boton>
+
+      {/* Abajo de 768 los enlaces viven acá adentro. */}
+      <button
+        type="button"
+        class:list={['hamburguesa', !enClaro && 'text-arena']}
+        aria-expanded="false"
+        aria-controls="menu-movil"
+        aria-label="Abrir menú"
+        data-menu-boton
+      >
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+      </button>
+    </nav>
+  </div>
+
+  {/* Menú de mobile. Entra con las mismas cortinas de columnas del preloader,
+      en el orden inverso: bajan primero el aqua y el amarillo y el oscuro
+      cierra encima, que es la capa sobre la que se leen los enlaces. */}
+  <div class="menu" id="menu-movil" data-menu>
+    <div class="menu-cortina menu-aqua"><span /><span /><span /><span /></div>
+    <div class="menu-cortina menu-amarillo"><span /><span /><span /><span /></div>
+    <div class="menu-cortina menu-oscuro"><span /><span /><span /><span /></div>
+
+    <div class="menu-cuerpo">
+      <nav aria-label="Menú">
+        <ul>
+          {
+            [...enlaces, { texto: 'Contacto', href: '/contacto' }].map((e, i) => (
+              <li style={`--i:${i}`}>
+                <a href={e.href} aria-current={rutaActual === sinBarra(e.href) ? 'page' : undefined}>
+                  {e.texto}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <div class="menu-pie">
+        <a href="mailto:hola@tropico.ar">hola@tropico.ar</a>
+        <a href="https://wa.me/5491122555938" target="_blank" rel="noopener">(+54911) 2255·5938</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* ── Botón hamburguesa ──────────────────────────────────────────────
+     Dos barras que se cruzan en X al abrir. El color lo hereda del tema. */
+  /* La marca queda por encima del panel: con el menú abierto sigue a la
+     vista y es la salida a la home. */
+  .marca {
+    position: relative;
+    z-index: 70;
+  }
+
+  :global(header:has(.menu.abierto)) .marca {
+    color: var(--color-arena);
+  }
+
+  .hamburguesa {
+    position: relative;
+    z-index: 70;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    gap: 0;
+  }
+
+  /* De 768 para arriba los enlaces están en la barra y el menú no existe.
+     El corte va acá y no con una utilidad: estas dos reglas declaran
+     `display` y `position`, y el estilo del componente le gana a `md:hidden`. */
+  @media (width >= 48rem) {
+    .hamburguesa,
+    .menu {
+      display: none;
+    }
+  }
+
+  .hamburguesa span {
+    position: absolute;
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: currentColor;
+    transition:
+      translate 320ms var(--ease-salida),
+      rotate 320ms var(--ease-salida);
+  }
+
+  .hamburguesa span:first-child {
+    translate: 0 -4px;
+  }
+
+  .hamburguesa span:last-child {
+    translate: 0 4px;
+  }
+
+  .hamburguesa[aria-expanded='true'] {
+    color: var(--color-arena);
+  }
+
+  .hamburguesa[aria-expanded='true'] span:first-child {
+    translate: 0 0;
+    rotate: 45deg;
+  }
+
+  .hamburguesa[aria-expanded='true'] span:last-child {
+    translate: 0 0;
+    rotate: -45deg;
+  }
+
+  /* ── Panel ──────────────────────────────────────────────────────────
+     Queda montado siempre; lo que lo saca de juego es `visibility`, para
+     que las cortinas puedan animar en los dos sentidos. */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    visibility: hidden;
+    transition: visibility 0s linear 900ms;
+  }
+
+  .menu.abierto {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .menu-cortina {
+    position: absolute;
+    inset: 0;
+    display: flex;
+  }
+
+  .menu-cortina span {
+    flex: 1 1 0;
+    translate: 0 -100%;
+    will-change: transform;
+  }
+
+  .menu.abierto .menu-cortina span {
+    translate: 0 0;
+  }
+
+  .menu-oscuro {
+    z-index: 4;
+  }
+
+  .menu-oscuro span {
+    background-color: var(--color-oscuro);
+  }
+
+  .menu-amarillo {
+    z-index: 3;
+  }
+
+  .menu-amarillo span {
+    background-color: var(--color-amarillo);
+  }
+
+  .menu-aqua {
+    z-index: 2;
+  }
+
+  .menu-aqua span {
+    background-color: var(--color-aqua);
+  }
+
+  /* Los mismos tiempos escalonados del preloader: cada columna llega en su
+     momento y el oscuro cierra al final. */
+  .menu-aqua span:nth-child(1) { transition: translate 0.46s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-aqua span:nth-child(2) { transition: translate 0.58s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-aqua span:nth-child(3) { transition: translate 0.5s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-aqua span:nth-child(4) { transition: translate 0.62s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-amarillo span:nth-child(1) { transition: translate 0.56s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-amarillo span:nth-child(2) { transition: translate 0.68s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-amarillo span:nth-child(3) { transition: translate 0.6s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-amarillo span:nth-child(4) { transition: translate 0.72s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-oscuro span:nth-child(1) { transition: translate 0.66s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-oscuro span:nth-child(2) { transition: translate 0.78s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-oscuro span:nth-child(3) { transition: translate 0.7s cubic-bezier(0.76, 0, 0.24, 1) }
+  .menu-oscuro span:nth-child(4) { transition: translate 0.82s cubic-bezier(0.76, 0, 0.24, 1) }
+
+  /* Los enlaces quedan centrados verticalmente y el contacto se apoya abajo;
+     por eso la nav se lleva el espacio libre y centra su contenido. */
+  .menu-cuerpo {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    padding: 112px 20px 40px;
+    color: var(--color-arena);
+  }
+
+  .menu-cuerpo nav {
+    display: grid;
+    flex: 1;
+    align-content: center;
+  }
+
+  .menu-cuerpo ul {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* Cada enlace entra atrás de su renglón, escalonado, una vez que el oscuro
+     terminó de bajar. */
+  .menu-cuerpo li {
+    overflow: hidden;
+  }
+
+  .menu-cuerpo li a {
+    display: block;
+    padding-block: 6px;
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    translate: 0 110%;
+    transition:
+      translate 520ms var(--ease-salida),
+      color 220ms var(--ease-salida);
+  }
+
+  .menu-cuerpo li a:hover,
+  .menu-cuerpo li a:focus-visible,
+  .menu-cuerpo li a:active {
+    color: var(--color-aqua);
+  }
+
+  .menu.abierto .menu-cuerpo li a {
+    translate: 0 0;
+    transition-delay: calc(760ms + var(--i) * 60ms);
+  }
+
+  .menu-cuerpo li a[aria-current='page'] {
+    color: var(--color-amarillo);
+  }
+
+  .menu-pie {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.875rem;
+    opacity: 0;
+    transition: opacity 420ms var(--ease-salida);
+  }
+
+  .menu.abierto .menu-pie {
+    opacity: 1;
+    transition-delay: 1s;
+  }
+
+  .menu-pie a {
+    transition: color 220ms var(--ease-salida);
+  }
+
+  .menu-pie a:hover,
+  .menu-pie a:focus-visible,
+  .menu-pie a:active {
+    color: var(--color-aqua);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu,
+    .menu-cortina span,
+    .menu-cuerpo li a,
+    .menu-pie,
+    .menu-pie a,
+    .hamburguesa span {
+      transition: none !important;
+    }
+  }
+</style>
+
+<script>
+  /* Menú de mobile: abre y cierra con el botón, con Escape y al tocar un
+     enlace. Mientras está abierto el fondo no scrollea. */
+  const boton = document.querySelector<HTMLButtonElement>('[data-menu-boton]');
+  const panel = document.querySelector<HTMLElement>('[data-menu]');
+
+  if (boton && panel) {
+    const cambiar = (abrir: boolean) => {
+      panel.classList.toggle('abierto', abrir);
+      boton.setAttribute('aria-expanded', String(abrir));
+      boton.setAttribute('aria-label', abrir ? 'Cerrar menú' : 'Abrir menú');
+      document.body.style.overflow = abrir ? 'hidden' : '';
+    };
+
+    boton.addEventListener('click', () =>
+      cambiar(boton.getAttribute('aria-expanded') !== 'true')
+    );
+
+    panel.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => cambiar(false)));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && panel.classList.contains('abierto')) {
+        cambiar(false);
+        boton.focus();
+      }
+    });
+
+    /* Si la pantalla crece y el menú deja de existir, no puede quedar el
+       scroll bloqueado. */
+    const ancho = window.matchMedia('(width >= 48rem)');
+    ancho.addEventListener('change', (e) => {
+      if (e.matches) cambiar(false);
+    });
+  }
+</script>

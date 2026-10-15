@@ -1,0 +1,47 @@
+---
+/**
+ * Seguimiento de origen. Guarda de dónde vino la visita en la primera página
+ * que pisa y lo deja disponible para el formulario de contacto, que casi
+ * siempre está a uno o dos clics de distancia.
+ *
+ * Va en el layout, así corre en todo el sitio. No envía nada a ningún lado:
+ * sólo escribe en `sessionStorage`, y el formulario lo lee al cargar. Cuando
+ * el envío esté conectado al CRM, los campos ocultos ya viajan con el resto.
+ *
+ * Se guarda una sola vez por sesión: lo que interesa es la primera entrada,
+ * no la última página vista. Si el navegador tiene el almacenamiento
+ * bloqueado, no pasa nada: el formulario manda los campos vacíos.
+ */
+---
+
+<script>
+  const CLAVE = 'tropico-origen';
+  const CAMPOS = [
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_content',
+    'utm_term',
+    'gclid',
+    'fbclid',
+    'msclkid',
+  ];
+
+  try {
+    if (!sessionStorage.getItem(CLAVE)) {
+      const url = new URL(window.location.href);
+      const datos: Record<string, string> = {
+        landing: url.pathname,
+        referrer: document.referrer || '',
+        fecha: new Date().toISOString(),
+      };
+      for (const c of CAMPOS) {
+        const v = url.searchParams.get(c);
+        if (v) datos[c] = v;
+      }
+      sessionStorage.setItem(CLAVE, JSON.stringify(datos));
+    }
+  } catch {
+    /* Almacenamiento bloqueado: se sigue sin seguimiento. */
+  }
+</script>

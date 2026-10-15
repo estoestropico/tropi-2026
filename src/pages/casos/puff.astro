@@ -1,0 +1,383 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Intro from '../../components/caso/Intro.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Media from '../../components/caso/Media.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+import { margenArriba } from '../../lib/espacios';
+
+import hero from '../../assets/casos/puff/hero.png';
+import marcaFondo from '../../assets/casos/puff/marca-fondo.png';
+import logoPuff from '../../assets/casos/puff/logo-puff.svg';
+import concepto from '../../assets/casos/puff/puff-concepto.svg';
+import etiqueta from '../../assets/casos/puff/puff-etiqueta.png';
+import infografia from '../../assets/casos/puff/infografia.png';
+import pote from '../../assets/casos/puff/pote.png';
+import composicion from '../../assets/casos/puff/puff-composicion.svg';
+import pasos from '../../assets/casos/puff/pasos.png';
+import claim from '../../assets/casos/puff/claim.png';
+import bolso from '../../assets/casos/puff/bolso.png';
+import botella from '../../assets/casos/puff/botella.png';
+import webDesktop from '../../assets/casos/puff/puff-web-desktop.png';
+import webMobile from '../../assets/casos/puff/puff-web-mobile.png';
+import cierre from '../../assets/casos/puff/footer-puff.png';
+
+const caso = await getEntry('casos', 'puff');
+if (!caso) throw new Error('Falta src/content/casos/puff.yaml');
+const { data } = caso;
+
+/* Colores muestreados del export del Figma */
+const VIOLETA_MARCA = '#360093';
+const NOCHE = '#221c50';
+const VERDE = '#00ae9b';
+const VIOLETA = '#30008d';
+
+/* Pantones del sistema: cinco divs, no una imagen. Los dos primeros se llevan
+   31 partes de 122 cada uno y los otros tres, 20 — las proporciones medidas
+   sobre el bloque de 1780 × 423. */
+const PANTONES = [
+  { nombre: 'Pantone Violet C', hex: '#360093', tinta: '#ffffff', parte: 31 },
+  { nombre: 'Pantone 274 C', hex: '#221C50', tinta: '#ffffff', parte: 31 },
+  { nombre: 'Pantone 129 C', hex: '#E9CD4F', tinta: '#282828', parte: 20 },
+  { nombre: 'Pantone 3275 C', hex: '#00AE9B', tinta: '#282828', parte: 20 },
+  { nombre: 'Grafito', hex: '#282828', tinta: '#ffffff', parte: 20 },
+];
+
+/* Gradiente dorado. Los tres pines y sus posiciones salen del export de Figma
+   (marco de 1530 × 270): el pin mide 61 × 68 y arranca en x 40,98 / 805,98 /
+   1304,98, o sea 2,678 %, 52,678 % y 85,293 % del ancho. El gradiente de la
+   barra corta en 55 %, que es donde está el amarillo del medio. */
+const ORO = [
+  { hex: '#9A6F26', izq: 2.678 },
+  { hex: '#F0D471', izq: 52.678 },
+  { hex: '#B08F42', izq: 85.293 },
+];
+const ESCALA = ['0%', '60%', '100%'];
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.cliente}
+    solape={0}
+  />
+
+  <Intro espacio="l">
+    Puff es un multivitamínico energizante a base de vitaminas, minerales,
+    cafeína y melena de león. Sabiendo que la figura de su creador
+    —ingeniero en alimentos y comunicador orgánico— es un motor
+    clave para el ADN de la marca, construimos el proyecto desde cero para
+    acompañar esa fuerza: trabajamos en el posicionamiento, diseñamos la
+    identidad, su packaging y su e-commerce. Por último, entregamos todos
+    los activos listos para que su equipo tome el control y siga potenciando
+    la comunicación.
+  </Intro>
+
+  {/* ── Identidad ───────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Identidad" titulo="Diseño de marca y universo gráfico">
+    <p>
+      Desarrollamos una identidad visual y verbal pensada para transmitir la
+      vitalidad del producto. Definimos la marca gráfica, la paleta
+      cromática y el sistema tipográfico. A la par, creamos su claim y el
+      tono de voz corporativo, logrando una propuesta sólida que conecta
+      rápidamente con su público.
+    </p>
+  </BloqueTexto>
+
+  {/* La trama recortada va sobre el violeta de marca, con el lockup centrado.
+      El dibujo de la trama vive en la mitad izquierda del archivo, así que va
+      pegado al borde izquierdo de la pantalla y no al del contenido: arriba de
+      1780 el bloque se topa y quedaba un margen de color a la izquierda. La
+      imagen arranca en el borde con su alto natural —nunca se agranda— y lo
+      que sobra a la derecha queda en violeta, como el resto de la banda.
+      El ancho de la trama sale de su alto, así que en algunos viewports caía
+      unos píxeles más allá del borde derecho y la página ganaba scroll
+      horizontal. Va adentro de una capa de 100vw que la recorta: la imagen
+      conserva su proporción —no se deforma— y lo que sobra se corta contra el
+      borde de la pantalla, que es donde termina la banda igual. */}
+  <Banda color={VIOLETA_MARCA} espacio="m">
+    <div class="relative" style="aspect-ratio:1780/642">
+      <div class="pointer-events-none absolute inset-y-0 left-[calc(50%-50vw)] w-screen max-w-none overflow-hidden">
+        <Image
+          src={marcaFondo}
+          alt=""
+          aria-hidden="true"
+          class="h-full w-auto max-w-none select-none"
+        />
+      </div>
+      <div class="absolute inset-0 grid place-items-center">
+        <Media src={logoPuff} alt="Marca Puff" efecto="fade" recorte={false} class="w-[37%] max-w-[658px]" />
+      </div>
+    </div>
+  </Banda>
+
+  <Banda color={NOCHE} espacio="nulo" class="py-[112px]">
+    <div class="ancho" style="--ancho:1095px">
+      <Media src={concepto} alt="Energía, potencia e impulso: los tres ejes del concepto" efecto="fade" recorte={false} />
+    </div>
+  </Banda>
+
+  {/* Gradiente dorado en divs. Los textos van al tamaño de párrafo del sistema
+      y el pin escala con ellos: así el bloque no mezcla una medida fija con
+      una proporcional. */}
+  <div class="oro franja" style={margenArriba('m')} data-revelar-grupo>
+    <div class="oro-pines">
+      {
+        ORO.map((c) => (
+          <div class="oro-pin" style={`left:${c.izq}%`} data-revelar>
+            <svg class="oro-pin-svg" viewBox="0 0 61 68" fill="none" aria-hidden="true">
+              <path
+                d="M53.5303 0.5L53.8857 0.508789C57.5375 0.694531 60.45 3.72377 60.4502 7.42969V53.5195C60.4502 57.3451 57.3468 60.45 53.5303 60.4502H36.4668L30.833 66.0742L30.4805 66.4268L30.127 66.0742L24.4932 60.4502H7.42969C3.60369 60.45 0.5 57.3456 0.5 53.5195V7.42969C0.500169 3.60379 3.60379 0.500169 7.42969 0.5H53.5303Z"
+                fill="#ffffff"
+                stroke="#DDDDDD"
+              />
+              <path d="M50.3311 10.6101H10.6211V50.3201H50.3311V10.6101Z" fill={c.hex} />
+            </svg>
+            <p>{c.hex.replace('#', '')}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="oro-barra" data-revelar></div>
+
+    <div class="oro-escala" data-revelar>
+      <p>{ESCALA[0]}</p>
+      <span class="oro-linea oro-linea-a"></span>
+      <p>{ESCALA[1]}</p>
+      <span class="oro-linea oro-linea-b"></span>
+      <p>{ESCALA[2]}</p>
+    </div>
+  </div>
+
+  <div class="pantones full-width" aria-label="Pantones del sistema" style={margenArriba('m')} data-revelar-grupo>
+    {
+      PANTONES.map((c) => (
+        <div
+          class="pantone"
+          style={`--parte:${c.parte};background-color:${c.hex};color:${c.tinta}`}
+          data-revelar
+        >
+          <p class="font-bold">{c.nombre}</p>
+          <p>{c.hex.replace('#', '')}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  {/* ── Packaging ───────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Packaging" titulo="Diseño de etiqueta y sistema de información">
+    <p>
+      Diseñamos la etiqueta priorizando el impacto visual y la claridad
+      funcional. Creamos una iconografía a medida para estructurar la
+      información nutricional y destacar de manera rápida y directa los
+      beneficios clave del producto.
+    </p>
+  </BloqueTexto>
+
+  <Banda color={VERDE} espacio="m" class="py-[48px]">
+    <div class="franja">
+      <Media src={etiqueta} alt="Etiqueta del envase desplegada" efecto="fade" recorte={false} />
+    </div>
+  </Banda>
+
+  <Grilla class="full-width" cols="700fr 1069fr" gap="0.65rem" espacio="xs">
+    {/* El PNG es transparente: el fondo va en el mismo figure que la máscara,
+        no en un contenedor, para que el violeta entre con la imagen y no antes.
+        #221C50 es el Pantone 274 C del sistema. */}
+    <Media
+      src={infografia}
+      alt="Atributos del producto"
+      efecto="reveal"
+      proporcion="700/700"
+      class="bg-[#221C50]"
+    />
+    <Media src={pote} alt="El envase de Puff en uso" efecto="reveal" proporcion="1069/700" />
+  </Grilla>
+
+  <Banda color={VIOLETA} espacio="xs" class="py-[48px]">
+    <div class="ancho" style="--ancho:1127px">
+      <Media src={composicion} alt="Gluten free, vitaminas y minerales, origen vegetal" efecto="fade" recorte={false} />
+    </div>
+  </Banda>
+
+  <Media class="full-width" src={pasos} alt="Servir, revolver y disfrutar" efecto="reveal" espacio="xs" proporcion="1780/1002" />
+  <Media class="full-width" src={claim} alt="Para vivir sin morir en el intento" efecto="parallax" espacio="xs" proporcion="1780/750" />
+
+  <Grilla class="full-width" cols="1069fr 700fr" gap="0.65rem" espacio="xs">
+    <Media src={bolso} alt="El envase en el bolso, en el día a día" efecto="reveal" proporcion="1069/700" />
+    <Media src={botella} alt="El envase junto a la botella de entrenamiento" efecto="reveal" proporcion="700/700" />
+  </Grilla>
+
+  {/* ── Web & CRM ───────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Plataforma digital" titulo="Diseño web y tienda online">
+    <p>
+      Desarrollamos los contenidos y el diseño de un sitio web con
+      e-commerce que equilibra educación y conversión. La plataforma
+      funciona como un espacio para presentar en detalle los atributos del
+      producto, con una experiencia de usuario optimizada especialmente para
+      facilitar y concretar la compra.
+    </p>
+  </BloqueTexto>
+
+  {/* Desktop a la izquierda y el mobile a la derecha, igual que en Parisi.
+      Las columnas salen de las dos proporciones (2496/1892 y 9/16) para que
+      las dos piezas cierren al mismo alto. */}
+  <Grilla class="full-width" cols="1246fr 531fr" gap="0" espacio="m">
+    <Media efecto="reveal" src={webDesktop} alt="La web de Puff en desktop" proporcion="2496/1892" />
+    <Media efecto="reveal" src={webMobile} alt="La web de Puff en el celular" />
+  </Grilla>
+
+  <Media class="full-width" src={cierre} alt="Cierre de marca Puff" efecto="fade" recorte={false} espacio="xs" />
+
+  <OtrosProyectos excluir="puff" />
+</Base>
+
+<style>
+  /* Gradiente dorado en divs. Toda la geometría del pin y de las separaciones
+     va en `em` sobre el tamaño de párrafo: el pin mide 61 × 68 justo cuando el
+     bloque está a su ancho de diseño (1530) y de ahí para abajo achica junto
+     con el texto, en vez de quedar fijo al lado de algo proporcional. La barra
+     sí escala con el contenedor, que es lo que hace en el diseño. */
+  .oro {
+    container-type: inline-size;
+    font-size: 1.125rem;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    color: #282828;
+  }
+
+  .oro-pin {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.167em;
+  }
+
+  .oro-pin-svg {
+    flex: none;
+    width: 3.389em;
+    height: 3.778em;
+  }
+
+  /* El rótulo se centra contra el cuadradito de color, no contra el pin
+     entero: el pin tiene la colita abajo y desplazaría el texto. */
+  .oro-pin p {
+    margin-top: 1.203em;
+    white-space: nowrap;
+  }
+
+  .oro-barra {
+    width: 100%;
+    aspect-ratio: 1530 / 97;
+    border-radius: 0.98cqw;
+    background-image: linear-gradient(to right, #9a6f26 0%, #f0d471 55%, #b08f42 100%);
+  }
+
+  .oro-escala {
+    display: flex;
+    align-items: center;
+    gap: 2.056em;
+    margin-top: 2.022em;
+  }
+
+  .oro-escala p {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Puntitos: el SVG usa un dash de 1 con punta redonda y stroke 2, que da un
+     punto de 2 cada 5. */
+  .oro-linea {
+    height: 2px;
+    background-image: repeating-linear-gradient(to right, #282828 0 2px, transparent 2px 7px);
+  }
+
+  .oro-linea-a {
+    flex: 644;
+  }
+
+  .oro-linea-b {
+    flex: 351;
+  }
+
+  /* Abajo del ancho de diseño los tres pines no entran en fila absoluta sin
+     pisarse, así que caen a una fila normal repartida. */
+  .oro-pines {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25em 2em;
+    margin-bottom: 1.511em;
+  }
+
+  @media (width >= 75rem) {
+    .oro-pines {
+      position: relative;
+      display: block;
+      height: 3.778em;
+    }
+
+    .oro-pin {
+      position: absolute;
+      top: 0;
+    }
+
+    .oro-escala {
+      padding-left: 3.203%;
+      padding-right: 10.327%;
+    }
+  }
+
+  /* Pantones. Las medidas van en cqw contra el ancho del bloque; los textos,
+     al tamaño de párrafo del sistema. */
+  .pantones {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pantone {
+    min-width: 0;
+    padding: 1.75rem 1.25rem;
+    min-height: 9rem;
+  }
+
+  /* Cinco pantones en una grilla de dos columnas dejan el último solo, con
+     media fila vacía al lado. Ahí se lleva el ancho entero. */
+  .pantone:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .pantone p {
+    font-size: 1.125rem;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+
+  /* Las cinco en fila entran recién a partir de 1200: con el texto en tamaño
+     de párrafo, abajo de ese ancho la columna angosta no contiene el nombre.
+     La proporción del diseño vale sólo en ese tramo. */
+  @media (width >= 1200px) {
+    .pantones {
+      aspect-ratio: 1780 / 423;
+      grid-template-columns: 31fr 31fr 20fr 20fr 20fr;
+    }
+
+    .pantone {
+      min-height: 0;
+      padding: 2.58cqw 1.74cqw;
+    }
+
+    .pantone:last-child {
+      grid-column: auto;
+    }
+  }
+</style>

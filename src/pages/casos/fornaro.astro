@@ -1,0 +1,262 @@
+---
+import { getEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import Base from '../../layouts/Base.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Intro from '../../components/caso/Intro.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Media from '../../components/caso/Media.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import Composicion from '../../components/caso/Composicion.astro';
+import MosaicoFeed from '../../components/caso/MosaicoFeed.astro';
+import Pieza from '../../components/caso/Pieza.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+import { margenArriba } from '../../lib/espacios';
+
+import hero from '../../assets/casos/fornaro/hero.png';
+import logoFornaro from '../../assets/casos/fornaro/logo-fornaro.svg';
+import cartel from '../../assets/casos/fornaro/cartel.png';
+import sabores from '../../assets/casos/fornaro/sabores.png';
+import bandaFornaro from '../../assets/casos/fornaro/banda-fornaro.svg';
+import localLineal from '../../assets/casos/fornaro/local-fornaro.png';
+import menuDigital from '../../assets/casos/fornaro/menu-digital.png';
+import cajas from '../../assets/casos/fornaro/cajas.png';
+import fachada from '../../assets/casos/fornaro/fachada.png';
+import equipo from '../../assets/casos/fornaro/equipo.png';
+import volante from '../../assets/casos/fornaro/volante.png';
+import bolsa from '../../assets/casos/fornaro/bolsa.png';
+import feed1 from '../../assets/casos/fornaro/feed/feed-1.png';
+import feed2 from '../../assets/casos/fornaro/feed/feed-2.png';
+import feed3 from '../../assets/casos/fornaro/feed/feed-3.png';
+import feed4 from '../../assets/casos/fornaro/feed/feed-4.png';
+import feed5 from '../../assets/casos/fornaro/feed/feed-5.png';
+import feed6 from '../../assets/casos/fornaro/feed/feed-6.png';
+import feed7 from '../../assets/casos/fornaro/feed/feed-7.png';
+import feed8 from '../../assets/casos/fornaro/feed/feed-8.png';
+import feed9 from '../../assets/casos/fornaro/feed/feed-9.png';
+import feed10 from '../../assets/casos/fornaro/feed/feed-10.png';
+import feed11 from '../../assets/casos/fornaro/feed/feed-11.png';
+import feed12 from '../../assets/casos/fornaro/feed/feed-12.png';
+import feed13 from '../../assets/casos/fornaro/feed/feed-13.png';
+import feed14 from '../../assets/casos/fornaro/feed/feed-14.png';
+import cierre from '../../assets/casos/fornaro/cierre-fornaro.svg';
+
+import icoMedialuna from '../../assets/casos/fornaro/ico-medialuna.svg';
+import icoEmpanada from '../../assets/casos/fornaro/ico-empanada.svg';
+import icoChipa from '../../assets/casos/fornaro/ico-chipa.svg';
+import icoCocineroBrazos from '../../assets/casos/fornaro/ico-cocinero-brazos.svg';
+import icoCocineroBandeja from '../../assets/casos/fornaro/ico-cocinero-bandeja.svg';
+import icoSelloFornaro from '../../assets/casos/fornaro/ico-sello-fornaro.svg';
+import icoSelloDelicias from '../../assets/casos/fornaro/ico-sello-delicias.svg';
+import icoSelloPizza from '../../assets/casos/fornaro/ico-sello-pizza.svg';
+
+const caso = await getEntry('casos', 'fornaro');
+if (!caso) throw new Error('Falta src/content/casos/fornaro.yaml');
+const { data } = caso;
+
+/* Colores de marca. El rojo sale del cartel y de la banda de cierre; el
+   marrón del fondo de los stickers lo confirmaste vos. */
+const ROJO = '#c80000';
+const MARRON = '#331c02';
+
+/* Stickers del sistema. Coordenadas del Figma sobre el marco de 1780 × 850
+   de la banda (el grupo mide 1269 × 676 y arranca en x 255, y 87). */
+const ICONOS = [
+  { src: icoSelloFornaro, alt: 'Sello: Fornaro, delicias al paso', x: 255, y: 114, w: 254 },
+  { src: icoCocineroBandeja, alt: 'Cocinero con la bandeja de empanadas', x: 599, y: 87, w: 237 },
+  { src: icoMedialuna, alt: 'Medialuna', x: 925, y: 151, w: 255 },
+  { src: icoSelloPizza, alt: 'Sello verde: pizza Fornaro', x: 1269, y: 105, w: 255 },
+  { src: icoChipa, alt: 'Chipás', x: 255, y: 506, w: 255 },
+  { src: icoSelloDelicias, alt: 'Sello verde: delicias al paso', x: 584, y: 482, w: 255 },
+  { src: icoCocineroBrazos, alt: 'Cocinero de brazos abiertos', x: 913, y: 455, w: 282 },
+  { src: icoEmpanada, alt: 'Empanada', x: 1270, y: 523, w: 255 },
+];
+
+/* Mosaico de redes: cinco columnas trabadas, giradas −10°, que se desplazan
+   sobre ese mismo eje. Las catorce piezas van todas al mismo ancho —las
+   columnas son `1fr`— y cada una lleva su proporción real, así el alto sale
+   de la imagen y no se recorta nada.
+   El reparto no sigue el orden de los archivos sino el alto: las 9:16 y las
+   1027×1823 miden 1,78 de alto por cada 1 de ancho, las 3:4 miden 1,33 y las
+   4:5 miden 1,25. Poniendo una alta arriba de todo y mezclando el resto, las
+   cinco columnas cierran en 5,61 de alto y quedan parejas.
+   Son cuatro filas —veinte lugares para catorce piezas— porque con tres la
+   columna quedaba más corta que el marco y al desplazarse dejaba el fondo a
+   la vista abajo. Las seis que se repiten caen siempre en otra columna que su
+   primera aparición, así no se ven dos iguales juntas. */
+const A = 'Pieza de campaña de Fornaro';
+const p = (src: ImageMetadata) => ({ src, alt: A, ratio: `${src.width}/${src.height}` });
+const COLUMNAS_FEED = [
+  { offset: '-14%', velocidad: -1, piezas: [p(feed6), p(feed3), p(feed1), p(feed12)] },
+  { offset: '-26%', velocidad: 1, piezas: [p(feed9), p(feed4), p(feed2), p(feed7)] },
+  { offset: '-19%', velocidad: -1, piezas: [p(feed11), p(feed5), p(feed14), p(feed4)] },
+  { offset: '-31%', velocidad: 1, piezas: [p(feed8), p(feed7), p(feed10), p(feed5)] },
+  { offset: '-16%', velocidad: -1, piezas: [p(feed13), p(feed12), p(feed3), p(feed1)] },
+];
+const NEGRO = '#070504';
+
+/* Las seis fotos del sistema aplicado, en dos columnas de 760 sobre la franja */
+const APLICACIONES = [
+  { src: localLineal, alt: 'Dibujo lineal de la fachada de Fornaro' },
+  { src: menuDigital, alt: 'Menú digital de Fornaro en el local' },
+  { src: cajas, alt: 'Cajas de pizza de Fornaro' },
+  { src: fachada, alt: 'Fachada del local con el muñeco de Fornaro' },
+  { src: equipo, alt: 'El equipo de Fornaro con las pizzas y empanadas' },
+  { src: volante, alt: 'Volante con el menú de Fornaro' },
+];
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.cliente}
+    solape={0}
+  />
+
+  <Intro espacio="l">
+    Fornaro es una cadena de empanadas y pizzas en Buenos Aires enfocada en
+    la agilidad: un concepto de «kiosco» gastronómico con productos
+    calientes y listos para llevar al paso, destacando por su buena relación
+    precio-calidad. Trabajamos en el desarrollo integral de su comunicación:
+    creamos la marca gráfica, su personaje institucional, el sistema visual,
+    la arquigrafía para sus locales, el packaging, la web y su estrategia en
+    redes.
+  </Intro>
+
+  {/* ── Identidad ───────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Identidad" titulo="Branding con impronta italiana">
+    <p>
+      El desafío estratégico fue posicionar a Fornaro un escalón por encima
+      de sus competidores directos por precio a través de un diseño más
+      cuidado. Desarrollamos una identidad corporativa que transmite un look
+      and feel de estética italiana, conviviendo de forma natural con el
+      nombre de la cadena.
+    </p>
+  </BloqueTexto>
+
+  {/* Marca sobre la banda. Figma: banda de 641, logo de 893 a 209 del borde */}
+  <Banda color={ROJO} espacio="l" class="pb-[11.69%] pt-[11.74%]">
+    <div class="mx-auto w-[calc(100%-2.5rem)] lg:w-[50.17%]">
+      <Media efecto="fade" src={logoFornaro} alt="Marca Fornaro, empanadas y pizzas" recorte={false} />
+    </div>
+  </Banda>
+
+  {/* Cartel y paleta, a sangre: 600 + 11 de medianera + 1169 */}
+  <Grilla class="full-width" cols="600fr 1169fr" gap="11px" ancho="completo" espacio="xs">
+    <Media efecto="reveal" src={cartel} alt="Cartel circular de Fornaro" proporcion="600/600" />
+    <Media efecto="reveal" src={sabores} alt="Los cinco colores de la marca sobre las porciones" proporcion="1169/600" />
+  </Grilla>
+
+  {/* Sistema de stickers. La banda mide 1780 × 850 y el aire ya va en la composición */}
+  <Banda color={MARRON} espacio="xs">
+    {/* Tres por fila y todos al mismo alto: a dos columnas cada sticker medía
+        media pantalla. El padding de arriba y abajo es sólo de mobile: en
+        desktop el aire ya viene en las coordenadas de la composición. */}
+    <Composicion
+      ancho={1780}
+      alto={850}
+      ancho_layout="completo"
+      colsMobile={3}
+      piezasParejas
+      altoMobile={82}
+      espacio="nulo"
+      class="px-5 py-12 lg:px-0 lg:py-0"
+    >
+      {ICONOS.map((i) => <Pieza src={i.src} alt={i.alt} efecto="fade" x={i.x} y={i.y} w={i.w} alto={850} />)}
+    </Composicion>
+  </Banda>
+
+  {/* Tira de damero. Figma: banda de 150 con la pieza de 1270 centrada */}
+  <Banda color={ROJO} espacio="xs" class="pb-[4.2%] pt-[4.25%]">
+    <div class="mx-auto w-[calc(100%-2.5rem)] lg:w-[71.35%]">
+      <Media efecto="fade" src={bandaFornaro} alt="" recorte={false} />
+    </div>
+  </Banda>
+
+  {/* ── Aplicaciones ────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Arquigrafía y packaging" titulo="Diseño de locales y punto de venta">
+    <p>
+      Llevamos la nueva identidad al espacio físico de manera inteligente y
+      escalable. Adaptamos el sistema visual a la cartelería de los
+      comercios existentes y diseñamos la implementación gráfica para las
+      nuevas aperturas. En paralelo, desarrollamos las pantallas de menú
+      dinámico, los volantes comerciales y el diseño de sus empaques, un
+      elemento clave para su formato de venta al paso.
+    </p>
+  </BloqueTexto>
+
+  <div class="franja" style={margenArriba('s')}>
+    <div class="aplicaciones" data-revelar-grupo>
+      {
+        APLICACIONES.map((a) => (
+          <Media efecto="reveal" src={a.src} alt={a.alt} proporcion="760/884" />
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="franja" style={margenArriba('xs')}>
+    <Media efecto="reveal" src={bolsa} alt="Bolsa de Fornaro en el mostrador" proporcion="1530/862" />
+  </div>
+
+  {/* ── Social & Ads ────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Ecosistema digital" titulo="Redes sociales y creatividades comerciales">
+    <p>
+      Diseñamos la presencia digital de la marca para impulsar la rotación
+      diaria de productos. Generamos el contenido visual y la grilla para
+      sus redes sociales, enfocándonos en exhibir la calidad de la oferta y
+      en desarrollar piezas creativas para acciones y promociones
+      comerciales que traccionen público directamente a las sucursales.
+    </p>
+  </BloqueTexto>
+
+  <MosaicoFeed
+    class="full-width"
+    columnas={COLUMNAS_FEED}
+    cols={5}
+    inclinacion={-10}
+    proporcion="1780/1134"
+    proporcionBase="1780/1600"
+    gap="24px"
+    relleno="0px"
+    fondo={NEGRO}
+    recorrido={130}
+    espacio="m"
+  />
+
+  {/* Cierre: el SVG trae 130 px transparentes arriba para que el cocinero
+      monte sobre el mosaico de redes. Por eso el margen negativo. */}
+  {/* El solape va en `vw` y no en `%`: el SVG ahora mide 100vw, y un margen
+      porcentual se calcula contra el contenedor —topado en 1780—, así que
+      arriba de ese ancho el solape se quedaba fijo en 130 px mientras el
+      dibujo seguía creciendo. 7,3vw da los mismos 130 px a 1780 y acompaña
+      al SVG a cualquier ancho. */}
+  <div class="full-width relative z-10 mt-[-7.3vw]">
+    <Media efecto="fade" src={cierre} alt="Fornaro, empanadas y pizzas" recorte={false} />
+  </div>
+
+  <OtrosProyectos excluir="fornaro" />
+</Base>
+
+<style>
+  /* Seis aplicaciones en dos columnas, con las medianeras del Figma:
+     10 px entre columnas y 11 px entre filas sobre un marco de 1530. */
+  .aplicaciones {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  @media (width >= 64rem) {
+    .aplicaciones {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 10px;
+      row-gap: 11px;
+    }
+  }
+</style>

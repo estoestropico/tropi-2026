@@ -1,0 +1,16 @@
+cliente: FXM
+titular: Cada ciudad, un desafío.
+bajada: >-
+  Identidad, web y contenidos para Fulbo Por El Mundo, el proyecto que recorre
+  el planeta jugando partidos 1x1 contra jugadores locales.
+rubro: Deportes
+servicios:
+  - Branding
+  - Web
+anio: '2025'
+orden: 6
+publicado: true
+destacado: false
+portada: ../../assets/casos/portadas/fxm.png
+portadaAlt: Sistema visual de FXM aplicado en indumentaria y merchandising
+heroAlt: Jugadores de Fulbo Por El Mundo en la cancha

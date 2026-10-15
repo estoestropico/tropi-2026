@@ -1,0 +1,137 @@
+---
+import PaginaRubro from '../components/rubro/PaginaRubro.astro';
+import { L_360, L_BRANDING, L_WEB } from '../lib/rubros';
+
+/* Vertical de rubro: Educación. Colegios e instituciones con trayectoria,
+   y proyectos educativos digitales. Casos publicados: Washington School y
+   Acadi. */
+
+const VENTAJAS = [
+  {
+    titulo: 'Alcance ajustado a lo que hace falta',
+    texto:
+      'El presupuesto se arma sobre lo que el caso pide: crear la identidad, rediseñarla, ponerla al día, o dejarla como está y trabajar sobre los canales.',
+  },
+  {
+    titulo: 'Un criterio para todas las áreas',
+    texto:
+      'Cada nivel, sede o área comunica con el mismo criterio, sin que la percepción de la institución cambie según quién publique.',
+  },
+  {
+    titulo: 'Cada fecha del ciclo, cubierta a tiempo',
+    texto:
+      'Admisión, inicio de clases, actos y rematrícula se planifican dentro del calendario anual, y el material se produce y se aprueba con anticipación.',
+  },
+  {
+    titulo: 'Matrícula nueva y comunidad, en paralelo',
+    texto:
+      'La comunicación de admisión y la institucional avanzan a la vez, cada una con su calendario y su presupuesto asignado.',
+  },
+  {
+    titulo: 'Lo que se promete y lo que se visita, alineados',
+    texto:
+      'Lo que una familia ve cuando entra —la recepción, la señalización, un acto— sostiene lo que ya había leído en el sitio y en las redes.',
+  },
+  {
+    titulo: 'Con tu equipo o con el nuestro',
+    texto:
+      'Si la institución tiene área de comunicación, le entregamos manual, plantillas y criterios de uso, y trabajamos con ella. Si preferís, la operación completa corre por nuestra cuenta con Trópico 360.',
+  },
+];
+
+const ALCANCE = [
+  {
+    titulo: 'Identidad institucional',
+    texto:
+      'Marca, sistema visual y verbal, con la versión ceremonial y la de uso diario resueltas por separado. Incluye el manual y los activos listos para aplicar.',
+  },
+  {
+    titulo: 'Arquitectura de niveles, programas y sedes',
+    texto:
+      'Definimos qué lleva marca propia y qué depende de la institucional, para que la oferta se entienda de un vistazo y pueda crecer sin desordenarse.',
+  },
+  {
+    titulo: 'Admisión',
+    texto:
+      'Campaña, piezas de inscripción, material para la entrevista, jornadas de puertas abiertas y pauta segmentada por zona, dentro del calendario del ciclo.',
+  },
+  {
+    titulo: 'Espacio físico',
+    texto:
+      'Señalización, ambientación, gráfica de actos y eventos, y material de recepción, coordinados con los proveedores de producción y montaje.',
+  },
+  {
+    titulo: 'Sitio y canales',
+    texto:
+      'Un sitio que resuelve lo que busca quien está evaluando y lo que necesita quien ya está adentro, más redes, newsletter y comunidad de egresados.',
+  },
+  {
+    titulo: 'Plataformas y proyectos digitales',
+    texto:
+      'Para academias y productos educativos, el trabajo suma marca de producto, tono, interfaz y las herramientas comerciales para venderlo.',
+  },
+];
+
+const PREGUNTAS = [
+  {
+    pregunta: '¿Se puede modernizar la marca sin perder los años de historia?',
+    respuesta:
+      'Es el trabajo más habitual en el sector y tiene un nombre: revamp. Se conserva lo que la comunidad reconoce —la forma del escudo, los colores, los símbolos con carga— y se pone al día todo lo demás: proporciones, tipografía, versiones digitales y sistema de aplicación. La marca queda actualizada y la comunidad la sigue reconociendo.',
+  },
+  {
+    pregunta: '¿Cómo manejan las aprobaciones cuando decide más de una persona?',
+    respuesta:
+      'Definimos al inicio quién aprueba qué y en qué instancia. Cada presentación va con el fundamento de las decisiones, que es lo que un consejo o un directorio necesita para resolver. Las rondas de ajuste se acuerdan antes de empezar.',
+  },
+  {
+    pregunta: '¿Se ocupan de la campaña de admisión?',
+    respuesta:
+      'Sí, y conviene que sea parte del plan anual. Jornadas de puertas abiertas, piezas de inscripción, material para la entrevista con las familias y pauta segmentada por zona, con el calendario armado antes de que arranque el período.',
+  },
+  {
+    pregunta: '¿Trabajan con instituciones y también con proyectos digitales?',
+    respuesta:
+      'Con los dos, sabiendo que son trabajos distintos. Un colegio necesita sostener una reputación construida durante años; una plataforma educativa necesita explicar rápido una propuesta que nadie conoce todavía.',
+  },
+  {
+    pregunta: '¿Cuánto cuesta?',
+    respuesta:
+      'Depende del alcance y del momento de la institución, así que no hay precio de lista. Con una reunión para entender el caso te pasamos rápido una propuesta con alcance, etapas y valores.',
+  },
+];
+
+/* Testimonios del rubro. Texto de relleno hasta que lleguen las citas
+   reales de cada institución. */
+const TESTIMONIOS = [
+  {
+    nombre: 'Verónica Sartoni',
+    cargo: 'Directora de gestión institucional',
+    empresa: 'Washington School',
+    texto:
+      '“Lo mejor de Trópico es que primero trabajan para conocer la identidad de la institución. Investigan, preguntan, la viven, y después son un torbellino de ideas, siempre predispuestos a atender las demandas que vayan surgiendo.”',
+  },
+];
+---
+
+<PaginaRubro
+  slug="educacion"
+  rotulo="Educación"
+  titulo="Educación"
+  descripcion="Branding, web y comunicación para colegios, institutos, academias, centros de formación y plataformas educativas, bajo un mismo criterio."
+  titular={['Una marca ', 'a la altura de tu proyecto educativo', '.']}
+  intro="Trabajamos con colegios, institutos, academias, centros de formación y plataformas educativas. Identidad institucional, admisión y vida de la comunidad, con el calendario del ciclo lectivo como eje."
+  ventajasTitulo="Una institución que se presenta igual en cada área y en cada etapa del ciclo."
+  ventajas={VENTAJAS}
+  alcanceTitulo="Un mismo equipo para la identidad, la admisión y la comunidad."
+  alcanceTexto={[
+    'El trabajo arranca por la identidad y el sistema de aplicación, sigue por los soportes donde la institución se muestra —sitio, redes, espacio físico, material de admisión— y se sostiene con un plan anual atado al ciclo lectivo. Las instancias de aprobación se definen al inicio.',
+    `Es el tipo de trabajo que encaja con ${L_360}: un plan anual atado al ciclo lectivo, un equipo fijo y un reporte mensual. Cuando lo que hace falta es ordenar la base —la identidad o el sitio—, ${L_BRANDING} y ${L_WEB} se toman como proyectos aparte.`,
+  ]}
+  alcance={ALCANCE}
+  casosRotulo="Marcas de educación"
+  casosBajada="Colegios, academias y proyectos educativos con su identidad, su sitio y su comunicación trabajados por un mismo equipo."
+  casos={['washington-school', 'acadi']}
+  casosArriba
+  testimonios={TESTIMONIOS}
+  preguntas={PREGUNTAS}
+/>

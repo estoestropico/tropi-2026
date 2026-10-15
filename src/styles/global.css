@@ -1,0 +1,515 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/onest';
+@import '@fontsource/big-shoulders/latin-500.css';
+
+/* ==========================================================================
+   Trópico T26 — Design tokens
+   Fuente de verdad: Figma "T26" (variables Arena / Oscuro / Amarillo, Onest)
+   ========================================================================== */
+@theme {
+  /* Color */
+  --color-arena: #f5f4eb;
+  --color-oscuro: #050515;
+  --color-amarillo: #ddfd30;
+  --color-verde: #b4e600;
+  --color-aqua: #0fffdb;
+  /* El celeste del mapa de la página de Trópico. */
+  --color-celeste: #0077ff;
+  /* Los tres entran con la home. En los casos no se usan. */
+  --color-rojo: #ff0059;
+  --color-violeta: #5d00ff;
+  --color-violeta-claro: #9a62f7;
+
+  /* Tipografía */
+  --font-sans: 'Onest Variable', 'Onest', ui-sans-serif, system-ui, sans-serif;
+  --font-rotulo: 'Big Shoulders', ui-sans-serif, system-ui, sans-serif;
+
+  /* Escala tipográfica del diseño */
+  --text-nav: 0.875rem;          /* 14px */
+  --text-nav--line-height: 1;
+  --text-nav--letter-spacing: 0.03em;
+  --text-etiqueta: 0.8125rem;    /* 13px — labels de sección */
+  --text-etiqueta--line-height: 1;
+  --text-etiqueta--letter-spacing: 0.08em;
+  --text-cuerpo: 1.125rem;       /* 18px — p general */
+  --text-cuerpo--line-height: 1.4;
+
+  /* Medidas del layout (frame Figma = 1780px) */
+  --tope: 1780px;                /* ancho máximo del contenido = frame del Figma */
+  --container-marco: 1680px;     /* ancho del header */
+  --container-contenido: 1410px; /* columna de contenido */
+  --container-franja: 1530px;    /* contenido dentro de una banda de color */
+
+  /* Radios */
+  --radius-pill: 80px;
+
+  /* Escala de espacios verticales (ver src/lib/espacios.ts) */
+  --espaciado-nulo: 0px;
+  --espaciado-xs: 12px;
+  --espaciado-s: 48px;
+  --espaciado-m: 112px;
+  --espaciado-l: 150px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: var(--color-oscuro);
+    font-family: var(--font-sans);
+    font-size: var(--text-cuerpo);
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-amarillo);
+    color: var(--color-oscuro);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-oscuro);
+    outline-offset: 3px;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Viudas: el navegador reparte las últimas líneas para que ningún bloque
+     termine con una palabra sola. `pretty` es para el texto corrido y
+     `balance` para los títulos, que son cortos y quedan mejor con las
+     líneas parejas. Donde el navegador no lo soporte, el texto corta como
+     siempre: no hay nada que reponer.
+
+     Los titulares con `data-lineas` traen los cortes horneados desde el
+     script y no dependen de esto. */
+  p,
+  li,
+  summary,
+  blockquote,
+  figcaption,
+  dd {
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+}
+
+/* ==========================================================================
+   Utilidades del proyecto
+   ========================================================================== */
+/* Tope del contenido. De 1780 para arriba el sitio deja de crecer y se
+   centra: así toda medida porcentual sacada del Figma se cumple exacta.
+   El color de las bandas sí sigue a sangre, con el ::before de .banda. */
+@utility tope {
+  max-width: var(--tope);
+  margin-inline: auto;
+}
+
+/* Rompe el tope: el bloque vuelve a medir el ancho del viewport aunque esté
+   dentro de `.tope`. Para las imágenes a sangre, que siguen creciendo con la
+   pantalla y ganando alto. El `overflow-x: clip` del body absorbe el ancho de
+   la barra de scroll, que `vw` incluye y el área visible no. */
+@utility full-width {
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+}
+
+@utility marco {
+  width: min(100% - 2.5rem, var(--container-marco));
+  margin-inline: auto;
+}
+
+@utility contenido {
+  width: min(100% - 2.5rem, var(--container-contenido));
+  margin-inline: auto;
+}
+
+/* Fondo oscuro de una banda. El color va escrito y no por variable: así no
+   viaja inline y el navegador lo tiene resuelto desde la hoja de estilos.
+   Es el mismo valor que `--color-oscuro`; si ese token cambia, cambia acá.
+
+   El `background-image` es un PNG de 2×2 enteramente transparente. No pinta
+   un solo píxel: está para que el fondo deje de ser un color sólido puro.
+   Chrome resuelve los tiles de color sólido por un camino distinto que los
+   que tienen algo dibujado, y la conversión al espacio de la pantalla no
+   coincide entre los dos: sobre un oscuro con tinte el corte se ve, justo
+   donde termina el contenido. Con una operación de dibujo de por medio,
+   todos los tiles van por el mismo camino. Verificado contra `#050515`
+   plano, que sí corta. */
+@utility fondo-oscuro {
+  background-color: #050515;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAC0lEQVR42mNgQAcAABIAAeRVjecAAAAASUVORK5CYII=');
+}
+
+/* Contenido dentro de una banda de color */
+@utility franja {
+  width: min(100% - 2.5rem, var(--container-franja));
+  margin-inline: auto;
+}
+
+/* Ancho a medida para una pieza suelta: class="ancho" style="--ancho:1182px" */
+@utility ancho {
+  width: min(100% - 2.5rem, var(--ancho, 100%));
+  margin-inline: auto;
+}
+
+/* Solapa del pie: mientras el body tenga la clase, el pie queda fijo al fondo
+   por debajo del contenido y el bloque de cierre lo descubre al scrollear. La
+   clase la pone el script de Base cuando el pie entra en la pantalla. */
+/* Tapa la placa violeta mientras se scrollea el contenido. Va por fuera del
+   `main` para poder medir el ancho de la pantalla entera. */
+.lienzo {
+  position: relative;
+  z-index: 10;
+  background-color: #ffffff;
+}
+
+.pie-solapa {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+/* El bloque de cierre se queda con el espacio libre y centra su contenido;
+   el pie se apoya abajo. Así "Hagamos algo juntos" queda al medio de la placa
+   y la marca con los legales al pie, a cualquier alto de pantalla. */
+.pie-solapa > .cierre-placa {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+.con-solapa .pie-solapa {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+/* Placa de legales del pie de la home. Onest regular 12 px con interlineado 2
+   y sin mayúsculas, que es lo que dice el Figma: el encabezado de cada columna
+   no se distingue por estilo sino por posición. Las columnas no son de ancho
+   igual —cada una mide lo que mide su texto más largo— y van separadas por
+   45 px con una línea vertical en el medio.
+   Vive acá y no en Footer.astro para no scopear el componente: un `<style>`
+   adentro le agrega un atributo a cada nodo del pie en las siete páginas de
+   caso, que ya están aprobadas. */
+.legales {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px 24px;
+}
+
+.legales-col p {
+  font-size: 0.75rem;
+  line-height: 2;
+  white-space: nowrap;
+}
+
+/* El encabezado de cada columna se distingue del resto: versalita y un tono
+   más apagado, igual que en el pie de mobile. */
+.legales-titulo {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+}
+
+.legales-linea {
+  display: none;
+}
+
+@media (width >= 80rem) {
+  .legales {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 45px;
+  }
+
+  /* Las columnas se apoyan arriba y no al medio: la de menú tiene un item
+     más que las otras, y centradas le levantaba el encabezado respecto del
+     resto. Las líneas divisorias sí siguen centradas. */
+  .legales-col {
+    flex: none;
+    align-self: start;
+  }
+
+  .legales-linea {
+    display: block;
+    flex: none;
+    width: 1px;
+    height: 93px;
+    background-color: currentColor;
+    opacity: 0.35;
+  }
+}
+
+/* Rótulo de sección: el texto chico en mayúsculas que encabeza cada bloque. */
+.rotulo {
+  font-family: var(--font-rotulo);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (width >= 64rem) {
+  .rotulo {
+    font-size: 1.25rem;
+    letter-spacing: 0.01em;
+  }
+
+  /* Dentro de los casos el rótulo va un punto más chico y despegado de la
+     línea de arriba. */
+  .rotulo-caso {
+    padding-top: calc(var(--spacing) * 2);
+    font-size: 1.05rem;
+  }
+
+  /* Rótulo de cabecera: el que va arriba del título de la página, y el
+     nombre del cliente arriba del titular del caso. */
+  .rotulo-cabecera {
+    font-size: 1.55rem;
+  }
+}
+
+/* Subrayado que se dibuja de izquierda a derecha. Es un degradé de fondo del
+   alto de una línea que pasa de 0 a 100 % de ancho: se anima el tamaño del
+   fondo, no el `text-decoration`, que no es animable. Toma el color del texto,
+   así que si el enlace cambia de color en hover el subrayado lo acompaña.
+   La página actual queda subrayada fija. */
+.subraya {
+  padding-bottom: 2px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition:
+    background-size 420ms var(--ease-salida),
+    color 240ms var(--ease-salida);
+}
+
+.subraya:hover,
+.subraya:focus-visible,
+.subraya[aria-current='page'] {
+  background-size: 100% 1px;
+}
+
+/* Ola de la marca: al pasar el mouse las letras suben y bajan de a una. Las
+   `<g class="letra">` las arma Logo.astro agrupando los trazos del SVG por
+   posición horizontal. El desplazamiento va en unidades del viewBox, así que
+   escala con el logo en lugar de quedar fijo en píxeles de pantalla. */
+.logo .letra {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+a:hover .logo .letra,
+a:focus-visible .logo .letra {
+  animation: ola 620ms var(--ease-salida);
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+@keyframes ola {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subraya {
+    transition: none;
+  }
+
+  a:hover .logo .letra,
+  a:focus-visible .logo .letra {
+    animation: none;
+  }
+}
+
+/* Sombra dura del sistema (botones) */
+@utility sombra-dura {
+  filter: drop-shadow(2px 4px 0px var(--color-oscuro));
+}
+
+/* ==========================================================================
+   Animaciones
+   ========================================================================== */
+@theme {
+  --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-mascara: cubic-bezier(0.62, 0.05, 0.16, 1);
+}
+
+/* Titulares: cada línea sube detrás de su máscara */
+[data-lineas] .a-linea {
+  display: block;
+  overflow: hidden;
+  /* Aire para que la máscara no corte las colas de la y, la g o la p.
+     El margen negativo lo devuelve, así el interlineado no cambia. */
+  padding-bottom: 0.2em;
+  margin-bottom: -0.2em;
+}
+
+[data-lineas] .a-linea:last-child {
+  margin-bottom: 0;
+}
+
+[data-lineas] .a-linea-i {
+  display: block;
+  transform: translate3d(0, 130%, 0);
+  transition: transform 1100ms var(--ease-salida);
+  transition-delay: calc(var(--i, 0) * 90ms + var(--retardo, 0ms));
+  will-change: transform;
+}
+
+[data-lineas].a-visible .a-linea-i {
+  transform: none;
+  will-change: auto;
+}
+
+/* Antes de partirse en líneas el titular no se muestra */
+[data-lineas]:not([data-partido='1']):not(.a-visible) {
+  opacity: 0;
+}
+
+/* Cuando el corte no se aplica —`data-lineas-desde` por encima del ancho de
+   la pantalla— el bloque entra con un fundido simple en vez de aparecer de
+   golpe al entrar en pantalla. */
+[data-lineas]:not([data-partido='1']) {
+  transition: opacity 700ms var(--ease-salida) var(--retardo, 0ms);
+}
+
+/* Medios: el clip se abre mientras el contenido baja de escala */
+[data-mascara] {
+  overflow: hidden;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1200ms var(--ease-mascara) var(--retardo, 0ms);
+  will-change: clip-path;
+}
+
+[data-mascara] > img,
+[data-mascara] > video,
+[data-mascara] > picture,
+[data-mascara] > .a-fondo {
+  transform: scale(1.14);
+  transition: transform 1600ms var(--ease-salida) var(--retardo, 0ms);
+  will-change: transform;
+}
+
+[data-mascara].a-visible {
+  clip-path: inset(0 0 0 0);
+  will-change: auto;
+}
+
+[data-mascara].a-visible > img,
+[data-mascara].a-visible > video,
+[data-mascara].a-visible > picture,
+[data-mascara].a-visible > .a-fondo {
+  transform: none;
+  will-change: auto;
+}
+
+/* Fade: opacidad + subida suave */
+[data-revelar] {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition:
+    opacity 800ms var(--ease-salida) var(--retardo, 0ms),
+    transform 900ms var(--ease-salida) var(--retardo, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-revelar].a-visible {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Sobre fondo oscuro el `will-change` de antes del revelado se nota: cada
+   elemento pendiente se promueve a su propia capa y el compositor vuelve a
+   rasterizar el fondo mientras se scrollea, con el tono cambiando hasta que
+   el revelado termina y las capas se juntan. Acá la animación corre igual,
+   sin la capa anticipada. */
+.fondo-oscuro [data-revelar] {
+  will-change: auto;
+}
+
+[data-parallax],
+[data-parallax-doc],
+[data-parallax-in] > img,
+[data-parallax-in] > video {
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-revelar],
+  [data-revelar].a-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  [data-mascara],
+  [data-mascara].a-visible {
+    clip-path: none;
+    transition: none;
+  }
+
+  [data-mascara] > img,
+  [data-mascara] > video,
+  [data-mascara] > picture,
+  [data-mascara] > .a-fondo,
+  [data-lineas] .a-linea-i {
+    transform: none;
+    transition: none;
+  }
+
+  [data-lineas]:not([data-partido='1']):not(.a-visible) {
+    opacity: 1;
+  }
+
+  [data-parallax],
+  [data-parallax-doc],
+  [data-parallax-in] > img,
+  [data-parallax-in] > video {
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

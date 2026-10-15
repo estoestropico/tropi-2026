@@ -1,0 +1,387 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Intro from '../../components/caso/Intro.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import ColumnaDerecha from '../../components/caso/ColumnaDerecha.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Media from '../../components/caso/Media.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import Video from '../../components/caso/Video.astro';
+import MosaicoFeed from '../../components/caso/MosaicoFeed.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+import { margenArriba } from '../../lib/espacios';
+
+import hero from '../../assets/casos/parisi/hero.png';
+import marcaVieja from '../../assets/casos/parisi/old-parisi.png';
+import marcaNueva from '../../assets/casos/parisi/marca-parisi.svg';
+import logoParisi from '../../assets/casos/parisi/logo-parisi.svg';
+import bordado from '../../assets/casos/parisi/bordado.png';
+import indumentaria from '../../assets/casos/parisi/indumentaria.png';
+import mate from '../../assets/casos/parisi/mate.png';
+import camionRollos from '../../assets/casos/parisi/camion-parisi.png';
+import folletoBolsillo from '../../assets/casos/parisi/folleto-bolsillo.png';
+import calendario from '../../assets/casos/parisi/calendario.png';
+import folletoInterior from '../../assets/casos/parisi/folleto-interior.png';
+import stand from '../../assets/casos/parisi/stand-parisi.png';
+import lona from '../../assets/casos/parisi/parisi-lona.png';
+import webDesktop from '../../assets/casos/parisi/parisi-web-desktop.png';
+import webMobile from '../../assets/casos/parisi/parisi-web-mobile.png';
+import tramaReel from '../../assets/casos/parisi/trama-reel.svg';
+import videoReel from '../../assets/casos/parisi/video/reel.mp4';
+import footerRight from '../../assets/casos/parisi/footer-parisi.png';
+import placa1 from '../../assets/casos/parisi/placa-1.png';
+import placa2 from '../../assets/casos/parisi/placa-2.png';
+import placa3 from '../../assets/casos/parisi/placa-3.png';
+import placa4 from '../../assets/casos/parisi/placa-4.png';
+import placa5 from '../../assets/casos/parisi/placa-5.png';
+import placa6 from '../../assets/casos/parisi/placa-6.png';
+import placa7 from '../../assets/casos/parisi/placa-7.png';
+import placa8 from '../../assets/casos/parisi/placa-8.png';
+
+const caso = await getEntry('casos', 'parisi');
+if (!caso) throw new Error('Falta src/content/casos/parisi.yaml');
+const { data } = caso;
+
+/* Colores muestreados del export del Figma */
+const VERDE_OSCURO = '#003a38';
+const VERDE_MEDIO = '#00953b';
+const BEIGE = '#f4f0ed';
+const VERDE_CLARO = '#9dd500';
+const VERDE_PIE = '#003c37'; /* fondo del bloque de cierre */
+
+/* Paleta: cuatro divs, no una imagen. Las dos primeras muestras se llevan un
+   tercio del bloque cada una y las dos últimas, un sexto (2:2:1:1).
+   La pastilla de abajo es el color de contraste sobre ese fondo. */
+const PALETA = [
+  { nombre: 'Oscuro', hex: '#003A38', fondo: VERDE_OSCURO, tinta: BEIGE, contraste: VERDE_CLARO, parte: 2, etiqueta: true },
+  { nombre: 'Medio', hex: '#00953B', fondo: VERDE_MEDIO, tinta: BEIGE, contraste: BEIGE, parte: 2 },
+  { nombre: 'Claro', hex: '#9DD500', fondo: VERDE_CLARO, tinta: VERDE_OSCURO, contraste: VERDE_OSCURO, parte: 1 },
+  { nombre: 'Beige', hex: '#F4F0ED', fondo: BEIGE, tinta: VERDE_OSCURO, contraste: VERDE_OSCURO, parte: 1 },
+];
+
+/* Muro de posteos: 4 columnas trabadas.
+   En reposo se ven las 8 piezas del Figma; la primera y la última de cada
+   columna quedan fuera del marco y son el material que entra al scrollear.
+   El offset es % del alto de la columna, así el bloque escala con el ancho. */
+const FEED = '567/755';   /* placas 1, 4, 5 y 8 */
+const STORY = '562/999';  /* placas 2, 3, 6 y 7 */
+const A = 'Pieza de campaña de Parisi';
+const columnasFeed = [
+  {
+    offset: '-21.83%',
+    velocidad: -1,
+    piezas: [
+      { src: placa1, alt: '', ratio: FEED },
+      { src: placa4, alt: A, ratio: FEED },
+      { src: placa2, alt: A, ratio: STORY },
+      { src: placa3, alt: '', ratio: STORY },
+    ],
+  },
+  {
+    offset: '-28.76%',
+    velocidad: 1,
+    piezas: [
+      { src: placa6, alt: '', ratio: STORY },
+      { src: placa7, alt: A, ratio: STORY },
+      { src: placa5, alt: A, ratio: FEED },
+      { src: placa8, alt: '', ratio: FEED },
+    ],
+  },
+  {
+    offset: '-21.87%',
+    velocidad: -1,
+    piezas: [
+      { src: placa8, alt: '', ratio: FEED },
+      { src: placa5, alt: A, ratio: FEED },
+      { src: placa6, alt: A, ratio: STORY },
+      { src: placa7, alt: '', ratio: STORY },
+    ],
+  },
+  {
+    offset: '-28.78%',
+    velocidad: 1,
+    piezas: [
+      { src: placa3, alt: '', ratio: STORY },
+      { src: placa2, alt: A, ratio: STORY },
+      { src: placa1, alt: A, ratio: FEED },
+      { src: placa4, alt: '', ratio: FEED },
+    ],
+  },
+];
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.cliente}
+    solape={0}
+  />
+
+  <Intro espacio="l">
+    Parisi ya era un referente en la producción de reservas forrajeras en la
+    provincia de Buenos Aires. Para dar su próximo salto de calidad, nos
+    sumamos como su equipo estratégico permanente bajo nuestro modelo
+    Trópico 360. El desafío: evolucionar su percepción en el mercado para
+    dejar de ser vistos como vendedores de rollos y posicionarse como
+    expertos en nutrición animal, alineando la imagen de la empresa con la
+    calidad real de su producto.
+  </Intro>
+
+  {/* ── Estrategia & Identidad ──────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Estrategia e identidad" titulo="Rebranding y mensajes clave">
+    <p>
+      El primer paso fue estratégico: cambiamos el eje de la conversación
+      corporativa para dejar de hablar del formato y enfocarnos en el
+      beneficio mediante un nuevo claim («Calidad que alimenta»). Sobre este
+      enfoque, renovamos su identidad visual. Optimizamos la marca aportando
+      pregnancia y modernidad, pero manteniendo los códigos del agro
+      mediante colores orgánicos y tipografías sólidas que transmiten
+      confianza y trayectoria.
+    </p>
+  </BloqueTexto>
+
+  {/* Antes y después, centrados dentro de la columna de texto */}
+  <ColumnaDerecha espacio="m">
+    {/* El par mide 748 en el diseño (289 + 113 + 346). Va en porcentajes de
+        ese ancho para que se achique junto con la columna: en px fijos
+        desborda apenas el viewport baja de 1350. */}
+    <div class="mx-auto flex w-full max-w-[748px] items-end justify-center gap-16 lg:gap-[15.11%]" data-revelar-grupo>
+      <figure class="w-[150px] text-center lg:w-[38.64%]">
+        <Media efecto="fade" src={marcaVieja} alt="Marca anterior de Parisi Rollos" />
+        <figcaption class="mt-6 text-[1.125rem] leading-[1.4]">Antes</figcaption>
+      </figure>
+      <figure class="w-[170px] text-center lg:w-[46.26%]">
+        <Media efecto="fade" src={marcaNueva} alt="Marca rediseñada: Parisi, calidad que alimenta" />
+        <figcaption class="mt-6 text-[1.125rem] leading-[1.4]">Después</figcaption>
+      </figure>
+    </div>
+  </ColumnaDerecha>
+
+  {/* ── Marca sobre el verde institucional ──────────────────────────────── */}
+  {/* Logo a 725 sobre el marco de 1780 (40,73 %) y aire al 10 %: en px fijos
+      no se achican junto con la banda cuando baja el viewport. */}
+  <Banda color={VERDE_OSCURO} espacio="m" class="py-[10%]">
+    <div class="mx-auto w-[calc(100%-2.5rem)] lg:w-[40.73%]">
+      <Media efecto="fade" src={logoParisi} alt="Marca Parisi" recorte={false} />
+    </div>
+  </Banda>
+
+  {/* ── Paleta: bordado + muestras ──────────────────────────────────────── */}
+  <Grilla class="full-width" cols="593fr 1176fr" gap="0.65rem" espacio="xs">
+    <Media efecto="reveal" src={bordado} alt="Sello bordado: expertos en rollos" proporcion="593/537" />
+    <div class="paleta" aria-label="Paleta cromática de Parisi" data-revelar-grupo>
+      {
+        PALETA.map((c) => (
+          <div
+            class="tono"
+            style={`--parte:${c.parte};background-color:${c.fondo};color:${c.tinta}`}
+            data-revelar
+          >
+            <div>
+              <p class="font-bold">{c.nombre}</p>
+              <p>{c.hex}</p>
+            </div>
+            <div class="pie">
+              <span class="pastilla" style={`background-color:${c.contraste}`} />
+              {c.etiqueta && <span class="etiqueta">Contraste</span>}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </Grilla>
+
+  {/* ── Aplicaciones ────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Aplicaciones de marca" titulo="Flota, indumentaria y merchandising">
+    <p>
+      Llevamos la nueva identidad al territorio. Aplicamos el sistema visual
+      a su flota de camiones, transformando su logística en una acción de
+      posicionamiento en ruta. Además, diseñamos la indumentaria de trabajo
+      y el merchandising corporativo para lograr que tanto colaboradores
+      como clientes lleven la marca con orgullo, consolidando a Parisi como
+      un sello de calidad en el sector.
+    </p>
+  </BloqueTexto>
+
+  <Grilla class="full-width" cols="1099fr 670fr" gap="0.65rem" espacio="m">
+    <Media efecto="reveal" src={indumentaria} alt="Indumentaria de trabajo y merchandising" proporcion="1099/700" />
+    <Media efecto="reveal" src={mate} alt="Equipo de Parisi en la camioneta" proporcion="670/700" />
+  </Grilla>
+
+  <Media class="full-width" efecto="reveal" src={camionRollos} alt="Camión de Parisi cargado de rollos" espacio="xs" proporcion="1780/970" />
+
+  <Grilla cols="1fr 1fr 1fr" gap="0.65rem" ancho="contenido" espacio="s">
+    <Media efecto="reveal" src={folletoBolsillo} alt="Folleto institucional de Parisi" proporcion="586/791" />
+    <Media efecto="reveal" src={calendario} alt="Calendario Parisi 2026" proporcion="586/791" />
+    <Media efecto="reveal" src={folletoInterior} alt="Interior del folleto de tipos de rollo" proporcion="586/791" />
+  </Grilla>
+
+  <div class="contenido" style={margenArriba('xs')}>
+    <Media efecto="reveal" src={stand} alt="Stand de Parisi en la feria" proporcion="1780/937" />
+  </div>
+  <div class="contenido" style={margenArriba('xs')}>
+    <Media efecto="reveal" src={lona} alt="Lona de campaña en el alambrado" proporcion="1780/780" />
+  </div>
+
+  {/* ── Web & CRM ───────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Ecosistema digital" titulo="Desarrollo web y automatización comercial (CRM)">
+    <p>
+      Diseñamos un sitio web ágil y orientado a la conversión. Para
+      potenciar el impacto del negocio, integramos la plataforma con un CRM
+      automatizado. De esta forma, profesionalizamos el área comercial: cada
+      consulta ingresa directamente a un embudo de ventas ordenado,
+      permitiendo al equipo responder con velocidad, optimizar la gestión y
+      maximizar cada oportunidad.
+    </p>
+  </BloqueTexto>
+
+  {/* Desktop a la izquierda y el mobile a la derecha. Las columnas salen de
+      las dos proporciones (2496/1892 y 9/16) para que las dos piezas cierren
+      al mismo alto: 1246 + 531 + gap ≈ el marco de 1780. */}
+  <Grilla cols="1246fr 531fr" gap="0" espacio="m">
+    <Media efecto="reveal" src={webDesktop} alt="La web de Parisi en desktop" proporcion="2496/1892" />
+    <Media efecto="reveal" src={webMobile} alt="La web de Parisi en el celular" />
+  </Grilla>
+
+  {/* ── Social Media & Ads ──────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Estrategia de comunicación" titulo="Social media y performance">
+    <p>
+      Evolucionamos la presencia en redes sociales para ir más allá de la
+      exhibición de maquinaria, posicionando a Parisi como un referente técnico
+      del sector agropecuario. A través de campañas de pauta en Google y Meta
+      Ads, implementamos una segmentación precisa dirigida a dueños de campo,
+      veterinarios y nutricionistas. El contenido se enfoca en educar sobre la
+      importancia de la fibra de calidad, elevando la percepción de la marca y
+      consolidando una comunidad calificada.
+    </p>
+  </BloqueTexto>
+
+  {/* Reel a la izquierda sobre la trama, muro de posteos a la derecha */}
+  {/* No es una Banda: es un bloque a sangre que sigue creciendo más allá de
+      1780, con sus medidas internas en porcentaje. */}
+  <div class="full-width" style={`background-color:${VERDE_CLARO};${margenArriba('m')}`}>
+    <div class="relative px-5 py-14 lg:p-0">
+      <div class="pointer-events-none absolute inset-y-0 left-0 hidden w-[32.022%] lg:block">
+        <Image src={tramaReel} alt="" aria-hidden="true" class="h-full w-full select-none object-cover" />
+      </div>
+
+      <div class="relative mx-auto mb-10 w-full max-w-[300px] lg:absolute lg:left-[5.674%] lg:top-[14.031%] lg:mx-0 lg:mb-0 lg:w-[20.674%] lg:max-w-none">
+        <Video efecto="fade" src={videoReel} alt="Reel de campaña de Parisi" proporcion="368/655" ancho="completo" class="rounded-[30px]" />
+      </div>
+
+      <MosaicoFeed
+        columnas={columnasFeed}
+        altura="898px"
+        proporcion="1190/898"
+        proporcionBase="350/532"
+        gap="22px"
+        relleno="0px"
+        fondo={VERDE_CLARO}
+        recorrido={110}
+        class="lg:ml-[33.146%] lg:w-[66.854%]"
+      />
+    </div>
+  </div>
+
+  {/* ── Cierre ──────────────────────────────────────────────────────────── */}
+  <Banda color={BEIGE} espacio="nulo" class="h-[48px]" />
+
+  {/* Dos mitades al ancho de la pantalla. La proporción de la foto manda el
+      alto de las dos, así el bloque se mantiene igual a cualquier ancho: el
+      logo va centrado en la mitad oscura y crece con ella. */}
+  <div class="full-width grid lg:grid-cols-2" style={`background-color:${VERDE_PIE}`}>
+    <div class="grid place-items-center px-5 py-16 lg:p-0">
+      <div class="w-[70%] max-w-[360px] lg:w-[62.13%] lg:max-w-none">
+        <Media efecto="fade" src={logoParisi} alt="Marca Parisi" recorte={false} />
+      </div>
+    </div>
+    <div class="aspect-[1776/958]">
+      <Image src={footerRight} alt="" aria-hidden="true" class="h-full w-full object-cover" />
+    </div>
+  </div>
+
+  <OtrosProyectos excluir="parisi" />
+</Base>
+
+<style>
+  /* Paleta de Parisi. Las medidas van en cqw contra el ancho del bloque, así
+     la muestra escala igual que la foto que tiene al lado. Los textos, en
+     cambio, van al tamaño de párrafo del sistema y no escalan. */
+  .paleta {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tono {
+    /* sin esto el ancho mínimo del contenido desborda la muestra en mobile */
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.75rem 1.25rem 1.5rem;
+  }
+
+  @media (width >= 1440px) {
+    .tono {
+      gap: 0;
+      padding: 5.84cqw 3.42cqw 5.21cqw;
+    }
+  }
+
+  .tono p {
+    font-size: 1.125rem;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+
+  .pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 3.4cqw;
+  }
+
+  .pastilla {
+    display: block;
+    flex: none;
+    width: 5rem;
+    height: 1.9rem;
+    border-radius: 999px;
+  }
+
+  @media (width >= 1440px) {
+    .pastilla {
+      width: 9.87cqw;
+      height: 3.84cqw;
+    }
+  }
+
+  .etiqueta {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Las cuatro muestras en fila entran recién a partir de 1440: con el texto
+     en tamaño de párrafo, abajo de ese ancho la columna angosta no llega a
+     contener el hex y desborda. Hasta ahí van dos por dos.
+     La proporción del diseño también vale sólo en ese tramo: con la altura
+     que pide el contenido, un aspect-ratio fijo obliga un ancho mayor que el
+     del viewport. */
+  @media (width >= 1440px) {
+    .paleta {
+      aspect-ratio: 1176 / 537;
+      grid-template-columns: 2fr 2fr 1fr 1fr;
+    }
+  }
+</style>

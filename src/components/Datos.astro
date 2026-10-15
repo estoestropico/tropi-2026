@@ -1,0 +1,50 @@
+---
+/**
+ * Datos estructurados del sitio (JSON-LD). Describen al estudio y al sitio
+ * para Google y para cualquier bot que lea schema.org: es lo que relaciona la
+ * marca con sus perfiles sociales y con sus datos de contacto.
+ *
+ * Los dos bloques van en todas las páginas con un `@id` fijo, así los
+ * buscadores los leen como el mismo nodo repetido y no como entidades nuevas.
+ */
+const sitio = Astro.site?.origin ?? 'https://www.tropico.ar';
+
+const organizacion = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${sitio}/#organizacion`,
+  name: 'Trópico',
+  alternateName: 'Trópico 360',
+  url: `${sitio}/`,
+  logo: `${sitio}/logo-tropico.png`,
+  image: `${sitio}/og-default.jpg`,
+  description:
+    'Agencia integral de branding, productos digitales y comunicación en Buenos Aires.',
+  email: 'hola@tropico.ar',
+  telephone: '+5491122555938',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Buenos Aires',
+    addressCountry: 'AR',
+  },
+  areaServed: 'AR',
+  sameAs: [
+    'https://www.instagram.com/estoestropico',
+    'https://www.linkedin.com/company/estoestropico',
+    'https://www.behance.net/estoestropico',
+  ],
+};
+
+const sitioWeb = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${sitio}/#sitio`,
+  name: 'Trópico',
+  url: `${sitio}/`,
+  inLanguage: 'es-AR',
+  publisher: { '@id': `${sitio}/#organizacion` },
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(organizacion)} />
+<script type="application/ld+json" is:inline set:html={JSON.stringify(sitioWeb)} />

@@ -1,0 +1,138 @@
+---
+import logo from '../../assets/brand/logo-tropico.svg?raw';
+
+/**
+ * Wordmark Trópico (Figma 1001:3454). Hereda el color del contenedor.
+ *
+ * El SVG viene como nueve trazos sueltos: siete letras más la tilde de la Ó y
+ * la barra de la O. Para que la marca pueda hacer la ola letra por letra, acá
+ * se agrupan los trazos que se pisan horizontalmente y cada grupo sale
+ * envuelto en un `<g class="letra">` con su número de orden en `--i`. La
+ * animación vive en global.css y se dispara con el hover del enlace que
+ * envuelve al logo.
+ *
+ * Se agrupa por geometría y no con una lista fija de índices: si el archivo se
+ * vuelve a exportar y cambia el orden de los trazos, la ola sigue saliendo.
+ */
+interface Props {
+  class?: string;
+  titulo?: string;
+}
+
+const { class: className = '', titulo = 'Trópico' } = Astro.props;
+
+/** Recorre el `d` de un trazo y devuelve hasta dónde llega en horizontal. */
+function rangoX(d: string): [number, number] {
+  const fichas = d.match(/[a-zA-Z]|-?\d*\.?\d+(?:e[-+]?\d+)?/g) ?? [];
+  /* Cuántos números lleva cada comando y en qué posición de esa tanda está la
+     x del punto de llegada. Sólo se miran puntos de llegada, no los de
+     control: los de control se van para afuera de la curva y con ellos dos
+     letras vecinas se pisaban y quedaban agrupadas como una sola. La `a` es
+     el arco: de sus siete números, el sexto es la x de llegada. */
+  const forma: Record<string, [number, number[]]> = {
+    m: [2, [0]], l: [2, [0]], t: [2, [0]],
+    h: [1, [0]],
+    v: [1, []],
+    c: [6, [4]],
+    s: [4, [2]], q: [4, [2]],
+    a: [7, [5]],
+    z: [0, []],
+  };
+
+  let x = 0;
+  let min = Infinity;
+  let max = -Infinity;
+  const marcar = (v: number) => {
+    if (v < min) min = v;
+    if (v > max) max = v;
+  };
+
+  let comando = '';
+  let i = 0;
+  while (i < fichas.length) {
+    if (/[a-zA-Z]/.test(fichas[i])) {
+      comando = fichas[i];
+      i += 1;
+      if (comando.toLowerCase() === 'z') continue;
+    }
+    const clave = comando.toLowerCase();
+    const [cuantos, posiciones] = forma[clave] ?? [2, [0]];
+    const relativo = comando === clave;
+    const tanda = fichas.slice(i, i + cuantos).map(Number);
+    i += cuantos;
+    if (tanda.length < cuantos) break;
+
+    for (const pos of posiciones) marcar(relativo ? x + tanda[pos] : tanda[pos]);
+    /* La x que queda para el próximo comando: la del último punto, salvo en
+       la V, que sólo mueve en vertical. */
+    if (clave === 'v') {
+      /* no cambia */
+    } else if (clave === 'h') {
+      x = relativo ? x + tanda[0] : tanda[0];
+    } else if (clave === 'a') {
+      x = relativo ? x + tanda[5] : tanda[5];
+    } else {
+      x = relativo ? x + tanda[cuantos - 2] : tanda[cuantos - 2];
+    }
+    /* Un comando repetido sin volver a escribir la letra sigue siendo el mismo,
+       salvo la M, que a partir de la segunda tanda se comporta como L. */
+    if (clave === 'm') comando = relativo ? 'l' : 'L';
+  }
+  marcar(x);
+  return [min, max];
+}
+
+/* Agrupa los trazos que se pisan en horizontal: cada grupo es una letra. */
+const trazos = [...logo.matchAll(/<path\b[^>]*>/g)].map((m) => m[0]);
+const conRango = trazos
+  .map((html) => ({ html, rango: rangoX(/\sd="([^"]+)"/.exec(html)?.[1] ?? '') }))
+  .sort((a, b) => a.rango[0] - b.rango[0]);
+
+const letras: { html: string[]; hasta: number }[] = [];
+for (const t of conRango) {
+  const ultima = letras.at(-1);
+  if (ultima && t.rango[0] <= ultima.hasta) {
+    ultima.html.push(t.html);
+    ultima.hasta = Math.max(ultima.hasta, t.rango[1]);
+  } else {
+    letras.push({ html: [t.html], hasta: t.rango[1] });
+  }
+}
+
+/* Los trazos originales salen del SVG y entran envueltos, uno por letra.
+   De paso se le saca el `clip-path` al grupo: el export trae un recorte del
+   tamaño del viewBox y, al subir, las letras se cortaban contra ese borde. */
+let marcado = logo.replace(/\sclip-path="url\(#[^)]*\)"/, '');
+/* Aire arriba para la ola: el viewBox crece 6 unidades hacia arriba, así las
+   letras suben adentro de la caja del propio SVG y no dependen de que ningún
+   contenedor —ni el navegador— las deje dibujar afuera. El margen negativo de
+   −6 % en el estilo compensa esa altura extra y el logo queda donde estaba. */
+marcado = marcado
+  .replace('viewBox="0 0 100 65"', 'viewBox="0 -6 100 71"')
+  .replace('height="65"', 'height="71"');
+for (const t of trazos) marcado = marcado.replace(t, '');
+const envueltos = letras
+  .map((l, i) => `<g class="letra" style="--i:${i}">${l.html.join('')}</g>`)
+  .join('');
+marcado = marcado.replace('</g>', `${envueltos}</g>`);
+---
+
+<span
+  class:list={['logo block', className]}
+  role="img"
+  aria-label={titulo}
+  set:html={marcado}
+/>
+
+<style>
+  .logo :global(svg) {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+    /* Compensa las 6 unidades de aire que se le sumaron arriba al viewBox:
+       el margen porcentual se calcula contra el ancho, y el SVG mide 100
+       unidades de ancho, así que −6 % son exactamente esas 6. */
+    margin-top: -6%;
+  }
+</style>

@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import Banda from '../../components/caso/Banda.astro';
+import BloqueServicios from '../../components/servicio/BloqueServicios.astro';
+
+/* Índice de servicios. Es el destino de "Servicios" en el menú y en el pie.
+   Se arma con piezas que ya existen: la apertura de las páginas de servicio y
+   el bloque de los tres servicios, que también usa la home. */
+
+const ARENA = '#f5f4eb';
+---
+
+<Base
+  titulo="Servicios"
+  descripcion="Branding, web y Trópico 360. Trabajamos la definición de la marca, su implementación en los canales y su gestión continua."
+>
+  {/* ── Apertura ─────────────────────────────────────────────────────────
+      Mismo ritmo y escala que la apertura de cada página de servicio. */}
+  <Banda color={ARENA} espacio="nulo">
+    <div class="contenido pb-[64px] pt-28 lg:pb-[100px] lg:pt-[202px]">
+      <p class="rotulo" data-revelar>Servicios</p>
+      <h1
+        class="mt-4 max-w-[981px] text-balance text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-[3.5rem] lg:mt-5 lg:text-[5rem]"
+        data-revelar
+        style="--retardo:60ms"
+      >
+        Todo lo que tu marca necesita, <span class="text-violeta">cuando lo necesita</span>.
+      </h1>
+    </div>
+  </Banda>
+
+  {/* ── Los tres momentos y los tres servicios ───────────────────────────
+      El texto ordena los bloques de abajo: definición, implementación y
+      gestión, en ese orden. */}
+  <Banda espacio="nulo" plana class="fondo-oscuro text-arena">
+    <div class="contenido pt-[80px] lg:pt-[120px]">
+      <p class="grande max-w-[1000px]" data-revelar>
+        Toda marca atraviesa tres momentos: la definición de su estrategia e
+        identidad, su implementación en los canales y su gestión continua.
+        Trabajamos en los tres, abordándolos por separado o como un proceso
+        único.
+      </p>
+    </div>
+
+    <div class="contenido pb-[96px] pt-[64px] lg:pb-[150px] lg:pt-[110px]">
+      <p class="rotulo text-aqua" data-revelar>Lo que hacemos</p>
+      <BloqueServicios class="mt-10 lg:mt-[121px]" />
+    </div>
+  </Banda>
+</Base>
+
+<style>
+  /* Mismo cuerpo que la intro de las páginas de servicio. */
+  .grande {
+    font-size: clamp(1.75rem, 0.9rem + 3.2vw, 3.3rem);
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+</style>

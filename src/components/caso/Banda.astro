@@ -1,0 +1,84 @@
+---
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Banda de color a sangre completa.
+ *
+ * El contenido del sitio está topado en 1780 (ver `.tope`), así que la banda
+ * pinta su color con un pseudo-elemento de 100vw centrado: el color sigue
+ * llegando a los dos bordes de la pantalla mientras las medidas porcentuales
+ * de adentro se calculan contra 1780 y no contra el viewport.
+ *
+ * `plana` deja la sección sin pseudo-elemento: se ensancha ella misma a
+ * 100vw y el fondo lo pone una clase del proyecto (`.fondo-oscuro`). Evita
+ * la capa de composición que crean `isolation` y el `z-index: -1`, y el
+ * color queda en la hoja de estilos en vez de viajar inline.
+ *
+ * Con `plana` el `color` sobra: si no se pasa, la banda no declara ningún
+ * color propio y pinta la clase.
+ */
+interface Props {
+  color?: string;
+  espacio?: Espacio;
+  plana?: boolean;
+  class?: string;
+}
+
+const { color, espacio, plana = false, class: className = '' } = Astro.props;
+const fondo = color ?? (plana ? undefined : '#f8f7ef');
+const estilo = [fondo && `--banda-color:${fondo}`, margenArriba(espacio)]
+  .filter(Boolean)
+  .join(';');
+---
+
+<section class:list={['banda', plana && 'banda-plana', className]} style={estilo || undefined}>
+  <slot />
+</section>
+
+<style>
+  .banda {
+    position: relative;
+    /* Crea contexto de apilado propio: sin esto el ::before con z-index −1
+       se iría detrás del fondo del body y no se vería. */
+    isolation: isolate;
+    width: 100%;
+  }
+
+  /* El color sangra a los dos lados aunque el contenido esté topado.
+
+     El `background-image` es un PNG de 2×2 enteramente transparente: no
+     pinta un solo píxel y está para que el fondo deje de ser un color
+     sólido puro. Chrome resuelve los tiles de color sólido por un camino
+     distinto que los que tienen algo dibujado, y la conversión al espacio
+     de la pantalla no coincide entre los dos: el corte se ve justo donde
+     termina el contenido. Con una operación de dibujo de por medio, todos
+     los tiles van por el mismo camino. Mismo recurso que en
+     `.fondo-oscuro`; acá cubre las bandas que siguen pintando con el
+     pseudo-elemento. */
+  .banda::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 50%;
+    width: 100vw;
+    margin-left: -50vw;
+    background-color: var(--banda-color);
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAC0lEQVR42mNgQAcAABIAAeRVjecAAAAASUVORK5CYII=');
+    z-index: -1;
+  }
+
+  /* Variante sin pseudo-elemento: el ancho a sangre va sobre la sección
+     misma y el fondo lo pone la clase que trae la página. El ancho de la
+     barra de scroll lo absorbe el `overflow-x: clip` del body, igual que en
+     `.full-width`. */
+  .banda-plana {
+    isolation: auto;
+    width: 100vw;
+    max-width: none;
+    margin-inline: calc(50% - 50vw);
+  }
+
+  .banda-plana::before {
+    content: none;
+  }
+</style>

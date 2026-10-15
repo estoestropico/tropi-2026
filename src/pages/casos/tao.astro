@@ -1,0 +1,1152 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CasoHero from '../../components/caso/CasoHero.astro';
+import Intro from '../../components/caso/Intro.astro';
+import BloqueTexto from '../../components/caso/BloqueTexto.astro';
+import Banda from '../../components/caso/Banda.astro';
+import Media from '../../components/caso/Media.astro';
+import Grilla from '../../components/caso/Grilla.astro';
+import Composicion from '../../components/caso/Composicion.astro';
+import Pieza from '../../components/caso/Pieza.astro';
+import OtrosProyectos from '../../components/caso/OtrosProyectos.astro';
+import { margenArriba } from '../../lib/espacios';
+
+import hero from '../../assets/casos/tao/hero.png';
+import logoTao from '../../assets/casos/tao/logo-tao-soluciones.svg';
+import arqSoluciones from '../../assets/casos/tao/arq-soluciones.svg';
+import arqPoint from '../../assets/casos/tao/arq-point.svg';
+import arqYane from '../../assets/casos/tao/arq-yane.svg';
+import arqAcademy from '../../assets/casos/tao/arq-academy.svg';
+import cartelObra from '../../assets/casos/tao/cartel-obra.png';
+import texturaCielo from '../../assets/casos/tao/textura-cielo.png';
+import texturaMadera from '../../assets/casos/tao/textura-madera.png';
+import texturaPasto from '../../assets/casos/tao/textura-pasto.png';
+import icoSiptao from '../../assets/casos/tao/ico-siptao.svg';
+import icoYane from '../../assets/casos/tao/ico-yane.svg';
+import icoInteria from '../../assets/casos/tao/ico-interia.svg';
+import icoHerramienta from '../../assets/casos/tao/ico-herramienta.svg';
+import icoCalendario from '../../assets/casos/tao/ico-calendario.svg';
+import icoCasaSustentable from '../../assets/casos/tao/ico-casa-sustentable.svg';
+import icoCorte from '../../assets/casos/tao/ico-corte.svg';
+import icoApilado from '../../assets/casos/tao/ico-apilado.svg';
+import icoReciclado from '../../assets/casos/tao/ico-reciclado.svg';
+import icoResistente from '../../assets/casos/tao/ico-resistente.svg';
+import icoSustentable from '../../assets/casos/tao/ico-sustentable.svg';
+import icoPaneles from '../../assets/casos/tao/ico-paneles.svg';
+import icoDialogo from '../../assets/casos/tao/ico-dialogo.svg';
+import icoBarras from '../../assets/casos/tao/ico-barras.svg';
+import icoCasaCorazon from '../../assets/casos/tao/ico-casa-corazon.svg';
+import merchGorra from '../../assets/casos/tao/merch-gorra.png';
+import merchLapices from '../../assets/casos/tao/merch-lapices.png';
+import merchChomba from '../../assets/casos/tao/merch-chomba.png';
+import merchMate from '../../assets/casos/tao/merch-mate.png';
+import merchLanyard from '../../assets/casos/tao/merch-lanyard.png';
+import carpeta from '../../assets/casos/tao/carpeta.png';
+import retratoChomba from '../../assets/casos/tao/retrato-chomba.png';
+import ficha2 from '../../assets/casos/tao/ficha-2.png';
+import ficha3 from '../../assets/casos/tao/ficha-3.png';
+import ficha4 from '../../assets/casos/tao/ficha-4.png';
+import ficha5 from '../../assets/casos/tao/ficha-5.png';
+import ficha6 from '../../assets/casos/tao/ficha-6.png';
+import rollup from '../../assets/casos/tao/rollup.png';
+import stand from '../../assets/casos/tao/stand.png';
+import mac from '../../assets/casos/tao/mac.png';
+import webHome from '../../assets/casos/tao/web-home.png';
+import storyCelular from '../../assets/casos/tao/story-celular.png';
+import storySantiago from '../../assets/casos/tao/story-santiago.png';
+import feedConstruccion from '../../assets/casos/tao/feed-construccion.png';
+import storySanMartin from '../../assets/casos/tao/story-san-martin.png';
+import storyAgradecimiento from '../../assets/casos/tao/story-agradecimiento.png';
+import feedInteria from '../../assets/casos/tao/feed-interia.png';
+import feedChapadmalal from '../../assets/casos/tao/feed-chapadmalal.png';
+import storyMadryn from '../../assets/casos/tao/story-madryn.png';
+import storyQueresSip from '../../assets/casos/tao/story-queres-sip.png';
+import logoAcademy from '../../assets/casos/tao/logo-academy.svg';
+import icoBirrete from '../../assets/casos/tao/ico-birrete.svg';
+import icoClaseOnline from '../../assets/casos/tao/ico-clase-online.svg';
+import icoReloj from '../../assets/casos/tao/ico-reloj.svg';
+import icoUbicacion from '../../assets/casos/tao/ico-ubicacion.svg';
+import icoDocente from '../../assets/casos/tao/ico-docente.svg';
+import icoCurso from '../../assets/casos/tao/ico-curso.svg';
+import academyPuntos from '../../assets/casos/tao/academy-puntos.svg';
+import academyCuadrados from '../../assets/casos/tao/academy-cuadrados.svg';
+import academyCirculo from '../../assets/casos/tao/academy-circulo.svg';
+import academyFlechas from '../../assets/casos/tao/academy-flechas.svg';
+import academyCarpeta from '../../assets/casos/tao/academy-carpeta.svg';
+import academySuma from '../../assets/casos/tao/academy-suma.svg';
+import academyInscribite from '../../assets/casos/tao/academy-inscribite.svg';
+import standAcademy from '../../assets/casos/tao/stand-academy.png';
+import taomiCelular from '../../assets/casos/tao/taomi-celular.png';
+import taomi from '../../assets/casos/tao/taomi.png';
+import cierre from '../../assets/casos/tao/footer-tao.png';
+import marcaAnterior from '../../assets/casos/tao/marca-anterior.png';
+import yaneLeft from '../../assets/casos/tao/yane-left.webp';
+import yaneCenter from '../../assets/casos/tao/yane-center.webp';
+import yaneRight from '../../assets/casos/tao/yane-right.webp';
+import feedSiptao1 from '../../assets/casos/tao/feed-siptao-1.png';
+import feedSiptao2 from '../../assets/casos/tao/feed-siptao-2.png';
+import feedAcademy2 from '../../assets/casos/tao/feed-academy-2.png';
+import feedAcademy3 from '../../assets/casos/tao/feed-academy-3.png';
+import feedAcademy4 from '../../assets/casos/tao/feed-academy-4.png';
+import feedAcademy5 from '../../assets/casos/tao/feed-academy-5.png';
+import progresoCurso from '../../assets/casos/tao/progreso-curso.png';
+import webAcademy from '../../assets/casos/tao/web-academy.png';
+
+const caso = await getEntry('casos', 'tao');
+if (!caso) throw new Error('Falta src/content/casos/tao.yaml');
+const { data } = caso;
+
+/* Colores muestreados del export del Figma (Tao.png). Todos en hex: el azul
+   es fondo oscuro y no lleva display-p3. */
+const AZUL = '#0f3775';
+const LILA = '#c1a6e2';
+const GRIS_CLARO = '#f6f6f6';
+const MALVA = '#ddd6d8';
+
+/* Arquitectura de marca: las cuatro marcas y lo que representa cada una. */
+const ARQUITECTURA = [
+  { logo: arqSoluciones, alt: 'TAO Soluciones Constructivas', ancho: 267, texto: 'Marca principal', icono: 'casa' },
+  { logo: arqPoint, alt: 'TAO Point', ancho: 188, texto: 'Puntos comerciales', icono: 'pin' },
+  { logo: arqYane, alt: 'TAO Yane', ancho: 174, texto: 'Línea de producto', icono: 'paneles' },
+  { logo: arqAcademy, alt: 'TAO Academy', ancho: 245, texto: 'Extensión educativa', icono: 'birrete' },
+];
+
+/* Paleta. Las tres líneas de producto llevan una textura arriba y el color
+   abajo, con el ícono del panel. */
+const LINEAS = [
+  { nombre: 'SIP-TAO', color: '#82d2e6', textura: texturaCielo, ico: icoSiptao, alt: 'Cielo' },
+  { nombre: 'YANE-TAO', color: '#f4cd94', textura: texturaMadera, ico: icoYane, alt: 'Corte de tronco' },
+  { nombre: 'INTERIA-TAO', color: '#a8d6b4', textura: texturaPasto, ico: icoInteria, alt: 'Pasto' },
+];
+
+/* Elementos gráficos de TAO. Posiciones del Figma relativas al bloque
+   (x sobre 1780, y sobre un alto de 350). */
+const ICONOS_TAO = [
+  { src: icoHerramienta, alt: 'Ícono: herramienta', x: 255, y: 0, w: 149 },
+  { src: icoCalendario, alt: 'Ícono: calendario', x: 479, y: 0, w: 149 },
+  { src: icoCasaSustentable, alt: 'Ícono: casa sustentable', x: 703, y: 0, w: 149 },
+  { src: icoResistente, alt: 'Sello: resistente, económico, sostenible, eficiente', x: 980, y: 0, w: 149 },
+  { src: icoSustentable, alt: 'Sostenible y de alto rendimiento', x: 1203, y: 10, w: 169 },
+  { src: icoPaneles, alt: 'Ícono: paneles', x: 1437, y: 5, w: 118 },
+  { src: icoCorte, alt: 'Ícono: corte', x: 255, y: 201, w: 149 },
+  { src: icoApilado, alt: 'Ícono: paneles apilados', x: 479, y: 201, w: 149 },
+  { src: icoReciclado, alt: 'Ícono: reciclado', x: 703, y: 201, w: 149 },
+  { src: icoDialogo, alt: 'Globo de diálogo', x: 980, y: 216, w: 167 },
+  { src: icoBarras, alt: 'Barras', x: 1204, y: 252, w: 168 },
+  { src: icoCasaCorazon, alt: 'Ícono: casa con corazón', x: 1445, y: 215, w: 102 },
+];
+
+/* Merchandising: cinco piezas sueltas, alto de bloque 358. */
+const MERCH = [
+  { src: merchGorra, alt: 'Gorra de TAO', x: 221, y: 28, w: 283 },
+  { src: merchLapices, alt: 'Lápices de madera de TAO', x: 531, y: 46, w: 202 },
+  { src: merchChomba, alt: 'Chomba de TAO', x: 751, y: 0, w: 358 },
+  { src: merchMate, alt: 'Mate de madera con la marca TAO', x: 1083, y: 48, w: 250 },
+  { src: merchLanyard, alt: 'Cinta porta credencial de TAO', x: 1327, y: 59, w: 288 },
+];
+
+/* Fichas técnicas. En el Figma la tira arranca cortada contra los dos
+   bordes; acá van las cinco fichas enteras y la tira se repite. */
+const FICHAS = [
+  { src: ficha2, alt: 'Ficha técnica: paneles SIP' },
+  { src: ficha3, alt: 'Ficha técnica: prediseño de vivienda' },
+  { src: ficha4, alt: 'Ficha técnica: revestimiento interior INTERIA' },
+  { src: ficha5, alt: 'Ficha técnica: descripción de productos' },
+  { src: ficha6, alt: 'Ficha técnica: techos YANE' },
+];
+
+/* Mosaico de redes sobre el malva: el celular y la grilla de piezas, con
+   las posiciones del Figma sobre 1780 × 731. Las dos piezas que faltan
+   exportar van como placeholder en su lugar. */
+const MOSAICO = [
+  { src: storyCelular, alt: 'Story de TAO en el celular', x: 50, y: 0, w: 340 },
+  { src: storySantiago, alt: 'Story: nuevo TAO Point Santiago del Estero', x: 429, y: 4, w: 252 },
+  { src: feedConstruccion, alt: 'Posteo: construcción con madera', x: 691, y: 4, w: 252 },
+  { src: storySanMartin, alt: 'Story: nuevo TAO Point San Martín', x: 691, y: 266, w: 252 },
+  { src: storyAgradecimiento, alt: 'Story: fue una mañana muy constructiva', x: 952, y: 4, w: 252 },
+  { src: feedInteria, alt: 'Posteo: paneles INTERIA-TAO', x: 953, y: 462, w: 252 },
+  { src: feedChapadmalal, alt: 'Posteo: sostenibilidad frente al mar', x: 1214, y: 4, w: 252 },
+  { src: storyMadryn, alt: 'Story: nuevo TAO Point Puerto Madryn', x: 1215, y: 266, w: 252 },
+  { src: storyQueresSip, alt: 'Story: ¿querés construir tu vivienda?', x: 1477, y: 4, w: 252 },
+  { src: feedSiptao1, alt: 'Posteo: SIP-TAO, optimización de recursos', x: 429, y: 461, w: 253 },
+  { src: feedSiptao2, alt: 'Posteo: construimos con madera, derribamos mitos', x: 1477, y: 461, w: 253 },
+];
+
+
+/* Paleta de TAO Academy: anchos del Figma sobre 1780. */
+const PALETA_ACADEMY = [
+  { nombre: 'Pantone 1655 C', hex: '#ED5B29', fondo: '#ed5b29', tinta: '#ffffff', ancho: 453 },
+  { nombre: 'Blanco puro', hex: '#FFFFFF', fondo: '#ffffff', tinta: '#000000', ancho: 452 },
+  { nombre: 'Black 6 C', hex: '#111821', fondo: '#000000', tinta: '#ffffff', ancho: 292 },
+  { nombre: 'Pantone 7632 C', hex: '#D2C8CB', fondo: '#d2c8cb', tinta: '#000000', ancho: 291 },
+  { nombre: 'Pantone 436 C', hex: '#AC9EA2', fondo: '#ac9ea2', tinta: '#ffffff', ancho: 292 },
+];
+
+/* Elementos gráficos de TAO Academy, alto de bloque 361. */
+const ICONOS_ACADEMY = [
+  { src: icoBirrete, alt: 'Ícono: birrete', x: 129, y: 0, w: 154 },
+  { src: icoClaseOnline, alt: 'Ícono: clase online', x: 360, y: 0, w: 154 },
+  { src: icoReloj, alt: 'Ícono: reloj', x: 591, y: 0, w: 154 },
+  { src: academyPuntos, alt: 'Trama de puntos', x: 905, y: 34, w: 96 },
+  { src: academyCuadrados, alt: 'Cuadrados superpuestos', x: 1087, y: 26, w: 160 },
+  { src: academyCirculo, alt: 'Círculo punteado', x: 1342, y: 25, w: 120 },
+  { src: academyFlechas, alt: 'Flechas', x: 1555, y: 32, w: 99 },
+  { src: icoUbicacion, alt: 'Ícono: ubicación', x: 129, y: 207, w: 154 },
+  { src: icoDocente, alt: 'Ícono: docente', x: 360, y: 207, w: 154 },
+  { src: icoCurso, alt: 'Ícono: curso', x: 591, y: 207, w: 154 },
+  { src: academyCarpeta, alt: 'Carpeta', x: 905, y: 210, w: 186 },
+  { src: academySuma, alt: 'Sumá conocimiento', x: 1152, y: 229, w: 215 },
+  { src: academyInscribite, alt: 'Inscribite', x: 1428, y: 248, w: 227 },
+];
+
+/* Feed de TAO Academy. Van las cuatro piezas enteras; las dos de los
+   extremos vienen recortadas en el export y quedan afuera de la tira. */
+const FEED_ACADEMY = [
+  { src: feedAcademy2, alt: 'Posteo: capacitación en la UOCRA, Mar del Plata' },
+  { src: feedAcademy3, alt: 'Posteo: ¿querés construir mejor y más rápido?' },
+  { src: feedAcademy4, alt: 'Posteo: obra abierta de TAO Academy' },
+  { src: feedAcademy5, alt: 'Posteo: capacitación en sistema constructivo SIP-TAO' },
+];
+
+---
+
+<Base titulo={`${data.cliente} · Caso`} descripcion={data.metaDescripcion ?? data.bajada ?? data.titular}>
+  <CasoHero
+    cliente={data.cliente}
+    titular={data.titular}
+    rubro={data.rubro}
+    servicios={data.servicios}
+    imagen={hero}
+    imagenAlt={data.heroAlt ?? data.cliente}
+    solape={0}
+  />
+
+  <Intro espacio="l">
+    TAO Soluciones Constructivas es una empresa especializada en el sistema
+    constructivo SIP: fabrican paneles, los mecanizan y comercializan kits
+    integrales de obra. Nuestro trabajo consistió en ordenar su comunicación
+    marcaria desde los cimientos. Tras el desarrollo integral, les entregamos
+    los manuales de marca y herramientas clave para que su equipo interno
+    tenga autonomía y pueda darle continuidad a la comunicación.
+  </Intro>
+
+  {/* ── Revamp marcario ─────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="l" etiqueta="Estrategia e identidad" titulo="Revamp marcario y arquitectura de marca">
+    <p>
+      Ejecutamos un revamp de la identidad para evolucionar su discurso y dejar
+      de hablar exclusivamente de "paneles", posicionándolos como referentes en
+      soluciones integrales. Ordenamos su arquitectura de marca —que presentaba
+      cierta dispersión inicial— y desarrollamos sus mensajes de venta para
+      estructurar una narrativa comercial más sólida.
+    </p>
+
+    {/* La marca anterior y la nueva, lado a lado. La anterior no está
+        exportada todavía. */}
+    <div slot="derecha" class="mt-10 flex items-center gap-10 lg:mt-[60px] lg:gap-[135px]" data-revelar-grupo>
+      <div class="w-[28%] max-w-[225px]">
+        <Image src={marcaAnterior} alt="Marca anterior de TAO: vanguardia en paneles" class="h-auto w-full" />
+      </div>
+      <div class="w-[48%] max-w-[394px]">
+        <Image src={logoTao} alt="TAO Soluciones Constructivas" class="h-auto w-full" />
+      </div>
+    </div>
+  </BloqueTexto>
+
+  {/* ── Arquitectura monolítica ─────────────────────────────────────────── */}
+  <Banda color={AZUL} espacio="m" class="arquitectura text-white">
+    <div class="contenido py-16 lg:py-[79px]">
+      <div class="arq-titulo" data-revelar>
+        <span class="arq-llave" aria-hidden="true"></span>
+        <h2 class="arq-rotulo">Arquitectura monolítica</h2>
+        <span class="arq-llave arq-llave-der" aria-hidden="true"></span>
+      </div>
+
+      <ul class="arq-marcas" data-revelar-grupo>
+        {
+          ARQUITECTURA.map((m) => (
+            <li class="arq-marca">
+              <div class="arq-logo">
+                <Image src={m.logo} alt={m.alt} class="h-auto w-full" style={`max-width:${m.ancho}px`} />
+              </div>
+              <span class="arq-punteado" aria-hidden="true" />
+              <svg class="arq-icono" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                {m.icono === 'casa' && <path d="M8 58V28L32 6l24 22v30H8Z" stroke-linejoin="round" />}
+                {m.icono === 'pin' && (
+                  <>
+                    <path d="M32 46s-14-11-14-22a14 14 0 0 1 28 0c0 11-14 22-14 22Z" />
+                    <circle cx="32" cy="24" r="6" />
+                    <path d="M20 58h24M32 46v12" />
+                  </>
+                )}
+                {m.icono === 'paneles' && (
+                  <>
+                    <path d="M2 4h14v56H2zM5 6v52" />
+                    <path d="M25 4h14v56H25zM28 6v52" />
+                    <path d="M48 4h14v56H48z" />
+                  </>
+                )}
+                {m.icono === 'birrete' && (
+                  <>
+                    <path d="M2 24 32 12l30 12-30 12L2 24Z" stroke-linejoin="round" />
+                    <path d="M14 29v14c0 4 8 8 18 8s18-4 18-8V29" />
+                    <path d="M56 26v18" />
+                    <rect x="53" y="44" width="6" height="10" rx="2" />
+                  </>
+                )}
+              </svg>
+              <p class="arq-texto">{m.texto}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Banda>
+
+  {/* Paneles y cartel de obra. El panel animado está pendiente: en el Figma
+      dice "GIF como la web". */}
+  <Grilla cols="697fr 1070fr" gap="0.5625rem" class="mt-[9px]">
+    <div class="grid place-items-center" style={`background-color:${GRIS_CLARO};aspect-ratio:697/650`}>
+      {/* Las tres capas del panel YANE se juntan a medida que se scrollea:
+          arrancan separadas en diagonal y terminan armando el panel. */}
+      <div class="panel" data-panel aria-label="Panel YANE-TAO: placa, núcleo y placa" role="img">
+        <Image src={yaneRight} alt="" class="panel-capa panel-der" />
+        <Image src={yaneCenter} alt="" class="panel-capa panel-centro" />
+        <Image src={yaneLeft} alt="" class="panel-capa panel-izq" />
+      </div>
+    </div>
+    <Media efecto="reveal" src={cartelObra} alt="Cartel de obra: tecnología SIP-TAO en acción" proporcion="1070/650" />
+  </Grilla>
+
+  {/* ── Paleta ──────────────────────────────────────────────────────────── */}
+  <section class="paleta full-width" aria-label="Paleta cromática de TAO">
+    <div class="paleta-fila" style="--cols:1326fr 442fr">
+      <div class="tono" style={`background-color:${AZUL};color:#ffffff`} data-revelar>
+        <div>
+          <p>Color Principal</p>
+          <p class="font-bold">Pantone 3597 C</p>
+        </div>
+      </div>
+      <div class="tono" style={`background-color:${LILA};color:${AZUL}`} data-revelar>
+        <div>
+          <p>Acento</p>
+          <p class="font-bold">Pantone 264 C</p>
+        </div>
+      </div>
+    </div>
+    <div class="paleta-fila" style="--cols:1fr 1fr">
+      <div class="tono" style={`background-color:${MALVA};color:${AZUL}`} data-revelar>
+        <div>
+          <p>Color Secundario</p>
+          <p class="font-bold">Pantone 7632 C</p>
+        </div>
+      </div>
+      <div class="tono" style={`background-color:${GRIS_CLARO};color:${AZUL}`} data-revelar>
+        <div>
+          <p>Color Secundario</p>
+          <p class="font-bold">#F6F6F6</p>
+        </div>
+      </div>
+    </div>
+    <div class="paleta-fila paleta-lineas" style="--cols:586fr 586fr 584fr">
+      {
+        LINEAS.map((l) => (
+          <div class="linea" data-revelar>
+            <Image src={l.textura} alt={l.alt} widths={[400, 800, 1200]} sizes="(min-width: 1024px) 33vw, 100vw" class="linea-textura" />
+            <div class="tono" style={`background-color:${l.color};color:${AZUL}`}>
+              <div class="linea-texto">
+                <p>{l.nombre}</p>
+                <p class="linea-pantone font-bold">
+                  Pantone 7632 C
+                  <Image src={l.ico} alt="" aria-hidden="true" class="linea-ico" />
+                </p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ── Elementos gráficos ──────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Universo visual" titulo="Sistema gráfico y diseño de la información">
+    <p>
+      Generamos un ecosistema visual amplio, versátil y atractivo, pensado
+      específicamente para organizar un caudal de información denso. El
+      sistema permite comunicar las múltiples facetas de la empresa, logrando
+      un equilibrio exacto entre la necesidad de vender y el gran desafío de
+      educar al mercado sobre un método constructivo relativamente nuevo en
+      Argentina.
+    </p>
+  </BloqueTexto>
+
+  <Composicion alto={350} colsMobile={3} espacio="m" alinear="figma" class="px-5 lg:px-0">
+    {ICONOS_TAO.map((i) => <Pieza src={i.src} alt={i.alt} x={i.x} y={i.y} w={i.w} alto={350} />)}
+  </Composicion>
+
+  <Composicion alto={358} colsMobile={3} espacio="m" alinear="figma" class="px-5 lg:px-0">
+    {MERCH.map((i) => <Pieza src={i.src} alt={i.alt} x={i.x} y={i.y} w={i.w} alto={358} />)}
+  </Composicion>
+
+  <Grilla cols="764fr 1004fr" gap="0.75rem" espacio="s">
+    <Media efecto="reveal" src={carpeta} alt="Carpeta institucional de TAO" proporcion="764/700" />
+    <Media efecto="reveal" src={retratoChomba} alt="Arquitecto con la chomba de TAO frente a una obra" proporcion="1004/700" />
+  </Grilla>
+
+  {/* Fichas técnicas: la tira se corre en horizontal con el scroll. */}
+  <div class="tira full-width" style={margenArriba('s')} data-tira="-1">
+    <div class="tira-pista">
+      {
+        [0, 1, 2].map((copia) =>
+          FICHAS.map((f) => (
+            <div class="tira-item ficha" aria-hidden={copia !== 1 ? 'true' : undefined}>
+              <Image src={f.src} alt={copia === 1 ? f.alt : ''} widths={[300, 600]} sizes="(min-width: 1024px) 294px, 45vw" class="h-auto w-full" />
+            </div>
+          ))
+        )
+      }
+    </div>
+  </div>
+
+  <BloqueTexto espacio="m" etiqueta="Herramientas comerciales" titulo="Material de venta">
+    <p>
+      Creamos piezas gráficas enfocadas en la venta y la educación, diseñadas
+      especialmente para los stands y puntos de contacto físico recurrentes
+      del cliente.
+    </p>
+  </BloqueTexto>
+
+  <Grilla cols="615fr 1153fr" gap="0.75rem" espacio="m">
+    <Media efecto="reveal" src={rollup} alt="Roll up de TAO en una feria" proporcion="615/900" />
+    <Media efecto="reveal" src={stand} alt="Stand de TAO en una feria de construcción" proporcion="1153/900" />
+  </Grilla>
+
+  {/* ── Sitio web ──────────────────────────────────────────────── */}
+  <Banda color={GRIS_CLARO} espacio="xs">
+    <div class="social">
+      <div class="social-texto">
+        <h2 class="rotulo rotulo-caso" data-revelar>Sitio web</h2>
+        <p class="mb-4 mt-8 text-[1.375rem] font-bold leading-none tracking-[-0.02em] lg:mt-[40px] lg:text-[1.625rem]" data-revelar>
+          TAO Online
+        </p>
+        <p class="text-[1.125rem] leading-[1.4] tracking-[-0.02em]" data-revelar style="--retardo:180ms">
+          En paralelo, estructuramos un nuevo sitio web con un objetivo claro:
+          eliminar la confusión de su propuesta anterior. Logramos una
+          plataforma ágil y visualmente atractiva que explica con total
+          exactitud su oferta de productos y servicios.
+        </p>
+      </div>
+
+      {/* La home recorre dentro de la Mac y sigue por debajo del chasis
+          hasta el pie de la banda, igual que en FXM. */}
+      <div class="web-mac" data-revelar>
+        <div class="web-mac-pantalla">
+          <Image
+            src={webHome}
+            alt="La home de TAO Soluciones Constructivas"
+            widths={[400, 800, 1334]}
+            sizes="(min-width: 1024px) 38vw, 70vw"
+            class="web-mac-home"
+          />
+        </div>
+        <Image src={mac} alt="" aria-hidden="true" widths={[600, 1200, 1743]} sizes="(min-width: 1024px) 49vw, 90vw" class="web-mac-frente" />
+      </div>
+    </div>
+  </Banda>
+
+  <Banda color={MALVA} espacio="nulo" class="py-12 lg:py-0">
+    <div class="mosaico">
+      {
+        MOSAICO.map((p) => (
+          <Image
+            src={p.src}
+            alt={p.alt}
+            widths={[300, 600, 700]}
+            sizes={`(min-width: 1024px) ${Math.round((p.w / 1780) * 100)}vw, 45vw`}
+            class="mosaico-pieza"
+            style={`--px:${(p.x / 1780) * 100}%;--py:${(p.y / 731) * 100}%;--pw:${(p.w / 1780) * 100}%`}
+            data-revelar
+          />
+        ))
+      }
+    </div>
+  </Banda>
+
+  {/* ── TAO Academy ─────────────────────────────────────────────────────── */}
+  <BloqueTexto espacio="m" etiqueta="Unidad educativa" titulo="TAO Academy">
+    <p>
+      Brandeamos su unidad de capacitación orientada a instaladores y
+      profesionales del sector: le dimos una identidad propia y desarrollamos
+      sus contenidos.
+    </p>
+  </BloqueTexto>
+
+  {/* La carpeta gris: pestaña arriba a la izquierda con la marca, la paleta
+      a sangre y los elementos gráficos. */}
+  <section class="academia full-width" style="margin-top:19px">
+    <svg class="academia-pestana" viewBox="0 0 470 92" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 32C0 14 14 0 32 0H360C378 0 388 6 398 20L432 72C441 85 452 92 470 92H0Z" />
+    </svg>
+    <div class="academia-cuerpo">
+      <div class="academia-marca" data-revelar>
+        <Image src={logoAcademy} alt="TAO Academy" class="h-auto w-full" />
+      </div>
+
+      <div class="academia-paleta" data-revelar-grupo>
+        {
+          PALETA_ACADEMY.map((c) => (
+            <div class="academia-tono" style={`--ancho:${c.ancho};background-color:${c.fondo};color:${c.tinta}`}>
+              <p class="font-bold uppercase">{c.nombre}</p>
+              <p>{c.hex}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="academia-iconos">
+        <Composicion alto={361} colsMobile={3} alinear="figma" class="px-5 lg:px-0">
+        {ICONOS_ACADEMY.map((i) => <Pieza src={i.src} alt={i.alt} x={i.x} y={i.y} w={i.w} alto={361} />)}
+      </Composicion>
+      </div>
+    </div>
+  </section>
+
+  <Media class="full-width" efecto="parallax" src={standAcademy} alt="Stand de TAO Academy en una feria" espacio="xs" proporcion="1780/900" />
+
+  {/* A sangre como el stand de arriba: de 1780 para arriba la grilla no se
+      topa y las dos placas llegan a los bordes de la pantalla. */}
+  <Grilla cols="733fr 1035fr" gap="0.75rem" espacio="xs" class="full-width">
+    <Media efecto="reveal" src={taomiCelular} alt="Chat con Taomi en el celular" proporcion="733/640" />
+    <Media efecto="reveal" src={taomi} alt="¡Hola, soy Taomi! El bot de IA de TAO" proporcion="1035/640" />
+  </Grilla>
+
+  {/* Feed de TAO Academy: tira que se corre con el scroll sobre el negro. */}
+  <Banda color="#000000" espacio="xs">
+    <div class="tira tira-negra full-width" data-tira="1">
+      <div class="tira-pista">
+        {
+          [0, 1, 2].map((copia) =>
+            FEED_ACADEMY.map((f) => (
+              <div class="tira-item feed-academy" aria-hidden={copia !== 1 ? 'true' : undefined}>
+                <Image src={f.src} alt={copia === 1 ? f.alt : ''} widths={[320, 640, 960]} sizes="(min-width: 1024px) 320px, 55vw" class="h-auto w-full" />
+              </div>
+            ))
+          )
+        }
+      </div>
+    </div>
+  </Banda>
+
+  {/* Plataforma de TAO Academy. En desktop sigue las posiciones del Figma
+      sobre 1780 × 1072: la notebook sangra por la derecha y la tarjeta de
+      progreso se le monta encima a la izquierda. */}
+  <section class="plataforma full-width">
+    <div class="plataforma-texto">
+      <h2 class="rotulo rotulo-caso" data-revelar>Plataforma</h2>
+      <p class="mb-4 mt-8 text-[1.375rem] font-bold leading-none tracking-[-0.02em] lg:mt-[40px] lg:text-[1.625rem]" data-revelar>
+        E-learning autogestionable
+      </p>
+      <p class="text-[1.125rem] leading-[1.4] tracking-[-0.02em]" data-revelar style="--retardo:180ms">
+        Para operativizarlo, creamos una plataforma de e-learning 100%
+        autogestionable, donde TAO puede cargar material de estudio, videos y
+        comercializar sus propios cursos de forma directa.
+      </p>
+    </div>
+    <Image src={webAcademy} alt="La plataforma de TAO Academy en la notebook" widths={[430, 858, 1716]} sizes="(min-width: 1024px) 48vw, 90vw" class="plataforma-web" data-revelar style="--retardo:120ms" />
+    <Image src={progresoCurso} alt="Tarjeta de progreso del curso en TAO Academy" widths={[251, 502]} sizes="(min-width: 1024px) 14vw, 45vw" class="plataforma-tarjeta" data-revelar style="--retardo:700ms" />
+  </section>
+
+  {/* El cierre sube sobre el bloque anterior: la cuña y la banda tapan el
+      pie de la notebook, así no se ve dónde se corta su sombra. El PNG es
+      transparente alrededor de la cuña. */}
+  <div class="cierre-tao full-width">
+    <Image src={cierre} alt="TAO: construcción sin destruir el planeta" widths={[640, 960, 1280, 1780, 2560, 3560]} sizes="100vw" class="h-auto w-full" />
+  </div>
+
+  <OtrosProyectos excluir="tao" />
+</Base>
+
+<style>
+  /* ── Arquitectura ──────────────────────────────────────────────────── */
+  .arq-titulo {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .arq-rotulo {
+    flex: none;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* La llave: una raya que sale del rótulo y baja en la punta. */
+  .arq-llave {
+    flex: 1;
+    height: 45px;
+    margin-top: 0.55em;
+    border-top: 2px solid var(--lila, #c1a6e2);
+    border-left: 2px solid #c1a6e2;
+  }
+
+  .arq-llave-der {
+    border-left: 0;
+    border-right: 2px solid #c1a6e2;
+  }
+
+  .arq-marcas {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .arq-marca {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .arq-logo {
+    display: grid;
+    width: 100%;
+    height: 56px;
+    place-items: center;
+  }
+
+  .arq-logo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .arq-punteado {
+    width: 0;
+    height: 40px;
+    margin-block: 1.25rem;
+    border-left: 1.5px dashed rgb(255 255 255 / 0.45);
+  }
+
+  .arq-icono {
+    width: 44px;
+    height: 44px;
+    color: #ffffff;
+  }
+
+  .arq-texto {
+    margin-top: 1rem;
+    color: #c1a6e2;
+    font-size: 1.125rem;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+
+  @media (width >= 64rem) {
+    .arq-titulo {
+      padding-inline: 13.1%;
+      gap: 34px;
+    }
+
+
+    .arq-marcas {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 70px;
+    }
+
+    .arq-logo {
+      height: 79px;
+    }
+
+    .arq-punteado {
+      height: 57px;
+      margin-block: 42px 51px;
+    }
+
+    .arq-icono {
+      width: 60px;
+      height: 60px;
+    }
+
+    .arq-texto {
+      margin-top: 34px;
+    }
+  }
+
+  /* ── Panel que se arma con el scroll ─────────────────────────────────
+     Las tres capas parten separadas en diagonal —la placa de atrás arriba a
+     la derecha, la de adelante abajo a la izquierda— y se juntan hasta
+     quedar casi superpuestas. `--p` (0 separado, 1 armado) lo pone el
+     script; las distancias van en `cqw` para escalar con la celda. */
+  .panel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    container-type: size;
+    --p: 0;
+  }
+
+  .panel-capa {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22%;
+    height: auto;
+    --dx: calc(7.2cqw - 6cqw * var(--p));
+    --dy: calc(9.9cqw - 8.3cqw * var(--p));
+    transform: translate(-50%, -50%) translate(calc(var(--k) * var(--dx)), calc(var(--k) * var(--dy) * -1));
+  }
+
+  .panel-der {
+    --k: 1;
+  }
+
+  .panel-centro {
+    --k: 0;
+  }
+
+  .panel-izq {
+    --k: -1;
+  }
+
+  /* ── Paleta ────────────────────────────────────────────────────────── */
+  .paleta {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .paleta-fila {
+    display: grid;
+    gap: 12px;
+  }
+
+  .tono {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    min-height: 130px;
+    padding: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  .linea-textura {
+    display: block;
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+  }
+
+  .linea-texto {
+    flex: 1;
+  }
+
+  /* El ícono del panel va en la línea del pantone, centrado con ella y
+     empujado al borde derecho de la placa, como en el Figma. */
+  .linea-pantone {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .linea-ico {
+    flex: none;
+    width: 68px;
+    height: auto;
+  }
+
+  @media (width >= 64rem) {
+    .paleta-fila {
+      grid-template-columns: var(--cols);
+    }
+
+    /* Alto fijo del Figma (199 sobre 1780), escalado con el ancho. */
+    .tono {
+      height: min(11.18vw, 199px);
+      min-height: 0;
+      padding: min(1.85vw, 33px) min(6.9vw, 123px);
+      font-size: 1.125rem;
+    }
+
+    .paleta-lineas .tono {
+      padding-top: min(2.2vw, 39px);
+      padding-right: min(1.5vw, 27px);
+    }
+
+    .linea-textura {
+      height: min(11.18vw, 199px);
+    }
+
+    .linea-ico {
+      width: min(5.4vw, 95px);
+    }
+  }
+
+  /* ── Tira que se corre con el scroll ───────────────────────────────── */
+  .tira {
+    overflow: hidden;
+  }
+
+  .tira-pista {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    will-change: transform;
+  }
+
+  .ficha {
+    width: 45vw;
+    max-width: 294px;
+  }
+
+  .ficha :global(img) {
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.12);
+  }
+
+  .tira-negra {
+    padding-block: 60px;
+  }
+
+  .feed-academy {
+    width: 55vw;
+    max-width: 320px;
+  }
+
+  @media (width >= 64rem) {
+    .ficha {
+      width: 16.52vw;
+    }
+
+    .tira-negra {
+      padding-block: 78px 79px;
+    }
+
+    .tira-negra .tira-pista {
+      gap: 37px;
+    }
+
+    .feed-academy {
+      width: 17.96vw;
+    }
+  }
+
+  /* ── Social y web ──────────────────────────────────────────────────── */
+  .social {
+    display: grid;
+    gap: 3rem;
+    padding: 64px 20px 0;
+  }
+
+  .web-mac {
+    position: relative;
+    aspect-ratio: 871.17 / 866;
+  }
+
+  .web-mac-pantalla {
+    position: absolute;
+    left: 11.66%;
+    top: 3.44%;
+    width: 76.61%;
+    bottom: 0;
+    overflow: hidden;
+  }
+
+  .web-mac-home {
+    display: block;
+    width: 100%;
+    height: auto;
+    will-change: transform;
+  }
+
+  .web-mac-frente {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+
+  @media (width >= 64rem) {
+    .social {
+      position: relative;
+      aspect-ratio: 1780 / 1000;
+      padding: 0;
+    }
+
+    .social-texto {
+      position: absolute;
+      left: 7.02%;
+      top: 21.4%;
+      width: 31%;
+    }
+
+    .web-mac {
+      position: absolute;
+      left: 43.8%;
+      top: 13.4%;
+      width: 48.94%;
+    }
+  }
+
+  /* ── Mosaico ───────────────────────────────────────────────────────── */
+  .mosaico {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding-inline: 20px;
+  }
+
+  .mosaico-pieza {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (width >= 64rem) {
+    .mosaico {
+      position: relative;
+      display: block;
+      aspect-ratio: 1780 / 850;
+      padding: 0;
+    }
+
+    .mosaico-pieza {
+      position: absolute;
+      left: var(--px);
+      top: calc(6.94% + var(--py) * 731 / 850);
+      width: var(--pw);
+    }
+  }
+
+  /* ── Plataforma Academy ────────────────────────────────────────────── */
+  .plataforma {
+    position: relative;
+    display: grid;
+    gap: 2rem;
+    padding: 80px 20px 48px;
+  }
+
+  .plataforma-web {
+    width: 100%;
+    height: auto;
+  }
+
+  .plataforma-tarjeta {
+    width: 40%;
+    max-width: 251px;
+    height: auto;
+    margin-top: -38%;
+    position: relative;
+  }
+
+  @media (width >= 64rem) {
+    .plataforma {
+      display: block;
+      aspect-ratio: 1780 / 1072;
+      padding: 0;
+    }
+
+    .plataforma-texto {
+      position: absolute;
+      left: 7.02%;
+      top: 39.9%;
+      width: 31%;
+    }
+
+    .plataforma-web {
+      position: absolute;
+      left: 51.8%;
+      top: 0;
+      width: 48.2%;
+    }
+
+    .plataforma-tarjeta {
+      position: absolute;
+      left: 49.16%;
+      top: 27.99%;
+      width: 14.1%;
+      max-width: none;
+      margin-top: 0;
+      z-index: 1;
+    }
+  }
+
+  /* ── Cierre ────────────────────────────────────────────────────────── */
+  .cierre-tao {
+    position: relative;
+    z-index: 1;
+    margin-top: -7.6%;
+  }
+
+  /* ── Academy ───────────────────────────────────────────────────────── */
+  .academia {
+    position: relative;
+    color: #f7f7f7;
+  }
+
+  .academia-pestana {
+    display: block;
+    width: 26.4%;
+    min-width: 180px;
+    height: auto;
+    aspect-ratio: 470 / 92;
+    fill: currentColor;
+    margin-bottom: -1px;
+  }
+
+  .academia-cuerpo {
+    padding-bottom: 48px;
+    border-radius: 0 28px 28px 28px;
+    background-color: #f7f7f7;
+    color: var(--color-oscuro);
+  }
+
+  .academia-marca {
+    position: relative;
+    width: 160px;
+    margin: -48px 0 0 20px;
+  }
+
+  .academia-paleta {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 32px;
+  }
+
+  .academia-tono {
+    flex: 1 1 50%;
+    min-height: 150px;
+    padding: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .academia-iconos {
+    margin-top: 64px;
+  }
+
+  @media (width >= 64rem) {
+    .academia-cuerpo {
+      padding-bottom: min(5.5vw, 98px);
+    }
+
+    .academia-marca {
+      width: 16.4%;
+      margin: calc(-1 * min(3.2vw, 50px)) 0 0 3.76%;
+    }
+
+    .academia-paleta {
+      flex-wrap: nowrap;
+      margin-top: min(4.4vw, 78px);
+    }
+
+    .academia-tono {
+      flex: 0 0 calc(var(--ancho) / 1780 * 100%);
+      height: min(23.76vw, 423px);
+      padding: min(2.1vw, 38px) min(1.85vw, 33px);
+      font-size: 1.125rem;
+    }
+
+
+
+    .academia-iconos {
+      margin-top: min(8.1vw, 144px);
+    }
+  }
+</style>
+
+<script>
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Tiras que se corren en horizontal con el scroll: `p` va de 0 a 1
+     mientras la tira cruza la pantalla y la pista recorre una copia entera.
+     El sentido lo da `data-tira` (-1 hacia la izquierda, 1 hacia la
+     derecha). La pista tiene tres copias y arranca en la del medio. */
+  const tiras = [...document.querySelectorAll<HTMLElement>('[data-tira]')]
+    .map((marco) => ({
+      marco,
+      pista: marco.querySelector<HTMLElement>('.tira-pista'),
+      sentido: Number(marco.dataset.tira) || -1,
+    }))
+    .filter((t) => t.pista);
+
+  /* Panel YANE: `--p` va de 0 cuando la celda asoma por abajo a 1 cuando
+     su centro llega al centro de la pantalla. */
+  const paneles = [...document.querySelectorAll<HTMLElement>('[data-panel]')];
+
+  /* La home dentro de la Mac baja atada al scroll, como en FXM. */
+  const macs = [...document.querySelectorAll<HTMLElement>('.web-mac')]
+    .map((marco) => ({
+      marco,
+      mascara: marco.querySelector<HTMLElement>('.web-mac-pantalla'),
+      home: marco.querySelector<HTMLElement>('.web-mac-home'),
+    }))
+    .filter((c) => c.mascara && c.home);
+
+  if (!quieto) {
+    let pendiente = false;
+
+    const avance = (r: DOMRect, alto: number) =>
+      Math.min(1, Math.max(0, 1 - (r.top + r.height) / (alto + r.height)));
+
+    const pintar = () => {
+      pendiente = false;
+      const alto = window.innerHeight || 1;
+
+      tiras.forEach((t) => {
+        const r = t.marco.getBoundingClientRect();
+        if (r.bottom < -alto * 0.25 || r.top > alto * 1.25) return;
+        const copia = t.pista!.scrollWidth / 3;
+        const p = avance(r, alto);
+        /* Arranca un tercio adentro y recorre media copia: suficiente para
+           que se lea el movimiento sin que se vea el borde de la pista. */
+        const x = -copia + t.sentido * (p - 0.5) * copia * 0.5;
+        t.pista!.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0)`;
+      });
+
+      paneles.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.bottom < -alto * 0.25 || r.top > alto * 1.25) return;
+        const p = Math.min(1, Math.max(0, (alto - r.top) / (alto / 2 + r.height / 2)));
+        el.style.setProperty('--p', p.toFixed(3));
+      });
+
+      macs.forEach((c) => {
+        const r = c.marco.getBoundingClientRect();
+        if (r.bottom < -alto * 0.25 || r.top > alto * 1.25) return;
+        const recorrido = c.home!.offsetHeight - c.mascara!.offsetHeight;
+        if (recorrido <= 0) return;
+        const demora = 0.15;
+        const p = Math.min(1, Math.max(0, (avance(r, alto) - demora) / (1 - demora)));
+        c.home!.style.transform = `translate3d(0, ${(-p * recorrido).toFixed(1)}px, 0)`;
+      });
+    };
+
+    const alScrollear = () => {
+      if (!pendiente) {
+        pendiente = true;
+        requestAnimationFrame(pintar);
+      }
+    };
+
+    window.addEventListener('scroll', alScrollear, { passive: true });
+    window.addEventListener('resize', alScrollear, { passive: true });
+    window.addEventListener('load', pintar);
+    pintar();
+  } else {
+    paneles.forEach((el) => el.style.setProperty('--p', '1'));
+    tiras.forEach((t) => {
+      t.pista!.style.transform = `translate3d(${-t.pista!.scrollWidth / 3}px, 0, 0)`;
+    });
+  }
+</script>

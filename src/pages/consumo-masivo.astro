@@ -1,0 +1,127 @@
+---
+import PaginaRubro from '../components/rubro/PaginaRubro.astro';
+import { CORREDOR_CONSUMO } from '../lib/corredores';
+import { L_360, L_BRANDING, L_WEB } from '../lib/rubros';
+
+/* Vertical de rubro: Consumo masivo. Alimentos, bebidas, suplementos y
+   cadenas gastronómicas. Casos publicados: Puff y Fornaro. */
+
+const VENTAJAS = [
+  {
+    titulo: 'Un envase que funciona en góndola',
+    texto:
+      'El packaging queda resuelto para el lineal: lectura a distancia, jerarquía de la información y diferenciación dentro de la categoría.',
+  },
+  {
+    titulo: 'Lanzamientos sin rehacer la línea',
+    texto:
+      'El sistema de variantes se define desde el primer envase, así el sabor nuevo o el tamaño distinto entran dentro de reglas ya establecidas.',
+  },
+  {
+    titulo: 'Rotulado dentro de la composición',
+    texto:
+      'La información nutricional, las leyendas obligatorias y los sellos se contemplan desde el boceto y entran dentro del diseño.',
+  },
+  {
+    titulo: 'La misma marca en cada punto de contacto',
+    texto:
+      'El lineal, la ficha del marketplace, el packaging de delivery y el contenido de redes se trabajan con el mismo criterio.',
+  },
+  {
+    titulo: 'Un canal propio además del retail',
+    texto:
+      'La tienda propia se arma junto con la marca, con medios de pago, envíos y fichas de producto resueltos.',
+  },
+  {
+    titulo: 'Con tu equipo o con el nuestro',
+    texto:
+      'Si tenés área de marketing, trabaja con nuestro manual, nuestras plantillas y nuestro criterio. Si preferís, la operación completa corre por nuestra cuenta con Trópico 360.',
+  },
+];
+
+const ALCANCE = [
+  {
+    titulo: 'Marca, naming y arquitectura',
+    texto:
+      'Marca madre, nombres de línea y de variante, y la jerarquía entre todos. Es la decisión que define si el consumidor entiende tu góndola de un vistazo o se pierde adentro de tu propio catálogo.',
+  },
+  {
+    titulo: 'Packaging y sistema de variantes',
+    texto:
+      'Diseño del envase y de la familia completa, con los criterios de color, jerarquía y rotulado definidos como sistema. Preparado para el troquel, con el proveedor gráfico en la conversación desde el principio.',
+  },
+  {
+    titulo: 'Punto de venta y local',
+    texto:
+      'Exhibidores, material de góndola y, para cadenas gastronómicas, arquigrafía del local, cartas, uniformes y packaging de delivery.',
+  },
+  {
+    titulo: 'E-commerce y marketplaces',
+    texto:
+      'Tienda propia con medios de pago y envíos configurados, y las fichas de producto resueltas para que el listado en marketplaces no sea el punto débil de la marca.',
+  },
+  {
+    titulo: 'Lanzamientos, campañas y pauta',
+    texto:
+      'El plan de cada lanzamiento y las campañas de temporada, con pauta en Google y Meta medida por costo de adquisición y retorno.',
+  },
+  {
+    titulo: 'Contenido, redes y creadores',
+    texto:
+      'Producción sostenida de contenido propio y trabajo con creadores, con un criterio editorial único para que lo que publica un tercero siga siendo tu marca.',
+  },
+];
+
+const PREGUNTAS = [
+  {
+    pregunta: '¿Se ocupan del rotulado y de los sellos?',
+    respuesta:
+      'Los contemplamos dentro del diseño desde el boceto, porque ocupan lugar y condicionan la composición. El contenido de la información nutricional y el encuadre normativo los aporta tu área técnica o tu asesor; nosotros nos ocupamos de que entren bien y de que el envase siga funcionando con todo eso adentro.',
+  },
+  {
+    pregunta: '¿Trabajan con la imprenta o entregan el archivo y listo?',
+    respuesta:
+      'Trabajamos con el proveedor gráfico. Preparamos los archivos sobre el troquel real, revisamos la prueba de color y seguimos la primera tirada. Aprobar un packaging en pantalla y no en papel es donde más seguido aparecen los problemas de color y de troquel.',
+  },
+  {
+    pregunta: '¿Hacen la línea completa o producto por producto?',
+    respuesta:
+      'La línea completa, y sobre todo el sistema que la ordena: qué cambia entre una variante y otra, qué se mantiene siempre igual, cómo entra un sabor nuevo. Con ese sistema definido, cada lanzamiento posterior se resuelve sin rehacer la línea.',
+  },
+  {
+    pregunta: '¿Y si vendo en góndola y también quiero vender directo?',
+    respuesta:
+      'Conviene, y se planifica junto. El canal propio te da margen, datos de quién compra y libertad para lanzar sin esperar la decisión de un comprador de cadena. Armamos la tienda y las fichas con la misma marca que va al lineal.',
+  },
+  {
+    pregunta: '¿Cuánto cuesta?',
+    respuesta:
+      'Depende del alcance y de la cantidad de productos, así que no hay precio de lista. Con una reunión para entender el caso te pasamos rápido una propuesta con alcance, etapas y valores.',
+  },
+];
+
+/* Sin testimonios: el bloque no se arma hasta que lleguen las citas
+   reales del rubro. */
+---
+
+<PaginaRubro
+  slug="consumo-masivo"
+  rotulo="Consumo masivo"
+  titulo="Consumo masivo"
+  descripcion="Branding, packaging, web y comunicación para marcas de alimentos, bebidas, suplementos y cadenas gastronómicas, bajo un mismo criterio."
+  titular={['Que tu producto ', 'se elija en la góndola', '.']}
+  intro="Trabajamos con marcas de alimentos, bebidas, suplementos y cadenas gastronómicas. Marca, packaging, canal propio y contenido, resueltos como un mismo sistema."
+  corredor={CORREDOR_CONSUMO}
+  ventajasTitulo="Una marca que se elige en la góndola y se reconoce en cada canal."
+  ventajas={VENTAJAS}
+  alcanceTitulo="Un mismo equipo para la marca, el envase y los canales."
+  alcanceTexto={[
+    'El trabajo arranca por la marca y el sistema de packaging, sigue por el punto de venta y los canales digitales, y se sostiene con un plan mensual. Los archivos de envase se preparan sobre el troquel real y se revisan con el proveedor gráfico.',
+    `Es el tipo de trabajo que encaja con ${L_360}: un plan mensual, un equipo fijo y un reporte que muestra qué movió cada acción. Cuando lo que hace falta es la marca y el envase, ${L_BRANDING} y ${L_WEB} se toman como proyectos aparte.`,
+  ]}
+  alcance={ALCANCE}
+  casosRotulo="Marcas de consumo masivo"
+  casosBajada="Productos y cadenas con su marca, su packaging y su comunicación trabajados por un mismo equipo."
+  casos={['puff', 'fornaro']}
+  preguntas={PREGUNTAS}
+/>

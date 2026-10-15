@@ -1,0 +1,284 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Mosaico de feed: columnas trabadas dentro de una máscara que suben y bajan
+ * al scrollear. Es el mismo bloque para todos los casos.
+ *
+ * Sin `columnas` arma el set de placeholders numerados 01–16 (Washington,
+ * hasta que estén las piezas reales). Con `columnas` usa las imágenes que se
+ * le pasan desde la página.
+ *
+ * offset  → posición de reposo de la columna. Acepta cualquier medida CSS:
+ *           px para un mosaico de alto fijo, % (del alto de la columna) para
+ *           uno que escala con el ancho.
+ * velocidad → sentido y proporción del desplazamiento (-1 sube, 1 baja).
+ * recorrido → cuántos px recorre una columna de velocidad 1 de punta a punta
+ *           del viewport.
+ *
+ * Respeta prefers-reduced-motion: sin movimiento, mosaico quieto.
+ */
+export interface PiezaFeed {
+  /** Numerito del placeholder cuando todavía no hay imagen. */
+  id?: string;
+  ratio: string;
+  src?: ImageMetadata;
+  alt?: string;
+}
+
+export interface ColumnaFeed {
+  offset: string;
+  velocidad: number;
+  piezas: PiezaFeed[];
+}
+
+interface Props {
+  columnas?: ColumnaFeed[];
+  /** Alto del marco. En lg manda `proporcion` si se declara. */
+  altura?: string;
+  /** Proporción del marco de lg en adelante, ej. "1190/898". */
+  proporcion?: string;
+  /** Proporción del marco por debajo de lg, cuando el mosaico cae a 2 columnas. */
+  proporcionBase?: string;
+  gap?: string;
+  relleno?: string;
+  fondo?: string;
+  recorrido?: number;
+  /** Cuántas columnas de lg en adelante. Por debajo siempre son 2. */
+  cols?: number;
+  /** Inclinación de la grilla en grados. Las columnas se desplazan en ese
+      mismo eje, porque el translate vive dentro del marco ya rotado. */
+  inclinacion?: number;
+  espacio?: Espacio;
+  class?: string;
+}
+
+/** Set por defecto: placeholders 1/1 y 4/5, el trabado sale del offset. */
+const PLACEHOLDERS: ColumnaFeed[] = [
+  {
+    offset: '-40px',
+    velocidad: -1,
+    piezas: [
+      { id: '01', ratio: '4/5' },
+      { id: '02', ratio: '1/1' },
+      { id: '03', ratio: '4/5' },
+      { id: '04', ratio: '1/1' },
+    ],
+  },
+  {
+    offset: '-180px',
+    velocidad: 1,
+    piezas: [
+      { id: '05', ratio: '1/1' },
+      { id: '06', ratio: '4/5' },
+      { id: '07', ratio: '1/1' },
+      { id: '08', ratio: '4/5' },
+    ],
+  },
+  {
+    offset: '-110px',
+    velocidad: -1,
+    piezas: [
+      { id: '09', ratio: '1/1' },
+      { id: '10', ratio: '4/5' },
+      { id: '11', ratio: '4/5' },
+      { id: '12', ratio: '1/1' },
+    ],
+  },
+  {
+    offset: '-230px',
+    velocidad: 1,
+    piezas: [
+      { id: '13', ratio: '4/5' },
+      { id: '14', ratio: '1/1' },
+      { id: '15', ratio: '4/5' },
+      { id: '16', ratio: '1/1' },
+    ],
+  },
+];
+
+const {
+  columnas = PLACEHOLDERS,
+  altura = '1004px',
+  proporcion,
+  proporcionBase,
+  gap = '27px',
+  relleno = '27px',
+  fondo = '#f2f2f2',
+  recorrido = 150,
+  cols = 4,
+  inclinacion = 0,
+  espacio,
+  class: className = '',
+} = Astro.props;
+
+const estilo = [
+  `--mosaico-alto:${altura}`,
+  proporcion ? `--mosaico-ratio:${proporcion}` : '',
+  proporcionBase ? `--mosaico-ratio-base:${proporcionBase}` : '',
+  `--mosaico-gap:${gap}`,
+  `--mosaico-relleno:${relleno}`,
+  `--mosaico-fondo:${fondo}`,
+  `--mosaico-cols:${cols}`,
+  `--mosaico-giro:${inclinacion}deg`,
+  /* Con la grilla girada el rectángulo interior tiene que ser más grande que
+     el marco para que no se vean las esquinas. Para θ y un marco de a × b:
+     ancho = a·cos θ + b·sin θ, alto = a·sin θ + b·cos θ. Se resuelve con un
+     inset negativo, redondeado para arriba. */
+  `--mosaico-sobra-x:${inclinacion ? -8 : 0}%`,
+  `--mosaico-sobra-y:${inclinacion ? -16 : 0}%`,
+  margenArriba(espacio),
+]
+  .filter(Boolean)
+  .join(';');
+---
+
+<div
+  class:list={['mosaico-marco', className]}
+  style={estilo}
+  data-mosaico
+  data-recorrido={String(recorrido)}
+  data-ratio={proporcion ? '' : undefined}
+  data-ratio-base={proporcionBase ? '' : undefined}
+>
+  <div class="mosaico-feed">
+  {
+    columnas.map((col) => (
+      <div class="mosaico-col" style={`--offset:${col.offset};--vel:${col.velocidad}`}>
+        {col.piezas.map((p) =>
+          p.src ? (
+            <Image
+              src={p.src}
+              alt={p.alt ?? ''}
+              widths={[280, 560, 840]}
+              sizes="(min-width: 1024px) 17vw, 45vw"
+              class="pieza-feed"
+              style={`aspect-ratio:${p.ratio}`}
+            />
+          ) : (
+            <div
+              class="pieza-feed grid place-items-center bg-white text-[0.8125rem] font-medium tabular-nums text-oscuro/20"
+              style={`aspect-ratio:${p.ratio}`}
+            >
+              {p.id}
+            </div>
+          )
+        )}
+      </div>
+    ))
+  }
+  </div>
+</div>
+
+<style>
+  /* El marco recorta; la grilla vive adentro y puede ir girada. */
+  .mosaico-marco {
+    position: relative;
+    height: var(--mosaico-alto);
+    overflow: hidden;
+    background-color: var(--mosaico-fondo);
+  }
+
+  .mosaico-feed {
+    position: absolute;
+    inset: var(--mosaico-sobra-y) var(--mosaico-sobra-x);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--mosaico-gap);
+    padding: var(--mosaico-relleno);
+    transform: rotate(var(--mosaico-giro));
+  }
+
+  @media (width >= 48rem) {
+    .mosaico-feed {
+      grid-template-columns: repeat(var(--mosaico-cols), 1fr);
+    }
+  }
+
+  /* Con proporción declarada el marco escala con el ancho */
+  .mosaico-marco[data-ratio-base] {
+    height: auto;
+    aspect-ratio: var(--mosaico-ratio-base);
+  }
+
+  @media (width >= 64rem) {
+    .mosaico-marco[data-ratio] {
+      height: auto;
+      aspect-ratio: var(--mosaico-ratio);
+    }
+  }
+
+  .mosaico-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mosaico-gap);
+    will-change: transform;
+    transform: translate3d(0, var(--offset), 0);
+  }
+
+  .pieza-feed {
+    width: 100%;
+    height: auto;
+    flex: none;
+    object-fit: cover;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mosaico-col {
+      will-change: auto;
+    }
+  }
+</style>
+
+<script>
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-mosaico]').forEach((mosaico) => {
+    const cols = [...mosaico.querySelectorAll<HTMLElement>('.mosaico-col')];
+    const bases = cols.map(
+      (c) => getComputedStyle(c).getPropertyValue('--offset').trim() || '0px'
+    );
+    const vels = cols.map(
+      (c) => parseFloat(getComputedStyle(c).getPropertyValue('--vel')) || 0
+    );
+    const recorrido = Number(mosaico.dataset.recorrido) || 150;
+
+    let pendiente = false;
+    let visible = false;
+
+    const pintar = () => {
+      pendiente = false;
+      const r = mosaico.getBoundingClientRect();
+      const alto = window.innerHeight || 1;
+      // -1 cuando el bloque entra por abajo, +1 cuando sale por arriba
+      const p = 1 - (r.top + r.height / 2) / (alto / 2 + r.height / 2);
+      cols.forEach((c, i) => {
+        const y = p * vels[i] * recorrido;
+        c.style.transform = `translate3d(0, calc(${bases[i]} + ${y.toFixed(1)}px), 0)`;
+      });
+    };
+
+    const alScrollear = () => {
+      if (!pendiente && visible) {
+        pendiente = true;
+        requestAnimationFrame(pintar);
+      }
+    };
+
+    if (!quieto) {
+      new IntersectionObserver(
+        ([e]) => {
+          visible = e.isIntersecting;
+          if (visible) pintar();
+        },
+        { rootMargin: '200px 0px' }
+      ).observe(mosaico);
+
+      window.addEventListener('scroll', alScrollear, { passive: true });
+      window.addEventListener('resize', alScrollear, { passive: true });
+      pintar();
+    }
+  });
+</script>

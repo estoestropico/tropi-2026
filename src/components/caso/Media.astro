@@ -1,0 +1,139 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { margenArriba, type Espacio } from '../../lib/espacios';
+
+/**
+ * Bloque de imagen de caso.
+ *
+ * efecto — se declara SIEMPRE en la página, nunca por defecto acá:
+ *   "reveal"  la imagen se descubre con un clip que se abre
+ *   "fade"     aparece con opacidad y una subida corta
+ *   "parallax" ya está puesta; se desplaza dentro de su marco al scrollear
+ *   "ninguno"  quieta
+ *
+ * Los efectos son excluyentes: una imagen entra con reveal, o entra con fade,
+ * o ya está puesta y se desplaza con parallax. No se combinan.
+ *
+ * recorte — true: la foto llena el marco y se recorta un poco arriba y abajo;
+ *           ese sobrante es el margen del parallax.
+ *           false: para placas gráficas; se ve entera y el marco lleva una
+ *           holgura del 9% que le da margen al parallax sin cortarla.
+ */
+export type Efecto = 'reveal' | 'fade' | 'parallax' | 'ninguno';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  efecto: Efecto;
+  recorte?: boolean;
+  /** Separación con el bloque anterior. Ver src/lib/espacios.ts */
+  espacio?: Espacio;
+  proporcion?: string;
+  ancho?: 'completo' | 'contenido';
+  class?: string;
+  eager?: boolean;
+}
+
+const {
+  src,
+  alt,
+  efecto,
+  recorte = true,
+  espacio,
+  proporcion,
+  ancho = 'completo',
+  class: className = '',
+  eager = false,
+} = Astro.props;
+
+const sizes =
+  ancho === 'completo' ? '100vw' : '(min-width: 1450px) 1410px, 100vw';
+const clases = [ancho === 'contenido' ? 'contenido' : '', className];
+const margen = margenArriba(espacio);
+
+const conReveal = efecto === 'reveal' ? '' : undefined;
+const conFade = efecto === 'fade' ? '' : undefined;
+const seMueve = efecto === 'parallax';
+
+const HOLGURA = 1.09;
+const ratioMarco = recorte
+  ? (proporcion ?? `${src.width} / ${src.height}`)
+  : `${src.width} / ${Math.round(src.height * HOLGURA)}`;
+
+/* Solo hace falta marco si la imagen se va a desplazar por dentro. */
+const conMarco = seMueve;
+
+/* `velocidad` es la fracción del alto del marco que la imagen recorre de
+   punta a punta. Se expresa así, y no en px, porque la holgura disponible
+   también es porcentual: con recorte la imagen mide 112 % del marco (6 % de
+   sobra de cada lado) y sin recorte el marco es 9 % más alto que la imagen
+   (4,5 % de cada lado). Recorrer menos que esa holgura garantiza que nunca
+   se vea el borde, en cualquier viewport y con cualquier proporción. */
+const velocidad = recorte ? '0.09' : '0.06';
+---
+
+{
+  conMarco ? (
+    <figure
+      class:list={[
+        ...clases,
+        recorte ? '' : 'grid place-items-center overflow-hidden',
+      ]}
+      data-mascara={conReveal}
+      data-revelar={conFade}
+      data-parallax-in={velocidad}
+      style={[`aspect-ratio:${ratioMarco}`, margen].filter(Boolean).join(';')}
+    >
+      {recorte ? (
+        /* La sobra de arriba va en `top`, no en `margin-top`: un margen en
+           porcentaje se calcula contra el ANCHO del contenedor, y el alto de
+           la imagen (112 %) contra el alto. En un marco apaisado —1780 × 750,
+           por ejemplo— ese 6 % de ancho son 107px contra 45px de sobra real,
+           así que la imagen quedaba corta abajo y el scroll terminaba
+           mostrando el fondo del marco. Con `top` las dos medidas son del
+           mismo alto y la sobra es la misma arriba que abajo. */
+        <div class="a-fondo relative h-full w-full overflow-hidden">
+          <Image
+            src={src}
+            alt={alt}
+            widths={[640, 960, 1280, 1600, 2048, 2560]}
+            sizes={sizes}
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+            class="absolute inset-x-0 top-[-6%] h-[112%] w-full object-cover"
+          />
+        </div>
+      ) : (
+        <div class="a-fondo w-full">
+          <Image
+            src={src}
+            alt={alt}
+            widths={[640, 960, 1280, 1600, 2048, 2560]}
+            sizes={sizes}
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+            class="w-full"
+          />
+        </div>
+      )}
+    </figure>
+  ) : (
+    <figure
+      class:list={clases}
+      data-mascara={conReveal}
+      data-revelar={conFade}
+      style={margen}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        widths={[640, 960, 1280, 1600, 2048, 2560]}
+        sizes={sizes}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        class="w-full"
+      />
+    </figure>
+  )
+}

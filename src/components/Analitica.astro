@@ -1,0 +1,77 @@
+---
+/**
+ * Códigos de seguimiento del sitio: Google Tag Manager y el píxel de Meta.
+ * Son los mismos contenedores que usa tropico.ar hoy, así que la medición no
+ * se corta cuando el sitio nuevo reemplace al viejo.
+ *
+ * El componente se usa dos veces desde el layout: `parte="head"` mete los dos
+ * scripts en el <head> y `parte="body"` deja los dos respaldos sin JavaScript
+ * apenas abre el <body>, que es donde Google y Meta los piden.
+ *
+ * En la previa (2026.tropico.ar) no se cargan, para que las visitas del
+ * equipo no entren en las métricas. Para probarlos ahí, el build se hace con
+ * SEGUIMIENTO=1.
+ */
+interface Props {
+  parte: 'head' | 'body';
+}
+
+const { parte } = Astro.props;
+
+const PREVIA = process.env.PREVIA === '1';
+const activo = process.env.SEGUIMIENTO === '1' || !PREVIA;
+---
+
+{
+  activo && parte === 'head' && (
+    <>
+      {/* Google Tag Manager */}
+      <script is:inline>
+        {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-K68BPL7C');`}
+      </script>
+
+      {/* Meta Pixel */}
+      <script is:inline>
+        {`!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','345546787839871');
+fbq('track','PageView');`}
+      </script>
+    </>
+  )
+}
+
+{
+  activo && parte === 'body' && (
+    <>
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-K68BPL7C"
+          height="0"
+          width="0"
+          style="display:none;visibility:hidden"
+          title="Google Tag Manager"
+        />
+      </noscript>
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style="display:none"
+          alt=""
+          src="https://www.facebook.com/tr?id=345546787839871&ev=PageView&noscript=1"
+        />
+      </noscript>
+    </>
+  )
+}

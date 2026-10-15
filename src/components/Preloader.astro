@@ -1,0 +1,191 @@
+---
+/**
+ * Preloader migrado de la web anterior (Tropico Web Claude · mvp/tropico).
+ * El logo flota en ola mientras carga y la salida son tres capas de columnas
+ * que suben con tiempos distintos, con la barra de progreso al pie.
+ *
+ * Se monta una sola vez en el layout Base, así corre en todas las páginas.
+ * Con prefers-reduced-motion no anima: se muestra y se va.
+ */
+---
+
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pl-cols pl-cols-aqua"><span></span><span></span><span></span><span></span></div>
+  <div class="pl-cols pl-cols-am"><span></span><span></span><span></span><span></span></div>
+  <div class="pl-cols pl-cols-osc"><span></span><span></span><span></span><span></span></div>
+
+  <div class="pl-brand">
+    <svg class="pl-logo" viewBox="0 0 729 470" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Trópico">
+      <path d="M94.9467 109.179L0 126.146V162.095L29.7344 156.79V470L65.2124 463.665V150.444L94.9467 145.128V109.179Z" fill="currentColor"/>
+      <path d="M680.974 313.132C654.487 317.866 632.949 299.88 632.949 273.053V57.9973C632.949 31.1587 654.498 5.48412 680.974 0.749868C707.461 -3.98438 729 14.0013 729 40.8287V255.873C729 282.712 707.45 308.386 680.974 313.121V313.132ZM680.974 36.71C674.06 37.9411 668.427 44.6564 668.427 51.6626V266.707C668.427 273.713 674.06 278.414 680.974 277.183C687.889 275.952 693.522 269.237 693.522 262.23V47.1746C693.522 40.1684 687.889 35.4677 680.974 36.6988V36.71Z" fill="currentColor"/>
+      <path d="M728.945 344.917L633.004 362.064V333.591L728.945 316.456V344.917Z" fill="currentColor"/>
+      <path d="M270.448 430.559C243.961 435.293 222.422 417.308 222.422 390.48V175.436C222.422 148.597 243.972 122.923 270.448 118.188C296.935 113.454 318.474 131.44 318.474 158.267V373.312C318.474 400.15 296.924 425.825 270.448 430.559ZM270.448 154.137C263.534 155.368 257.9 162.084 257.9 169.09V384.134C257.9 391.141 263.534 395.841 270.448 394.61C277.362 393.379 282.996 386.664 282.996 379.658V164.613C282.996 157.607 277.362 152.906 270.448 154.137Z" fill="currentColor"/>
+      <path d="M318.418 97.7292L222.478 114.864V86.3916L318.418 69.2566V97.7292Z" fill="currentColor"/>
+      <path d="M376.893 407.973L341.415 414.308V65.1491L390.81 56.3297C416.535 51.7298 437.477 69.2006 437.477 95.2781V211.687C437.477 237.753 416.546 262.712 390.81 267.3L376.904 269.785V407.985L376.893 407.973ZM376.893 233.825L390.799 231.34C396.963 230.243 401.977 224.256 401.977 218.01V101.602C401.977 95.3565 396.963 91.1706 390.799 92.2675L376.893 94.7521V233.814V233.825Z" fill="currentColor"/>
+      <path d="M178.008 300.183C193.163 289.651 203.568 271.844 203.568 253.467V137.058C203.568 110.992 182.636 93.521 156.912 98.1097L107.516 106.929V456.099H107.605V456.055L142.994 449.731V306.473L171.204 444.695L207.445 438.214L177.997 300.171L178.008 300.183ZM142.994 136.554L156.901 134.07C163.064 132.973 168.079 137.159 168.079 143.404V259.813C168.079 266.058 163.064 272.035 156.901 273.143L142.994 275.627V136.566V136.554Z" fill="currentColor"/>
+      <path d="M577.456 326.921C577.456 333.927 571.823 340.642 564.908 341.873C557.994 343.104 552.361 338.415 552.361 331.397V72.4015C552.361 65.3953 557.994 58.68 564.908 57.4489C571.823 56.2178 577.456 60.9073 577.456 67.9247V167.948L612.934 161.614V61.5788C612.934 34.7402 591.384 16.7657 564.908 21.5C538.421 26.2342 516.883 51.9088 516.883 78.7474V337.754C516.883 364.593 538.433 382.568 564.908 377.833C591.395 373.099 612.934 347.424 612.934 320.586V240.965L577.456 247.3V326.921Z" fill="currentColor"/>
+      <path d="M456.906 44.5892V393.603L492.395 387.268V38.2545L456.906 44.5892Z" fill="currentColor"/>
+    </svg>
+  </div>
+
+  <span class="pl-bar" id="plBar"></span>
+</div>
+
+<style>
+  /* Tres capas de columnas + marca + barra. Los tiempos son los de la web anterior. */
+  .preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .preloader .pl-cols {
+    position: absolute;
+    inset: 0;
+    display: flex;
+  }
+
+  .preloader .pl-cols span {
+    flex: 1 1 0;
+    transform: translateY(0);
+    will-change: transform;
+  }
+
+  .preloader.out .pl-cols span {
+    transform: translateY(-100%);
+  }
+
+  .preloader .pl-cols-osc { z-index: 4 }
+  .preloader .pl-cols-osc span { background: var(--color-oscuro) }
+  .preloader .pl-cols-am { z-index: 3 }
+  .preloader .pl-cols-am span { background: var(--color-amarillo) }
+  .preloader .pl-cols-aqua { z-index: 2 }
+  .preloader .pl-cols-aqua span { background: #0fffdb }
+
+  .preloader .pl-cols-osc span:nth-child(1) { transition: transform 0.72s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-osc span:nth-child(2) { transition: transform 1.02s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-osc span:nth-child(3) { transition: transform 0.84s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-osc span:nth-child(4) { transition: transform 1.14s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-am span:nth-child(1) { transition: transform 0.92s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-am span:nth-child(2) { transition: transform 1.22s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-am span:nth-child(3) { transition: transform 1.04s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-am span:nth-child(4) { transition: transform 1.34s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-aqua span:nth-child(1) { transition: transform 1.14s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-aqua span:nth-child(2) { transition: transform 1.44s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-aqua span:nth-child(3) { transition: transform 1.26s cubic-bezier(0.76, 0, 0.24, 1) }
+  .preloader .pl-cols-aqua span:nth-child(4) { transition: transform 1.56s cubic-bezier(0.76, 0, 0.24, 1) }
+
+  .preloader .pl-brand {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-arena);
+    transition:
+      transform 0.5s cubic-bezier(0.62, 0, 0.2, 1),
+      opacity 0.45s ease;
+  }
+
+  .preloader.out .pl-brand {
+    transform: translateY(-24px);
+    opacity: 0;
+  }
+
+  .preloader .pl-logo {
+    width: 180px;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  .preloader .pl-logo path {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: plbob 1.15s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .preloader.out .pl-logo path {
+    animation-play-state: paused;
+  }
+
+  @keyframes plbob {
+    0%, 100% { transform: translateY(0) }
+    32% { transform: translateY(-26px) }
+  }
+
+  .preloader .pl-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 7px;
+    width: 0;
+    background: var(--color-amarillo);
+    z-index: 7;
+    transition: width 0.3s linear;
+  }
+
+  .preloader.out .pl-bar {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  @media (width < 48rem) {
+    .preloader .pl-logo { width: 118px }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .preloader .pl-logo path { animation: none !important }
+    .preloader .pl-cols span,
+    .preloader .pl-brand { transition: none !important }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var pl = document.getElementById('preloader');
+    if (!pl) return;
+    var bar = document.getElementById('plBar');
+    var svg = pl.querySelector('.pl-logo');
+    var paths = svg ? [].slice.call(svg.querySelectorAll('path')) : [];
+    var W = (svg && svg.viewBox && svg.viewBox.baseVal.width) || 729;
+
+    /* La ola: cada letra arranca según su posición horizontal */
+    function setWave() {
+      paths.forEach(function (p) {
+        try {
+          var b = p.getBBox();
+          p.style.animationDelay = ((b.x + b.width / 2) / W * 0.62).toFixed(3) + 's';
+        } catch (e) {}
+      });
+    }
+    requestAnimationFrame(setWave);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(setWave);
+
+    var start = Date.now(), done = false, pct = 0;
+    var prog = setInterval(function () {
+      pct = Math.min(95, pct + Math.random() * 18);
+      if (bar) bar.style.width = pct + '%';
+    }, 140);
+
+    function finish() {
+      if (done) return;
+      done = true;
+      clearInterval(prog);
+      if (bar) bar.style.width = '100%';
+      setTimeout(function () {
+        pl.classList.add('out');
+        setTimeout(function () { pl.style.display = 'none'; }, 1700);
+      }, 200);
+    }
+
+    addEventListener('load', function () {
+      var wait = Math.max(0, 1000 - (Date.now() - start));
+      setTimeout(finish, wait);
+    });
+    setTimeout(finish, 2600);
+  })();
+</script>

@@ -1,0 +1,21 @@
+cliente: Farmaexpert
+titular: Un experto a tu lado.
+bajada: >-
+  Identidad, packaging, e-commerce y contenidos para una red de farmacias que
+  se propuso asesorar, no solo despachar.
+rubro: Salud
+servicios:
+  - Trópico 360
+  - Branding
+  - Pack
+  - Web
+  - Social
+  - Ads
+  - Growth
+anio: '2025'
+orden: 4
+publicado: true
+destacado: false
+portada: ../../assets/casos/portadas/farmaexpert.png
+portadaAlt: Sistema visual de Farmaexpert aplicado en local y packaging
+heroAlt: Fachada de una sucursal de Farmaexpert

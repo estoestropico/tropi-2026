@@ -1,0 +1,135 @@
+---
+import PaginaServicio from '../../components/servicio/PaginaServicio.astro';
+import { SIN_360 } from '../../lib/previa';
+import { CORREDOR_WEB } from '../../lib/corredores';
+
+/* Servicio: Web. Misma estructura que Branding. Contenidos del documento de
+   la página de web; los textos de la columna fija de "El servicio" son
+   nuevos y falta revisarlos. */
+
+const ALTERNATIVAS = [
+  {
+    titulo: 'Sitio web',
+    texto:
+      'El centro de tu presencia digital. Estructura, diseño y desarrollo a medida, pensados para que la gente encuentre lo que busca y avance hacia el contacto.',
+  },
+  {
+    titulo: 'Tienda e-commerce',
+    texto:
+      'Catálogo, fichas de producto, medios de pago y envíos. Configurada y probada, lista para vender desde el primer día.',
+  },
+  {
+    titulo: 'Web app',
+    texto:
+      'Aplicaciones a medida para resolver un requerimiento propio del negocio, cuando ninguna herramienta del mercado lo cubre.',
+  },
+];
+
+const ETAPAS = [
+  {
+    titulo: 'Arquitectura y UX',
+    texto:
+      'Antes de diseñar, estructuramos. Definimos el mapa del sitio, la navegación y los objetivos de conversión, con el recorrido que va a hacer cada tipo de visitante hasta encontrar lo que busca. Se resuelve en wireframes y se valida con vos antes de que aparezca el diseño.',
+  },
+  {
+    titulo: 'Diseño de interfaz',
+    texto:
+      'Aplicamos el sistema visual de la marca al entorno digital: jerarquías, componentes, estados e interacciones. Un look and feel que respeta tu identidad y eleva la percepción de lo que vendés. Cada vista se entrega resuelta en todos los tamaños de pantalla, con criterios de accesibilidad aplicados desde el layout y los componentes definidos como sistema para que el sitio pueda crecer sin rehacerse.',
+  },
+  {
+    titulo: 'Contenido',
+    texto:
+      'Producimos lo que el proyecto pida: textos orientados a conversión, fotografía, video, ilustración y motion. Trabajamos sobre los contenidos que ya tenés o generamos los que falten. Se define dentro del alcance y se cotiza aparte del desarrollo.',
+  },
+  {
+    titulo: 'Desarrollo e integraciones',
+    texto:
+      'Elegimos la tecnología según lo que el sitio tenga que hacer. Cuando necesita un gestor de contenidos, trabajamos sobre WordPress o Laravel; en tiendas, sobre WooCommerce, TiendaNube o desarrollos propios en Laravel. Construimos con el SEO técnico incorporado —estructura, encabezados, URLs y metadatos— e integramos lo que el negocio ya usa: analítica, píxeles, formularios, CRM, medios de pago y envíos. Cuando el proyecto lleva gestor, capacitamos a tu equipo para que lo administre.',
+  },
+  {
+    titulo: 'Testing y publicación',
+    texto:
+      'Validamos cada función, cada formulario y cada pantalla en los navegadores y dispositivos que usa tu audiencia. Revisamos velocidad de carga y accesibilidad antes de salir a producción.',
+  },
+  {
+    titulo: 'Soporte y mantenimiento',
+    texto:
+      'Planes mensuales con actualizaciones de plataforma, copias de seguridad, monitoreo, hosting gestionado y resolución de incidencias. Cuando además querés que alguien lleve la comunicación completa, eso se trabaja desde',
+    enlace: { texto: 'Trópico 360', href: SIN_360 ? undefined : '/servicios/360' },
+  },
+];
+
+const PREGUNTAS = [
+  {
+    pregunta: '¿Diseñan a medida o usan plantillas?',
+    respuesta:
+      'Diseñamos cada sitio a medida, desde cero, en base a tu marca y tus objetivos. Una plantilla condiciona la estructura y la forma de explicar tu negocio, y limita el crecimiento posterior.',
+  },
+  {
+    pregunta: '¿Cuánto cuesta un sitio?',
+    respuesta:
+      'Depende del alcance: la cantidad de secciones, las funcionalidades, las integraciones y si hay tienda o un desarrollo propio detrás. No damos un número cerrado sin entender antes qué tiene que hacer el sitio dentro de tu negocio. La primera reunión sirve para eso, y de ahí sale una propuesta con alcance, etapas y valores.',
+  },
+  {
+    pregunta: '¿Cuánto tarda?',
+    respuesta:
+      'Se define junto con el alcance. Al aprobar el presupuesto ya tenés las fases del proyecto y una fecha estimada de publicación.',
+  },
+  {
+    pregunta: '¿Cuántas rondas de corrección hay?',
+    respuesta:
+      'Dos, una en cada instancia de validación: la primera sobre los wireframes, antes de que aparezca el diseño, y la segunda sobre el diseño de interfaz ya aplicado a tu marca.',
+  },
+  {
+    pregunta: '¿De quién son el dominio, el código y las cuentas?',
+    respuesta:
+      'Tuyos. Todos los registros y servicios quedan a nombre de tu empresa: dominio, hosting, analítica, medios de pago y cualquier plataforma que el proyecto necesite. Te asesoramos y hacemos los trámites con vos, pero nada queda a nombre nuestro. El código también es tuyo cuando el proyecto termina.',
+  },
+  {
+    pregunta: '¿Puedo actualizar el sitio yo mismo?',
+    respuesta:
+      'Sí, cuando el proyecto incluye un gestor de contenidos: te capacitamos para que edites textos, cargues productos y publiques sin depender de nosotros. En los sitios que no lo llevan, los cambios los hacemos nosotros o cualquier profesional que maneje código, porque la programación siempre queda limpia y documentada.',
+  },
+  {
+    pregunta: '¿El sitio incluye posicionamiento en Google?',
+    respuesta:
+      'El SEO técnico viene dentro de la construcción: estructura, encabezados, URLs, velocidad y metadatos, para que el sitio salga preparado para posicionar. Las campañas de posicionamiento son un trabajo aparte.',
+  },
+  {
+    pregunta: '¿Qué necesito tener listo antes de arrancar?',
+    respuesta:
+      'No hace falta que esté todo cerrado. Ayuda saber qué servicios querés destacar, a qué cliente apuntás y qué tiene que lograr el sitio. El resto lo ordenamos en la primera etapa.',
+  },
+  {
+    pregunta: '¿Hacen aplicaciones nativas?',
+    respuesta:
+      'Sí, con equipo propio. Evaluamos cada caso para definir si conviene una aplicación nativa o una web app, según lo que el proyecto tenga que resolver.',
+  },
+  {
+    pregunta: '¿Necesito marca y web juntas?',
+    respuesta:
+      'Cuando el proyecto pide las dos, conviene hacerlas juntas: un solo descubrimiento, un solo criterio y decisiones tomadas mirando marca y web a la vez.',
+  },
+];
+---
+
+<PaginaServicio
+  slug="web"
+  titulo="Web"
+  descripcion="Diseñamos y desarrollamos productos digitales que la gente disfruta usar: claros, rápidos y hechos para convertir."
+  titular={['Creá la experiencia digital que ', 'tu marca merece', '.']}
+  intro="Diseñamos y desarrollamos productos digitales que la gente disfruta usar: claros, rápidos y hechos para convertir."
+  corredor={CORREDOR_WEB}
+  alternativasTitulo="Distintos tipos de desarrollo, según lo que el negocio necesite resolver."
+  alternativas={ALTERNATIVAS}
+  servicioTitulo="Diseñamos y desarrollamos la presencia digital de tu negocio: sitios y plataformas que explican lo que hacés y llevan a la gente hasta el contacto."
+  servicioTexto={[
+    'Partimos de lo que el sitio tiene que lograr dentro de tu negocio. Ordenamos la información, diseñamos cada pantalla sobre tu sistema de marca y elegimos la tecnología según lo que el proyecto necesita.',
+    'Desde la arquitectura inicial hasta la publicación, trabajás con un mismo equipo que valida cada etapa con vos antes de avanzar a la siguiente.',
+    'El objetivo es simple: un sitio rápido, claro y fácil de administrar, que se sostiene en el tiempo y crece junto con tu negocio.',
+  ]}
+  etapas={ETAPAS}
+  aplicadoRotulo="Web aplicada"
+  casos={['fxm', 'tao', 'puff']}
+  preguntas={PREGUNTAS}
+/>
