@@ -52,6 +52,14 @@
     will-change: transform;
   }
 
+  /* Con zoom o escalas no enteras, las columnas caen en medio píxel y la unión
+     dejaba ver la capa de abajo como una línea vertical. Mientras el splash
+     está quieto, la capa oscura lleva además un fondo liso que tapa esas
+     uniones; al salir se saca y las columnas suben como siempre. */
+  .preloader:not(.out) .pl-cols-osc {
+    background: var(--color-oscuro);
+  }
+
   .preloader.out .pl-cols span {
     transform: translateY(-100%);
   }
