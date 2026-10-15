@@ -195,10 +195,10 @@ const CAMPOS: {
         {/* El badge de reCAPTCHA va oculto (ver estilos): Google lo permite
             siempre que este aviso quede visible junto al formulario. */}
         <p class="letra-chica legal-recaptcha mt-3" data-revelar>
-          Este sitio está protegido por reCAPTCHA y se aplican la
-          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidad</a>
-          y las
-          <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Condiciones del Servicio</a>
+          Este sitio está protegido por reCAPTCHA y se aplican la{' '}
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidad</a>{' '}
+          y las{' '}
+          <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Condiciones del Servicio</a>{' '}
           de Google.
         </p>
       </div>
@@ -207,6 +207,40 @@ const CAMPOS: {
 </Base>
 
 <script>
+  import intlTelInput from 'intl-tel-input';
+  import traducciones from 'intl-tel-input/locale/es';
+  import 'intl-tel-input/styles';
+
+  /* Selector de país del WhatsApp: bandera y código a la izquierda del número,
+     Argentina de entrada. Para Argentina se muestra "+54 9" (el 9 de celular
+     que pide WhatsApp) con CSS, vía `data-pais`. El número completo se arma al
+     enviar; sin JavaScript el campo queda como texto común y el PHP asume +54. */
+  const telefono = document.querySelector<HTMLInputElement>('#whatsapp');
+  const iti = telefono
+    ? intlTelInput(telefono, {
+        initialCountry: 'ar',
+        separateDialCode: true,
+        countryOrder: ['ar', 'uy', 'cl', 'py', 'bo', 'br', 'pe', 'co', 'mx', 'es', 'us'],
+        countryNameLocale: 'es',
+        uiTranslations: traducciones,
+      })
+    : null;
+  const marcarPais = () => {
+    const campo = telefono?.closest<HTMLElement>('.campo');
+    if (campo && iti) campo.dataset.pais = iti.getSelectedCountry()?.iso2 ?? '';
+  };
+  marcarPais();
+  telefono?.addEventListener('countrychange', marcarPais);
+
+  /* Número completo para el PHP: "+código número", con el 9 si es Argentina.
+     Si la persona ya escribió el número con "+", se respeta tal cual. */
+  const numeroCompleto = () => {
+    const local = telefono?.value.trim() ?? '';
+    const pais = iti?.getSelectedCountry();
+    if (!pais || local === '' || local.startsWith('+')) return local;
+    return `+${pais.dialCode} ${pais.iso2 === 'ar' ? '9 ' : ''}${local}`;
+  };
+
   /* Completa los campos ocultos con el origen que guardó `Seguimiento` en la
      primera página de la visita. Si no hay nada guardado, quedan vacíos. */
   try {
@@ -287,9 +321,11 @@ const CAMPOS: {
       token.value = await pedirToken();
 
       try {
+        const datosForm = new FormData(form);
+        datosForm.set('whatsapp', numeroCompleto());
         const respuesta = await fetch(form.action, {
           method: 'POST',
-          body: new FormData(form),
+          body: datosForm,
           headers: { Accept: 'application/json' },
         });
         const datos = await respuesta.json();
@@ -424,6 +460,31 @@ const CAMPOS: {
   .letra-chica a {
     text-decoration: underline;
     text-underline-offset: 2px;
+  }
+
+  /* Selector de país del WhatsApp (intl-tel-input). El campo sigue siendo la
+     raya del resto; el país, la bandera y el código van a la izquierda. */
+  .campo :global(.iti) {
+    display: block;
+    width: 100%;
+    --iti-icon-color: currentColor;
+  }
+
+  .campo :global(.iti__selected-dial-code) {
+    color: inherit;
+    font-size: 1.125rem;
+  }
+
+  .campo[data-pais='ar'] :global(.iti__selected-dial-code)::after {
+    content: ' 9';
+  }
+
+  /* El desplegable va sobre fondo claro, con texto oscuro (también en el
+     modo de pantalla completa que usa en el celular). */
+  :global(.iti__country-selector) {
+    --iti-icon-color: var(--color-oscuro);
+    color: var(--color-oscuro);
+    font-size: 1rem;
   }
 
   /* Badge flotante de reCAPTCHA oculto: lo reemplaza la leyenda de arriba.

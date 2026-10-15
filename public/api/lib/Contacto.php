@@ -151,24 +151,31 @@ final class Contacto
             $d = substr($d, 2);
         }
         if (!$internacional && !str_starts_with($d, $pais)) {
-            $d = ltrim($d, '0');
+            $d = $pais . ltrim($d, '0');
+        }
+
+        // Argentina. El selector de país del formulario antepone "+54 9", y detrás
+        // la gente escribe el número como lo conoce: con 0, con 15 o con el 9 otra
+        // vez. Se reduce todo a los 10 dígitos de área + número y se arma +549….
+        if ($pais === '54' && str_starts_with($d, '54')) {
+            $n = substr($d, 2);
+            if (strlen($n) > 10 && $n[0] === '9') {
+                $n = substr($n, 1); // 9 de celular
+            }
+            $n = ltrim($n, '0');
+            if (strlen($n) > 10 && $n[0] === '9') {
+                $n = substr($n, 1); // 9 repetido después del 0
+            }
             // Prefijo móvil local "15" después del código de área (2 a 4 dígitos).
-            if (strlen($d) === 12) {
+            if (strlen($n) === 12) {
                 foreach ([2, 3, 4] as $area) {
-                    if (substr($d, $area, 2) === '15') {
-                        $d = substr($d, 0, $area) . substr($d, $area + 2);
+                    if (substr($n, $area, 2) === '15') {
+                        $n = substr($n, 0, $area) . substr($n, $area + 2);
                         break;
                     }
                 }
             }
-            $d = $pais . $d;
-        }
-
-        if ($pais === '54' && str_starts_with($d, '54')) {
-            if (strlen($d) === 12) {
-                $d = '549' . substr($d, 2); // WhatsApp usa el 9 de celular
-            }
-            return (strlen($d) === 13 && $d[2] === '9') ? '+' . $d : null;
+            return strlen($n) === 10 ? '+549' . $n : null;
         }
         return (strlen($d) >= 8 && strlen($d) <= 15) ? '+' . $d : null;
     }
