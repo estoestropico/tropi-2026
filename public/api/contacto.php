@@ -74,15 +74,20 @@ if (!$contacto->dentroDelLimite($_SERVER['REMOTE_ADDR'] ?? '')) {
 $variables = [$config['variables']['novedades'] => $datos['novedades'] ? 'Sí' : 'No'];
 if ($datos['servicios']) {
     $variables[$config['variables']['servicio']] = implode(', ', $datos['servicios']);
-}// Tags vacíos en la configuración no se envían.
+}
+// Texto de "¿Qué idea tenés en mente?". Sin nombre de variable en la configuración no se envía.
+$varConsulta = $config['variables']['consulta'] ?? '';
+if ($varConsulta !== '' && $datos['idea'] !== '') {
+    $variables[$varConsulta] = $datos['idea'];
+}
+
+// Tags vacíos en la configuración no se envían.
 $tagsServicios = array_values(array_filter(array_map(
     fn ($s) => $config['tags']['servicios'][$s] ?? '',
     $datos['servicios']
 )));
 $tagsBase = array_values(array_filter([$config['tags']['origen'], ...$tagsServicios]));
 
-// El texto de la consulta no se envía a Prometheo: queda solo en el registro privado
-// (más adelante se enviará por mail).
 $registro = ['datos' => $datos];
 // Origen de la visita (página de entrada, referente, UTMs): solo para el registro.
 if ($origen = $contacto->origen($_POST)) {
