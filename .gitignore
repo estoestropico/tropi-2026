@@ -3,6 +3,10 @@ dist/
 dist-previa/
 .astro/
 
+# Imágenes originales del sitio: la fuente única es la carpeta de la Mac.
+# Se copian acá solo para hacer el build local; no se versionan.
+src/assets/
+
 # Dependencias
 node_modules/
 vendor/
