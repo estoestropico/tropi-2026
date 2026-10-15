@@ -95,6 +95,32 @@ pública (en Hostinger, junto a `public_html/`) y la ruta local de XAMPP. Con
 la carpeta privada subida una vez junto a `public_html/`, los builds siguientes
 no requieren tocar nada. Requiere PHP 8.1 o superior con cURL.
 
+## Publicar en Hostinger (www.tropico.ar)
+
+El sitio está publicado desde el 15/10/2026. Para cada actualización:
+
+1. `npm run build`. Tiene que terminar con `✓ Integración del contacto
+   verificada en dist/`; si no, no se sube.
+2. Comprimir el **contenido** de `dist/` (no la carpeta), incluidos los
+   archivos ocultos: `cd dist && zip -r ../sitio.zip .`
+3. En el Administrador de archivos de Hostinger, subirlo a `public_html` y
+   extraerlo ahí mismo, aceptando reemplazar. Después borrar el zip.
+
+Lo que **no** se toca nunca en el servidor:
+
+- `public_html/.htaccess`: ya está activo. `htaccess-produccion.txt` es su
+  fuente; sólo si cambia hay que volver a renombrarlo a `.htaccess` (y nunca
+  en 2026.tropico.ar). Si no cambió, se puede borrar del servidor.
+- Las carpetas ajenas al sitio dentro de `public_html`: `clientes`,
+  `firma-mail`, `tropico-2026` (la previa), `_old`, `_bck`, `_new`,
+  `backhtml`. No vaciar `public_html`.
+- `tropi-privado/`, al lado de `public_html`: configuración con claves, logs
+  de contactos y límite de envíos.
+
+Cada build deja en `_astro/` archivos con nombres nuevos; los viejos no
+molestan. Para limpiarlos, borrar `_astro/` en el servidor justo antes de
+extraer un build completo, nunca con una actualización parcial.
+
 ## Design tokens
 
 Definidos en `src/styles/global.css`, tomados de las variables del Figma.
