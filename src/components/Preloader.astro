@@ -53,9 +53,19 @@
   }
 
   /* Con zoom o escalas no enteras, las columnas caen en medio píxel y la unión
-     dejaba ver la capa de abajo como una línea vertical. Mientras el splash
-     está quieto, la capa oscura lleva además un fondo liso que tapa esas
-     uniones; al salir se saca y las columnas suben como siempre. */
+     dejaba ver la capa de abajo como una línea vertical, quieta y al arrancar
+     la salida. Cada columna proyecta 1px sólido de su color sobre la siguiente:
+     tapa la unión, viaja con la columna y no toca el layout. */
+  .preloader {
+    overflow: hidden;
+  }
+
+  .preloader .pl-cols-osc span { box-shadow: 1px 0 0 var(--color-oscuro) }
+  .preloader .pl-cols-am span { box-shadow: 1px 0 0 var(--color-amarillo) }
+  .preloader .pl-cols-aqua span { box-shadow: 1px 0 0 #0fffdb }
+
+  /* Quieto, además, la capa oscura lleva un fondo liso: queda opaca entera
+     aunque la GPU deje algún medio píxel. Al salir se saca. */
   .preloader:not(.out) .pl-cols-osc {
     background: var(--color-oscuro);
   }
