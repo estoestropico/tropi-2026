@@ -20,12 +20,15 @@
   RewriteRule ^(.*)$ https://www.tropico.ar/$1 [R=301,L]
 
   # 2) Páginas del sitio anterior. Las dos primeras tienen ficha nueva; las
-  #    otras tres todavía no, así que van al portfolio.
-  RewriteRule ^farmaexpert\.html$            /casos/farmaexpert/ [R=301,L]
-  RewriteRule ^washington-school\.html$      /casos/washington-school/ [R=301,L]
-  RewriteRule ^secretaria-medio-ambiente\.html$ /casos/ [R=301,L]
-  RewriteRule ^rosmar\.html$                 /casos/ [R=301,L]
-  RewriteRule ^malva\.html$                  /casos/ [R=301,L]
+  #    otras tres todavía no, así que van al portfolio. El sitio anterior las
+  #    publicaba sin extensión (/farmaexpert) y redirigía la versión .html, así
+  #    que se cubren las dos formas. Sólo aplican en la raíz: las carpetas
+  #    ajenas al sitio (como /clientes) no se tocan.
+  RewriteRule ^farmaexpert(\.html)?$            /casos/farmaexpert/ [R=301,L]
+  RewriteRule ^washington-school(\.html)?$      /casos/washington-school/ [R=301,L]
+  RewriteRule ^secretaria-medio-ambiente(\.html)?$ /casos/ [R=301,L]
+  RewriteRule ^rosmar(\.html)?$                 /casos/ [R=301,L]
+  RewriteRule ^malva(\.html)?$                  /casos/ [R=301,L]
 
   # 3) El index del sitio anterior.
   RewriteRule ^index\.html$ / [R=301,L]
