@@ -1,0 +1,5 @@
+# Todo lo que Astro pone en /_astro/ lleva el hash del contenido en el nombre:
+# si cambia el archivo, cambia el nombre. Se puede cachear un año.
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</IfModule>

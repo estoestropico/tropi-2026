@@ -10,9 +10,13 @@
   RewriteEngine On
 
   # 1) Un solo dominio canónico: https://www.tropico.ar
-  #    Cubre http → https y tropico.ar → www.tropico.ar en un solo salto.
-  RewriteCond %{HTTPS} !=on [OR]
-  RewriteCond %{HTTP_HOST} !^www\.tropico\.ar$ [NC]
+  #    Sólo toca tropico.ar y www.tropico.ar. Los subdominios cuya carpeta
+  #    vive dentro de public_html (p. ej. clientes) heredan este archivo, y
+  #    una regla del tipo "todo lo que no sea www" los mandaría a la web.
+  RewriteCond %{HTTP_HOST} ^tropico\.ar$ [NC]
+  RewriteRule ^(.*)$ https://www.tropico.ar/$1 [R=301,L]
+  RewriteCond %{HTTP_HOST} ^www\.tropico\.ar$ [NC]
+  RewriteCond %{HTTPS} !=on
   RewriteRule ^(.*)$ https://www.tropico.ar/$1 [R=301,L]
 
   # 2) Páginas del sitio anterior. Las dos primeras tienen ficha nueva; las
@@ -30,13 +34,11 @@
 # 4) Página 404 propia del sitio.
 ErrorDocument 404 /404.html
 
-# 5) Caché. Todo lo que Astro pone en /_astro/ lleva el hash del contenido en
-#    el nombre: si cambia el archivo, cambia el nombre. Se puede cachear un
-#    año. El HTML no, porque la dirección no cambia cuando cambia la página.
+# 5) Caché. El HTML se revalida siempre, porque la dirección no cambia cuando
+#    cambia la página. La caché de un año para lo que lleva hash en el nombre
+#    está en _astro/.htaccess, para que no alcance a carpetas ajenas al sitio
+#    (como /clientes) que tienen archivos de nombre fijo.
 <IfModule mod_headers.c>
-  <FilesMatch "\.(js|css|woff2|woff|jpg|jpeg|png|webp|avif|svg|mp4)$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
-  </FilesMatch>
   <FilesMatch "\.(html|xml|txt)$">
     Header set Cache-Control "public, max-age=0, must-revalidate"
   </FilesMatch>
