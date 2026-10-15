@@ -17,6 +17,48 @@ final class Contacto
         return $segundos !== '' && (float) $segundos < $this->config['segundos_minimos'];
     }
 
+    // Verifica el token de reCAPTCHA v3 con Google. Apagado ('activa' => false) o sin
+    // clave secreta no verifica (útil en local). Si Google no responde, deja pasar el envío: el resto
+    // del anti-spam sigue activo y no se pierde un contacto real por una caída ajena.
+    /** @return array{ok:bool, motivo:string, puntaje:?float} */
+    public function verificarRecaptcha(string $token, string $ip): array
+    {
+        $conf = $this->config['recaptcha'] ?? [];
+        $secreta = (string) ($conf['secreta'] ?? '');
+        if (empty($conf['activa']) || $secreta === '') {
+            return ['ok' => true, 'motivo' => 'desactivado', 'puntaje' => null];
+        }
+        if ($token === '') {
+            return ['ok' => false, 'motivo' => 'sin token', 'puntaje' => null];
+        }
+
+        $ch = curl_init('https://www.google.com/recaptcha/api/siteverify');
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => http_build_query(['secret' => $secreta, 'response' => $token, 'remoteip' => $ip]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 5,
+        ]);
+        $cuerpo = curl_exec($ch);
+        curl_close($ch);
+        $r = is_string($cuerpo) ? json_decode($cuerpo, true) : null;
+        if (!is_array($r)) {
+            return ['ok' => true, 'motivo' => 'google sin respuesta', 'puntaje' => null];
+        }
+
+        $puntaje = isset($r['score']) ? (float) $r['score'] : null;
+        if (empty($r['success'])) {
+            return ['ok' => false, 'motivo' => 'token inválido: ' . implode(', ', $r['error-codes'] ?? []), 'puntaje' => $puntaje];
+        }
+        if (($r['action'] ?? '') !== 'contacto') {
+            return ['ok' => false, 'motivo' => 'acción inesperada: ' . ($r['action'] ?? ''), 'puntaje' => $puntaje];
+        }
+        if ($puntaje !== null && $puntaje < (float) ($conf['puntaje_minimo'] ?? 0.5)) {
+            return ['ok' => false, 'motivo' => 'puntaje bajo', 'puntaje' => $puntaje];
+        }
+        return ['ok' => true, 'motivo' => 'ok', 'puntaje' => $puntaje];
+    }
+
     /** @return array{0:array,1:array<string,string>} [datos limpios, errores por campo] */
     public function validar(array $post): array
     {
@@ -51,6 +93,35 @@ final class Contacto
             'acepta_whatsapp' => isset($post['acepta_whatsapp']),
             'idea'      => $idea,
         ], $errores];
+    }
+
+    // Prepara la consulta para citarla en la plantilla de WhatsApp. Devuelve null si
+    // no conviene citarla: muy corta, o con links, emails o teléfonos (el formulario
+    // no puede servir para hacer circular esos datos en nombre de Trópico). Si es
+    // larga, la recorta sin cortar palabras. Ya llega en una sola línea, como pide Meta.
+    public function consultaParaPlantilla(string $idea, int $maximo, int $minimo): ?string
+    {
+        $idea = trim($idea);
+        if (mb_strlen($idea) < $minimo) {
+            return null;
+        }
+        $patrones = [
+            '~https?://|www\.~i',                                 // links
+            '~\b[a-z0-9-]+\.(com|net|org|ar|io|co|info|biz|app|store|shop|online|site|xyz|me)\b~i', // dominios
+            '~\S+@\S+~',                                          // emails
+            '~(?:\d[\s.\-]?){7,}~',                               // teléfonos
+        ];
+        foreach ($patrones as $patron) {
+            if (preg_match($patron, $idea)) {
+                return null;
+            }
+        }
+        if (mb_strlen($idea) > $maximo) {
+            $corte = mb_substr($idea, 0, $maximo - 1);
+            $espacio = mb_strrpos($corte, ' ');
+            $idea = rtrim(mb_substr($corte, 0, $espacio ?: null), " ,.;:") . '…';
+        }
+        return $idea;
     }
 
     // Campos ocultos de origen que completa el sitio; vacíos se omiten.

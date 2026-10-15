@@ -12,6 +12,10 @@ const VIOLETA = '#5d00ff';
    agrega o renombra un servicio, hay que sumarlo también ahí. */
 const SERVICIOS = ['Trópico360', 'Branding', 'Web'];
 
+/* Clave pública de reCAPTCHA v3, la misma que usa tropico.ar. Es pública por
+   diseño; la secreta vive en la configuración privada del PHP. */
+const RECAPTCHA = '6LfghbcnAAAAAH1EIEYXwZbxOv3brZjhzMn8eGlY';
+
 const CAMPOS: {
   id: string;
   etiqueta: string;
@@ -95,8 +99,8 @@ const CAMPOS: {
       {/* ── Columna derecha: formulario ───────────────────────────────── */}
       {/* INTEGRACIÓN CON PROMETHEO — no cambiar sin revisar
           `public/api/contacto.php`: el `action`, los `name` de los campos,
-          la trampa (`sitio_web`), el tiempo (`t`) y la casilla
-          `acepta_whatsapp` son los que lee el PHP. `npm run build` falla si
+          la trampa (`sitio_web`), el tiempo (`t`), el token de reCAPTCHA
+          (`recaptcha`) y `acepta_whatsapp` son los que lee el PHP. `npm run build` falla si
           falta alguno (ver `scripts/verificar-contacto.mjs`).
 
           Sin JavaScript el formulario se envía igual por POST y el PHP
@@ -105,81 +109,99 @@ const CAMPOS: {
           Los campos ocultos de origen los completa `Seguimiento` con la
           página de entrada, el referente y las UTMs de la visita. Quedan en
           el registro privado; a Prometheo no se envían. */}
-      <form class="formulario" action="/api/contacto.php" method="post" novalidate>
-        <p class="trampa" aria-hidden="true">
-          <label>No completar <input type="text" name="sitio_web" tabindex="-1" autocomplete="off" /></label>
-        </p>
-        <input type="hidden" name="t" value="" />
-        {
-          ['landing', 'referrer', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid', 'msclkid'].map(
-            (c) => <input type="hidden" name={c} data-origen={c} />
-          )
-        }
-        {
-          CAMPOS.map((c) => (
-            <p class="campo" data-revelar>
-              <label class="sr-only" for={c.id}>
-                {c.etiqueta}
-              </label>
-              <input
-                id={c.id}
-                name={c.id}
-                type={c.tipo}
-                placeholder={c.etiqueta}
-                required={c.requerido || undefined}
-                autocomplete={c.autocomplete}
-              />
-              {c.requerido && <span class="aviso">¡Necesitamos saberlo!</span>}
-            </p>
-          ))
-        }
-
-        <fieldset class="mt-9 lg:mt-[46px]" data-revelar>
-          <legend class="mb-5 lg:mb-[28px]">¿Sobre qué servicio nos consultás?</legend>
-          <ul class="flex flex-wrap gap-x-6 gap-y-4 lg:gap-x-[23px]">
-            {
-              SERVICIOS.map((s) => (
-                <li>
-                  <label class="marca">
-                    <input type="checkbox" name="servicios[]" value={s} />
-                    <span class="caja" aria-hidden="true" />
-                    {s}
-                  </label>
-                </li>
-              ))
-            }
-          </ul>
-        </fieldset>
-
-        <p class="campo campo-alto mt-9 lg:mt-[54px]" data-revelar>
-          <label class="sr-only" for="idea">¿Qué idea tenés en mente?</label>
-          <textarea id="idea" name="idea" rows="3" placeholder="¿Qué idea tenés en mente?"></textarea>
-        </p>
-
-        <div
-          class="mt-9 flex flex-col items-start gap-6 lg:mt-[46px] lg:flex-row lg:items-center lg:justify-between"
-          data-revelar
+      <div>
+        <form
+          class="formulario"
+          action="/api/contacto.php"
+          method="post"
+          novalidate
+          data-recaptcha={RECAPTCHA}
         >
-          <div class="flex flex-col gap-4">
+          <p class="trampa" aria-hidden="true">
+            <label>No completar <input type="text" name="sitio_web" tabindex="-1" autocomplete="off" /></label>
+          </p>
+          <input type="hidden" name="t" value="" />
+          <input type="hidden" name="recaptcha" value="" />
+          {/* El consentimiento para la bienvenida por WhatsApp es el aviso de
+              abajo del botón: quien envía, acepta. Este campo deja constancia de
+              que el envío salió de un formulario con ese aviso. */}
+          <input type="hidden" name="acepta_whatsapp" value="aviso" />
+          {
+            ['landing', 'referrer', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid', 'msclkid'].map(
+              (c) => <input type="hidden" name={c} data-origen={c} />
+            )
+          }
+          {
+            CAMPOS.map((c) => (
+              <p class="campo" data-revelar>
+                <label class="sr-only" for={c.id}>
+                  {c.etiqueta}
+                </label>
+                <input
+                  id={c.id}
+                  name={c.id}
+                  type={c.tipo}
+                  placeholder={c.etiqueta}
+                  required={c.requerido || undefined}
+                  autocomplete={c.autocomplete}
+                />
+                {c.requerido && <span class="aviso">¡Necesitamos saberlo!</span>}
+              </p>
+            ))
+          }
+
+          <fieldset class="mt-9 lg:mt-[46px]" data-revelar>
+            <legend class="mb-5 lg:mb-[28px]">¿Sobre qué servicio nos consultás?</legend>
+            <ul class="flex flex-wrap gap-x-6 gap-y-4 lg:gap-x-[23px]">
+              {
+                SERVICIOS.map((s) => (
+                  <li>
+                    <label class="marca">
+                      <input type="checkbox" name="servicios[]" value={s} />
+                      <span class="caja" aria-hidden="true" />
+                      {s}
+                    </label>
+                  </li>
+                ))
+              }
+            </ul>
+          </fieldset>
+
+          <p class="campo campo-alto mt-9 lg:mt-[54px]" data-revelar>
+            <label class="sr-only" for="idea">¿Qué idea tenés en mente?</label>
+            <textarea id="idea" name="idea" rows="3" placeholder="¿Qué idea tenés en mente?"></textarea>
+          </p>
+
+          <div
+            class="mt-9 flex flex-col items-start gap-6 lg:mt-[46px] lg:flex-row lg:items-center lg:justify-between"
+            data-revelar
+          >
             <label class="marca">
               <input type="checkbox" name="novedades" />
               <span class="caja" aria-hidden="true" />
               Quiero recibir información de Trópico
             </label>
-            {/* Sin esta casilla no se envía la plantilla de bienvenida por
-                WhatsApp: el lead entra a Prometheo igual, pero nadie le
-                escribe primero. */}
-            <label class="marca">
-              <input type="checkbox" name="acepta_whatsapp" />
-              <span class="caja" aria-hidden="true" />
-              Acepto que Trópico me contacte por WhatsApp
-            </label>
+            <Boton tamano="chico" class="font-bold!">Empecemos</Boton>
           </div>
-          <Boton tamano="chico" class="font-bold!">Empecemos</Boton>
-        </div>
 
-        <p class="estado-form" role="status" aria-live="polite"></p>
-      </form>
+          <p class="estado-form" role="status" aria-live="polite"></p>
+
+          {/* Opt-in para WhatsApp (Meta pide que nombre a la empresa). */}
+          <p class="letra-chica mt-6" data-revelar>
+            Al enviar, aceptás que Trópico te contacte por WhatsApp sobre tu consulta.
+          </p>
+        </form>
+
+        {/* El badge de reCAPTCHA va oculto (ver estilos): Google lo permite
+            siempre que este aviso quede visible junto al formulario. */}
+        <p class="letra-chica legal-recaptcha mt-3" data-revelar>
+          Este sitio está protegido por reCAPTCHA y se aplican la
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidad</a>
+          y las
+          <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Condiciones del Servicio</a>
+          de Google.
+        </p>
+      </div>
     </div>
   </div>
 </Base>
@@ -200,8 +222,8 @@ const CAMPOS: {
     /* Almacenamiento bloqueado o dato ilegible: se envía sin origen. */
   }
 
-  /* Envío a `public/api/contacto.php`, que valida, registra el lead en
-     Prometheo y, si marcó la casilla, le manda la bienvenida por WhatsApp.
+  /* Envío a `public/api/contacto.php`, que verifica reCAPTCHA, valida,
+     registra el lead en Prometheo y le manda la bienvenida por WhatsApp.
      Si sale bien se pasa a /muchas-gracias/; si no, el error se muestra
      abajo del botón y el formulario queda como estaba. */
   const form = document.querySelector<HTMLFormElement>('form.formulario');
@@ -210,7 +232,36 @@ const CAMPOS: {
     const estado = form.querySelector<HTMLElement>('.estado-form')!;
     const boton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     const tiempo = form.querySelector<HTMLInputElement>('input[name="t"]')!;
+    const token = form.querySelector<HTMLInputElement>('input[name="recaptcha"]')!;
+    const clave = form.dataset.recaptcha ?? '';
     const inicio = performance.now();
+
+    /* reCAPTCHA v3 se carga sólo en esta página, al abrirla: Google puntúa
+       mejor cuanto más tiempo lleva el script observando la visita. */
+    const script = document.createElement('script');
+    script.src = `https://www.google.com/recaptcha/api.js?render=${clave}`;
+    script.async = true;
+    document.head.append(script);
+
+    type Grecaptcha = {
+      ready: (cb: () => void) => void;
+      execute: (clave: string, opciones: { action: string }) => Promise<string>;
+    };
+
+    /* Pide el token justo antes de enviar (vence a los 2 minutos). Si Google
+       no responde o está bloqueado, sigue sin token y decide el PHP. */
+    const pedirToken = () =>
+      new Promise<string>((resolver) => {
+        const g = (window as unknown as { grecaptcha?: Grecaptcha }).grecaptcha;
+        if (!g) return resolver('');
+        const corte = setTimeout(() => resolver(''), 8000);
+        g.ready(() => {
+          g.execute(clave, { action: 'contacto' })
+            .then((t) => resolver(t))
+            .catch(() => resolver(''))
+            .finally(() => clearTimeout(corte));
+        });
+      });
 
     const avisar = (texto: string, tipo: 'ok' | 'error' = 'ok') => {
       estado.dataset.tipo = tipo;
@@ -233,6 +284,7 @@ const CAMPOS: {
       tiempo.value = ((performance.now() - inicio) / 1000).toFixed(1);
       boton.disabled = true;
       avisar('Enviando…');
+      token.value = await pedirToken();
 
       try {
         const respuesta = await fetch(form.action, {
@@ -360,6 +412,24 @@ const CAMPOS: {
 
   .estado-form[data-tipo='error'] {
     color: var(--color-amarillo);
+  }
+
+  /* Aviso de WhatsApp y leyenda de reCAPTCHA. */
+  .letra-chica {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    opacity: 0.8;
+  }
+
+  .letra-chica a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Badge flotante de reCAPTCHA oculto: lo reemplaza la leyenda de arriba.
+     Google lo inyecta en el <body>, por eso va global. */
+  :global(.grecaptcha-badge) {
+    visibility: hidden;
   }
 
   /* ── Casillas ────────────────────────────────────────────────────────

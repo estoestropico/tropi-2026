@@ -39,7 +39,7 @@ if (existsSync(contacto)) {
     if (!/action="\/api\/contacto\.php"/.test(apertura)) errores.push('contacto: el form no envía a /api/contacto.php');
     if (!/method="post"/i.test(apertura)) errores.push('contacto: el form no usa method="post"');
 
-    const campos = ['nombre', 'email', 'whatsapp', 'servicios[]', 'novedades', 'acepta_whatsapp', 'sitio_web', 't'];
+    const campos = ['nombre', 'email', 'whatsapp', 'servicios[]', 'novedades', 'acepta_whatsapp', 'sitio_web', 't', 'recaptcha'];
     for (const campo of campos) {
       if (!form.includes(`name="${campo}"`)) errores.push(`contacto: falta el campo name="${campo}"`);
     }
@@ -49,6 +49,13 @@ if (existsSync(contacto)) {
     }
     if (!/<button\b[^>]*type="submit"/.test(form)) errores.push('contacto: falta el botón de envío (type="submit")');
     if (!form.includes('estado-form')) errores.push('contacto: falta el aviso de envío (.estado-form)');
+    if (!/data-recaptcha="6L[\w-]+"/.test(apertura)) errores.push('contacto: falta la clave pública de reCAPTCHA (data-recaptcha)');
+    // Opt-in de WhatsApp: sin este aviso no corresponde mandar la bienvenida.
+    if (!form.includes('aceptás que Trópico te contacte por WhatsApp')) errores.push('contacto: falta el aviso de consentimiento de WhatsApp');
+  }
+  // Con el badge de reCAPTCHA oculto, Google exige la leyenda con sus políticas.
+  for (const url of ['https://policies.google.com/privacy', 'https://policies.google.com/terms']) {
+    if (!html.includes(url)) errores.push(`contacto: falta el link a ${url} (leyenda de reCAPTCHA)`);
   }
 }
 

@@ -10,9 +10,10 @@ fuente, así que cada build lo regenera entero; no se retoca nada en `dist/`.
 
 - Al sumar o editar casos de portfolio no hay que tocar nada del contacto.
 - No modificar `public/api/`, ni el `action`, los `name` de los campos, el
-  campo trampa `sitio_web`, el campo `t` o la casilla `acepta_whatsapp` de
-  `src/pages/contacto.astro`, salvo que el pedido sea explícitamente sobre la
-  integración con Prometheo.
+  campo trampa `sitio_web`, el campo `t`, el token `recaptcha`, el campo
+  `acepta_whatsapp`, el aviso de consentimiento de WhatsApp ni la leyenda de
+  reCAPTCHA de `src/pages/contacto.astro`, salvo que el pedido sea
+  explícitamente sobre la integración con Prometheo.
 - `npm run build` termina con `scripts/verificar-contacto.mjs`. Si falla, se
   corrige la causa en `src/` o `public/`; nunca se saltea el chequeo ni se
   parchea el `dist/`.

@@ -48,10 +48,15 @@ src/
 
 ## Formulario de contacto y Prometheo
 
-El formulario de `/contacto/` registra cada envío como lead en Prometheo
-(CRM), le asigna los tags de origen y de servicio, y, si la persona marcó
-"Acepto que Trópico me contacte por WhatsApp", le manda la plantilla de
-bienvenida. Desde ahí sigue el agente de IA de Prometheo.
+El formulario de `/contacto/` verifica cada envío con reCAPTCHA v3, lo
+registra como lead en Prometheo (CRM) con sus tags y la consulta en la
+variable "Consulta", y le manda la plantilla de bienvenida por WhatsApp. El
+consentimiento es el aviso "Al enviar, aceptás que Trópico te contacte por
+WhatsApp…" debajo del botón. Desde ahí sigue el agente de IA de Prometheo.
+
+El badge flotante de reCAPTCHA está oculto; por eso debajo del formulario va
+la leyenda con los links a la Política de Privacidad y las Condiciones de
+Google, que Google exige en ese caso.
 
 **Está integrado en la fuente, no en el build.** Cada `npm run build` lo
 regenera completo: no hay que retocar nada en `dist/` después de compilar.
@@ -70,9 +75,10 @@ regenera completo: no hay que retocar nada en `dist/` después de compilar.
    página en `src/pages/casos/` y sus imágenes: ninguno de esos archivos
    interviene en el contacto.
 2. **No editar `public/api/`** ni los `name` de los campos, el `action` del
-   formulario, el campo trampa `sitio_web`, el campo `t` ni la casilla
-   `acepta_whatsapp`. El diseño del formulario (textos, estilos, orden) sí se
-   puede cambiar.
+   formulario, el campo trampa `sitio_web`, el campo `t`, el token
+   `recaptcha`, el campo `acepta_whatsapp`, el aviso de consentimiento ni la
+   leyenda de reCAPTCHA. El resto del diseño del formulario (estilos, orden,
+   textos de los campos) sí se puede cambiar.
 3. **`npm run build` y `npm run build:previa` verifican la integración al
    final.** Si falta el PHP, su `.htaccess` o algún campo, el build sale con
    error y explica qué falta. Un build que falla así no se sube.

@@ -67,6 +67,14 @@ if ($errores) {
     responder(false, 'Revisá los datos marcados.', 422, $errores);
 }
 
+// reCAPTCHA v3. Si falla, el envío no llega a Prometheo pero los datos quedan en el
+// registro, por si era una persona con puntaje bajo (VPN, navegador raro).
+$recaptcha = $contacto->verificarRecaptcha((string) ($_POST['recaptcha'] ?? ''), $_SERVER['REMOTE_ADDR'] ?? '');
+if (!$recaptcha['ok']) {
+    $contacto->registrar(['resultado' => 'recaptcha', 'recaptcha' => $recaptcha, 'ip' => $_SERVER['REMOTE_ADDR'] ?? '', 'datos' => $datos]);
+    responder(false, 'No pudimos verificar el envío. Probá de nuevo o escribinos a hola@tropico.ar.', 403);
+}
+
 if (!$contacto->dentroDelLimite($_SERVER['REMOTE_ADDR'] ?? '')) {
     responder(false, 'Recibimos varios envíos seguidos. Probá de nuevo en un rato.', 429);
 }
@@ -88,7 +96,7 @@ $tagsServicios = array_values(array_filter(array_map(
 )));
 $tagsBase = array_values(array_filter([$config['tags']['origen'], ...$tagsServicios]));
 
-$registro = ['datos' => $datos];
+$registro = ['datos' => $datos, 'recaptcha' => $recaptcha];
 // Origen de la visita (página de entrada, referente, UTMs): solo para el registro.
 if ($origen = $contacto->origen($_POST)) {
     $registro['origen'] = $origen;
@@ -151,18 +159,37 @@ try {
 
     // Bienvenida por WhatsApp: solo a leads nuevos que dieron su consentimiento.
     // Abre la conversación; cuando el lead responde, sigue el agente IA.
+    // Si escribió una consulta citable y está activa la plantilla con consulta, se usa
+    // esa: el agente sólo lee el chat, y así la tiene en el primer mensaje. Si Meta la
+    // rechaza, se reintenta en el momento con la plantilla común.
     $plantilla = $config['plantilla'];
     if ($plantilla['activa'] && $registro['resultado'] === 'creado' && $datos['acepta_whatsapp']) {
         $valores = [
             'nombre'   => $datos['nombre'],
             'servicio' => $datos['servicios'] ? implode(', ', $datos['servicios']) : $plantilla['servicio_defecto'],
         ];
-        $parametros = array_map(fn ($campo) => $valores[$campo], $plantilla['parametros']);
-        try {
-            [$codigoPl, $respPl] = $api->enviarPlantilla($datos['telefono'], $plantilla['nombre'], $plantilla['idioma'], $parametros);
-            $registro['plantilla'] = $codigoPl === 200 ? 'enviada' : "error $codigoPl: " . ($respPl['message'] ?? '');
-        } catch (Throwable $e) {
-            $registro['plantilla'] = 'error: ' . $e->getMessage();
+        $intentos = [];
+        $conConsulta = $plantilla['con_consulta'] ?? [];
+        if (!empty($conConsulta['activa'])) {
+            $cita = $contacto->consultaParaPlantilla($datos['idea'], $conConsulta['largo_maximo'], $conConsulta['largo_minimo']);
+            if ($cita !== null) {
+                $intentos[] = [$conConsulta['nombre'], $conConsulta['parametros'], $valores + ['consulta' => $cita]];
+            }
+        }
+        $intentos[] = [$plantilla['nombre'], $plantilla['parametros'], $valores];
+
+        foreach ($intentos as [$nombre, $mapa, $datosPl]) {
+            $parametros = array_map(fn ($campo) => $datosPl[$campo], $mapa);
+            try {
+                [$codigoPl, $respPl] = $api->enviarPlantilla($datos['telefono'], $nombre, $plantilla['idioma'], $parametros);
+                $resultadoPl = $codigoPl === 200 ? 'enviada' : "error $codigoPl: " . ($respPl['message'] ?? '');
+            } catch (Throwable $e) {
+                $resultadoPl = 'error: ' . $e->getMessage();
+            }
+            $registro['plantilla'][$nombre] = $resultadoPl;
+            if ($resultadoPl === 'enviada') {
+                break;
+            }
         }
     }
 } catch (Throwable $e) {
