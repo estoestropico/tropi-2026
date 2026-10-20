@@ -97,14 +97,24 @@ no requieren tocar nada. Requiere PHP 8.1 o superior con cURL.
 
 ## Publicar en Hostinger (www.tropico.ar)
 
-El sitio está publicado desde el 15/10/2026. Para cada actualización:
+El sitio está publicado desde el 15/10/2026. Para cada actualización, desde
+`main` y con todo commiteado:
 
-1. `npm run build`. Tiene que terminar con `✓ Integración del contacto
-   verificada en dist/`; si no, no se sube.
-2. Comprimir el **contenido** de `dist/` (no la carpeta), incluidos los
-   archivos ocultos: `cd dist && zip -r ../sitio.zip .`
-3. En el Administrador de archivos de Hostinger, subirlo a `public_html` y
-   extraerlo ahí mismo, aceptando reemplazar. Después borrar el zip.
+```bash
+npm run deploy -- --dry-run   # compila y muestra qué subiría, sin subir nada
+npm run deploy                # compila y publica
+```
+
+`scripts/deploy.sh` corre `npm run build` (si el chequeo del contacto falla,
+no sube nada) y sincroniza `dist/` con `public_html` por rsync: sube sólo lo
+que cambió y no borra nada del servidor. Con `--sin-build` usa el `dist/` que
+ya está. Necesita el alias `hostinger-tropico` en `~/.ssh/config` (usuario
+`u922223883`, puerto 65002) con una clave cargada en hPanel → Acceso SSH.
+
+Sin SSH, el método manual: comprimir el **contenido** de `dist/` con los
+ocultos (`cd dist && zip -r ../sitio.zip .`), subirlo a `public_html` desde
+el Administrador de archivos, extraerlo ahí aceptando reemplazar y borrar el
+zip.
 
 Lo que **no** se toca nunca en el servidor:
 

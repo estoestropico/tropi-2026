@@ -9,6 +9,7 @@
     "build": "astro build && node scripts/verificar-contacto.mjs dist",
     "preview": "astro preview",
     "check": "astro check",
+    "deploy": "bash scripts/deploy.sh",
     "build:previa": "PREVIA=1 astro build --outDir dist-previa && cp _ref/robots-previa.txt dist-previa/robots.txt && node scripts/verificar-contacto.mjs dist-previa"
   },
   "dependencies": {
