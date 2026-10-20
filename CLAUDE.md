@@ -23,12 +23,12 @@ fuente, así que cada build lo regenera entero; no se retoca nada en `dist/`.
 Detalle completo en la sección "Formulario de contacto y Prometheo" de
 `PROYECTO.md`.
 
-## Imágenes (`src/assets/`) — fuera del repo
+## Imágenes (`src/assets/`)
 
-La fuente única del sitio es la carpeta "Tropico Nueva Web" de la Mac. Las
-imágenes originales no se versionan acá (`.gitignore`): para un build local
-hay que copiarlas desde un zip actualizado de esa carpeta a `src/assets/`.
-Sin ellas `npm run build` falla, porque las páginas las importan.
+La fuente única del sitio, imágenes incluidas, es el repo
+`estoestropico/tropi-2026` en GitHub. Las imágenes originales se versionan
+en `src/assets/`: en cualquier máquina alcanza con clonar, `npm install` y
+`npm run build`. Ya no se copian desde zips de la carpeta de la Mac.
 
 Prueba local: `npm run build` y servir `dist/` en la raíz de un puerto con el
 PHP de XAMPP (`/opt/lampp/bin/php -S 127.0.0.1:8080 -t dist`). Las rutas son

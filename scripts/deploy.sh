@@ -46,13 +46,7 @@ if [[ "$rama" != main || -n "$sucio" ]]; then
   fi
 fi
 
-if [[ $COMPILAR -eq 1 ]]; then
-  if [[ ! -d src/assets ]]; then
-    echo "✗ Falta src/assets: copiar las imágenes desde la carpeta de la Mac." >&2
-    exit 1
-  fi
-  npm run build
-fi
+[[ $COMPILAR -eq 1 ]] && npm run build
 
 if [[ ! -f dist/index.html ]]; then
   echo "✗ No hay build en dist/." >&2
