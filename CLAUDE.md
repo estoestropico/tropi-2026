@@ -23,6 +23,31 @@ fuente, así que cada build lo regenera entero; no se retoca nada en `dist/`.
 Detalle completo en la sección "Formulario de contacto y Prometheo" de
 `PROYECTO.md`.
 
+## Repo, máquinas y publicación
+
+Se trabaja en paralelo desde una PC y una Mac contra el repo
+`estoestropico/tropi-2026` (GitHub, privado). Detalle en las secciones
+"Trabajar desde varias máquinas" y "Publicar en Hostinger" de `PROYECTO.md`;
+configuración de una máquina nueva en `docs/configurar-mac.md`.
+
+- **Al empezar una sesión**, antes de tocar archivos: `git fetch` y
+  `git status -sb`. Si GitHub tiene commits nuevos, `git pull` (y avisar si
+  hay cambios locales sin commitear que puedan chocar).
+- **Al terminar algo**, ofrecer commit y push. Commits chicos, en español,
+  que digan qué cambió. Nunca `git push --force` ni reescribir historia ya
+  pusheada. Un conflicto se le muestra al usuario; no se resuelve a ciegas.
+- **El remote es `git@github-tropico:…`**, un alias de `~/.ssh/config` con la
+  clave de esa máquina. No cambiarlo a `github.com`: en la PC esa clave es de
+  otro repo.
+- **Publicar sólo cuando el usuario lo pide**, con `npm run deploy` (primero
+  `-- --dry-run` si no se sabe qué va a subir). Nunca subir a mano a
+  `public_html` ni tocar el `.htaccess`, las carpetas ajenas ni
+  `tropi-privado/` del servidor.
+- **El SSH de Hostinger está apagado** salvo para publicar. Antes de
+  `npm run deploy`, pedirle al usuario que lo active en hPanel → Avanzado →
+  Acceso SSH (si responde `/sbin/nologin`, sigue apagado). Al terminar,
+  recordarle que lo desactive. No se puede activar desde la terminal.
+
 ## Imágenes (`src/assets/`)
 
 La fuente única del sitio, imágenes incluidas, es el repo

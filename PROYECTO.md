@@ -95,21 +95,73 @@ pública (en Hostinger, junto a `public_html/`) y la ruta local de XAMPP. Con
 la carpeta privada subida una vez junto a `public_html/`, los builds siguientes
 no requieren tocar nada. Requiere PHP 8.1 o superior con cURL.
 
+## Trabajar desde varias máquinas
+
+El repo es `estoestropico/tropi-2026` en GitHub (privado, cuenta
+hola@tropico.ar). Es la fuente única del sitio, imágenes incluidas: no hay
+carpetas ni zips aparte. Se trabaja en paralelo desde la PC y desde la Mac.
+
+Para configurar una máquina nueva: `docs/configurar-mac.md`. Claude Code la
+sigue paso a paso y va guiando.
+
+Cada máquina tiene sus propias claves SSH, una para GitHub y otra para
+Hostinger, con los mismos alias en `~/.ssh/config`: `github-tropico` y
+`hostinger-tropico`. Si se pierde una máquina, se borra su clave en GitHub
+(Settings → SSH keys) y en hPanel (Acceso SSH → Claves SSH), y la otra sigue
+funcionando.
+
+### Todos los días
+
+```bash
+git pull                     # al empezar: traer lo que se hizo en la otra máquina
+# …cambios…
+git add -A
+git commit -m "Qué cambió"
+git push                     # al terminar, o cada vez que algo quede listo
+```
+
+- **Pull al empezar, push al terminar.** Cuanto menos tiempo pase un cambio
+  sin subir, menos chances de pisarse con la otra máquina.
+- **Commits chicos**, de a un tema (un caso, un ajuste del header). Si hay
+  un conflicto, es más fácil de entender.
+- **Si `git pull` da conflicto**, no forzar nada: ver qué cambió en cada
+  lado y elegir. Nunca `git push --force`.
+- **Las imágenes van directo a `src/assets/`** y se commitean como cualquier
+  otro archivo. Si dos personas tocan la misma imagen a la vez, git no las
+  puede mezclar: gana la que se elija en el conflicto.
+- **Publicar** es aparte de pushear: un push no cambia el sitio. Se publica
+  con `npm run deploy` cuando se quiere, desde cualquiera de las dos
+  máquinas (ver la sección siguiente).
+
 ## Publicar en Hostinger (www.tropico.ar)
 
 El sitio está publicado desde el 15/10/2026. Para cada actualización, desde
-`main` y con todo commiteado:
+`main`, con todo commiteado y pusheado:
 
-```bash
-npm run deploy -- --dry-run   # compila y muestra qué subiría, sin subir nada
-npm run deploy                # compila y publica
-```
+1. En hPanel → **Avanzado → Acceso SSH**, activar el SSH.
+2. Publicar:
+   ```bash
+   npm run deploy -- --dry-run   # compila y muestra qué subiría, sin subir nada
+   npm run deploy                # compila y publica
+   ```
+3. En hPanel, **desactivar el SSH**. No queda encendido entre publicaciones.
 
 `scripts/deploy.sh` corre `npm run build` (si el chequeo del contacto falla,
 no sube nada) y sincroniza `dist/` con `public_html` por rsync: sube sólo lo
 que cambió y no borra nada del servidor. Con `--sin-build` usa el `dist/` que
-ya está. Necesita el alias `hostinger-tropico` en `~/.ssh/config` (usuario
-`u922223883`, puerto 65002) con una clave cargada en hPanel → Acceso SSH.
+ya está.
+
+Antes de subir, el script comprueba que:
+
+- se esté en `main`, sin cambios sin commitear;
+- `main` sea igual al de GitHub: si falta un `git pull` o un `git push`,
+  corta. Así una máquina desactualizada no publica encima de lo que publicó
+  la otra;
+- haya conexión SSH. Si el SSH está desactivado en hPanel, avisa y corta.
+
+Necesita el alias `hostinger-tropico` en `~/.ssh/config` (usuario
+`u922223883`, puerto 65002) con una clave de esa máquina cargada en hPanel →
+Acceso SSH → Claves SSH.
 
 Sin SSH, el método manual: comprimir el **contenido** de `dist/` con los
 ocultos (`cd dist && zip -r ../sitio.zip .`), subirlo a `public_html` desde

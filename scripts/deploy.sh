@@ -10,6 +10,9 @@
 # El .htaccess de la raíz nunca se pisa: si htaccess-produccion.txt cambió,
 # avisa y hay que subirlo a mano (y nunca en 2026.tropico.ar).
 #
+# El SSH de Hostinger no queda encendido: se activa en hPanel → Avanzado →
+# Acceso SSH antes de publicar y se desactiva al terminar.
+#
 # Requiere el alias `hostinger-tropico` en ~/.ssh/config.
 #
 # Uso: npm run deploy [-- --dry-run] [-- --sin-build]
@@ -32,18 +35,41 @@ done
 
 cd "$(dirname "$0")/.."
 
-# Lo publicado tiene que ser un commit de main, para saber siempre qué hay
-# en producción. En modo prueba sólo se avisa.
-rama=$(git rev-parse --abbrev-ref HEAD)
-sucio=$(git status --porcelain)
-if [[ "$rama" != main || -n "$sucio" ]]; then
-  mensaje="Estás en '$rama'$([[ -n "$sucio" ]] && echo ' con cambios sin commitear')."
+# En modo prueba los problemas sólo se avisan; al publicar, cortan.
+problema() {
   if [[ $PRUEBA -eq 1 ]]; then
-    echo "⚠ $mensaje Para publicar de verdad tiene que ser main y sin cambios."
+    echo "⚠ $1 Para publicar de verdad hay que resolverlo."
   else
-    echo "✗ $mensaje Se publica sólo desde main, con todo commiteado." >&2
+    echo "✗ $1" >&2
     exit 1
   fi
+}
+
+# Lo publicado tiene que ser un commit de main, para saber siempre qué hay
+# en producción.
+rama=$(git rev-parse --abbrev-ref HEAD)
+[[ "$rama" == main ]] || problema "Estás en '$rama': se publica sólo desde main."
+[[ -z "$(git status --porcelain)" ]] || problema "Hay cambios sin commitear."
+
+# Se trabaja desde más de una máquina: si este main no es el de GitHub, se
+# publicaría encima de lo que subió la otra.
+git fetch -q origin main
+local_=$(git rev-parse HEAD)
+remoto=$(git rev-parse origin/main)
+if [[ "$local_" != "$remoto" ]]; then
+  if git merge-base --is-ancestor "$local_" "$remoto"; then
+    problema "GitHub tiene commits que acá no están: hacer git pull."
+  elif git merge-base --is-ancestor "$remoto" "$local_"; then
+    problema "Hay commits sin subir a GitHub: hacer git push."
+  else
+    problema "main y origin/main se separaron: hacer git pull y resolver."
+  fi
+fi
+
+if ! ssh -o ConnectTimeout=10 "$HOST" true 2>/dev/null; then
+  echo "✗ No hay conexión SSH con Hostinger." >&2
+  echo "  Activar el SSH en hPanel → Avanzado → Acceso SSH y volver a correr." >&2
+  exit 1
 fi
 
 [[ $COMPILAR -eq 1 ]] && npm run build
@@ -72,3 +98,4 @@ if [[ $PRUEBA -eq 1 ]]; then
 else
   echo "✓ Publicado $(git rev-parse --short HEAD) en www.tropico.ar"
 fi
+echo "→ Si ya terminaste, desactivá el SSH en hPanel → Avanzado → Acceso SSH."
