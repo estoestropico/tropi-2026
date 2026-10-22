@@ -1,0 +1,15 @@
+cliente: Guderma
+titular: Ciencia para tu piel.
+rubro: Salud
+servicios:
+  - Trópico 360
+  - Branding
+  - Pack
+  - Social
+anio: '2025'
+orden: 6
+publicado: true
+destacado: false
+portada: ../../assets/casos/portadas/guderma.png
+portadaAlt: Línea de dermocosmética Guderma
+heroAlt: Productos de la línea Guderma

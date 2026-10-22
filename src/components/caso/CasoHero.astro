@@ -19,8 +19,8 @@ import type { ImageMetadata } from 'astro';
  * recorte lateral. La velocidad está calculada contra esa holgura: el marco
  * deja de verse cuando el scroll pasa su borde inferior, y hasta ahí la
  * imagen no puede quedarse corta. Por debajo de lg el marco pasa a medirse
- * en vh mientras el bloque de texto de arriba sigue midiendo lo que mide, así
- * que ahí hace falta un poco más de sobra: 145 %.
+ * en proporción (16:10) y la sobra baja a 112 %, que es lo que esa caja más
+ * baja necesita para tener recorrido sin agrandar la foto de más.
  *
  * Ese 134 % da por sentado un original 16:9, que es lo que usan casi todos
  * los casos. Con una foto más panorámica no alcanza: para llegar al 134 % de
@@ -57,7 +57,7 @@ const {
   sobra,
 } = Astro.props;
 
-const sobraBase = sobra ?? 145;
+const sobraBase = sobra ?? 112;
 const sobraLg = sobra ?? 134;
 ---
 
@@ -85,7 +85,7 @@ const sobraLg = sobra ?? 134;
   </div>
 
   <div
-    class="hero-marco full-width relative h-[46vh] overflow-hidden lg:h-[748px]"
+    class="hero-marco full-width relative overflow-hidden lg:h-[748px]"
     style={`margin-top:-${solape}px`}
   >
     <Image
@@ -103,6 +103,22 @@ const sobraLg = sobra ?? 134;
 </section>
 
 <style>
+  /* Mobile: el marco medía 46vh, que en un teléfono alto da una caja casi
+     cuadrada. Sobre una foto 16:9 eso obliga a `object-cover` a agrandarla
+     dos veces y media para llenarla, y se come más de la mitad del ancho. Con
+     una proporción apaisada la foto entra casi entera y la sobra que queda
+     alcanza para el recorrido. De lg en adelante no cambia nada: ahí manda el
+     alto fijo del Figma. */
+  .hero-marco {
+    aspect-ratio: 16 / 10;
+  }
+
+  @media (width >= 64rem) {
+    .hero-marco {
+      aspect-ratio: auto;
+    }
+  }
+
   .hero-img {
     height: var(--sobra);
   }

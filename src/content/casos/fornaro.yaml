@@ -10,7 +10,7 @@ servicios:
   - Web
   - Social
 anio: '2025'
-orden: 8
+orden: 9
 publicado: true
 destacado: false
 portada: ../../assets/casos/portadas/fornaro.png
